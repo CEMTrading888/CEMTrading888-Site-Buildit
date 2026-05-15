@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Patches the backtest.py on the server to add a /api/history GET endpoint.
+Patches /var/www/cemtrading888/backtest.py to add a /api/history GET endpoint.
 Safe to re-run: skips if already patched.
-Auto-discovers the correct path.
 """
-import os, sys, glob
+import os, sys
+
+TARGET = '/var/www/cemtrading888/backtest.py'
 
 MARKER = '# CEM_HISTORY_ROUTE_V1'
 
@@ -12,7 +13,7 @@ NEW_ROUTE = r'''
 # CEM_HISTORY_ROUTE_V1
 @app.get("/api/history")
 async def api_history(symbol: str = "MGC", interval: str = "1d", range: str = "5y"):
-    import yfinance as yf
+    import yfinance as yf, pandas as pd
     SYMBOL_MAP = {
         "MGC": "MGC=F", "GC": "GC=F", "MES": "MES=F", "ES": "ES=F",
         "MNQ": "MNQ=F", "NQ": "NQ=F", "MBT": "BTC-USD", "BTC": "BTC-USD",
@@ -25,6 +26,7 @@ async def api_history(symbol: str = "MGC", interval: str = "1d", range: str = "5
                          auto_adjust=True, progress=False)
         if df is None or df.empty:
             return {"symbol": symbol, "bars": [], "count": 0}
+        # Flatten multi-level columns if present
         if hasattr(df.columns, 'levels'):
             df.columns = df.columns.get_level_values(0)
         df = df.rename(columns=str.capitalize)
@@ -52,36 +54,17 @@ async def history_ping():
     return {"ok": True, "route": "history"}
 '''
 
-# Search common locations for backtest.py
-CANDIDATES = [
-    '/var/www/cemtrading888/backtest.py',
-    '/home/cemtrading888/backtest.py',
-    '/opt/cemtrading888/backtest.py',
-    '/app/backtest.py',
-    '/srv/backtest.py',
-]
-# Also search via glob
-CANDIDATES += glob.glob('/var/www/*/backtest.py')
-CANDIDATES += glob.glob('/home/*/backtest.py')
-
-TARGET = None
-for c in CANDIDATES:
-    if os.path.exists(c):
-        TARGET = c
-        break
-
-if TARGET is None:
-    print("backtest.py not found in any of:", CANDIDATES, file=sys.stderr)
-    # Don't exit with error — service restart will still happen
-    sys.exit(0)
+if not os.path.exists(TARGET):
+    print(f"ERROR: {TARGET} not found", file=sys.stderr)
+    sys.exit(1)
 
 src = open(TARGET).read()
 
 if MARKER in src:
-    print(f"ALREADY PATCHED — {TARGET}")
+    print("ALREADY PATCHED — nothing to do")
     sys.exit(0)
 
-# Insert after the last @app route or at end of file
+# Find a good insertion point: after the last @app route or before if __name__
 insert_pos = src.rfind('\nif __name__')
 if insert_pos == -1:
     insert_pos = len(src)
