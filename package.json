@@ -1,0 +1,15 @@
+{
+  "name": "cemtrading888",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CEMTrading888 Algo Trading Platform - Strategy Builder & Simulator",
+  "scripts": {
+    "build": "echo 'CEMTrading888 build complete — static files ready' && mkdir -p dist && cp -r *.html api/ dist/ 2>/dev/null || true",
+    "dev": "echo 'Run locally with live server or Cursor preview'",
+    "test:e2e": "playwright test",
+    "test:e2e:prod": "PLAYWRIGHT_BASE_URL=https://cemtrading888.com playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.0"
+  }
+}

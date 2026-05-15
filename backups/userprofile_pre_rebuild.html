@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('cem_theme')||'teal');})();</script>
+<!-- CEM-BUILD: PROFILE-REBUILD-APRIL4 -->
+<!-- CEM-BUILD: APRIL4-MASTER -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Command Station — CEMTrading888</title>
+<script>
+window.SUPABASE_URL='https://gsnbqohzprencuzkirui.supabase.co';
+window.SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdzbmJxb2h6cHJlbmN1emtpcnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyOTYzMjMsImV4cCI6MjA4OTg3MjMyM30.YsMOVJyz4XYWOT0e_lQjNHDArNLiEdF38RXZuoR1iq8';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+:root{
+  --bg:#060810;--bg2:#0a0d14;--bg3:#0f1520;--bg4:#141b28;
+  --accent:#9B59B6;--accent2:#c084fc;--teal:#00ffcc;
+  --text:#e8def5;--dim:#8f84aa;--muted:#5f5778;
+  --border:#201a2d;--red:#ff4757;--green:#00d68f;
+  --mono:'JetBrains Mono',monospace;--ui:'Inter',sans-serif;
+}
+*{box-sizing:border-box}
+html, body { height: 100dvh; overflow: hidden; margin: 0; }
+body { display: grid; grid-template-rows: 1fr; font-family:var(--ui); background:var(--bg); color:var(--text); }
+#profile-shell {
+  grid-row: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#cs-main { display: contents; }
+#profile-sidebar{display:flex;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;background:var(--bg2);border-bottom:1px solid rgba(155,91,182,0.3);flex-shrink:0;padding:0 16px;align-items:center;gap:4px;scrollbar-width:none;}
+#profile-sidebar::-webkit-scrollbar{display:none;}
+#cs-content{flex:1;min-height:0;overflow-y:auto;padding:24px;position:relative;}
+#cs-rail{display:none;}
+.side-head{padding:14px 14px;border-bottom:1px solid var(--border)}
+.side-name{font-weight:700;font-size:13px}
+.side-sub{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.nav-title{font-family:var(--mono);font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding:10px 14px 4px}
+.snav{list-style:none;margin:0;padding:0;display:flex;flex-direction:row;align-items:center;gap:2px;}
+.snav a.profile-nav-item{display:flex;align-items:center;padding:10px 14px;color:rgba(232,222,245,.45);text-decoration:none;border-bottom:2px solid transparent;border-left:none;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;height:44px;}
+.snav a.profile-nav-item:hover{background:rgba(155,91,182,.06);color:var(--accent2);}
+.snav a.profile-nav-item.active{border-bottom:2px solid #00C9B1;border-left:none;background:rgba(0,201,177,.08);color:#00C9B1;}
+
+.section{display:none}
+.section.active{display:block}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:12px}
+.page-head h1{margin:0;font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.page-head p{margin:6px 0 0;color:var(--dim);font-size:13px}
+.badge{font-family:var(--mono);font-size:9px;letter-spacing:.1em;padding:3px 8px;border:1px solid var(--accent);color:var(--accent2);background:rgba(155,91,182,.08);text-transform:uppercase}
+
+.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:8px}
+.metric{padding:12px}
+.ml{font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.mv{font-size:22px;font-weight:800;margin-top:6px}
+.mv.mono{font-family:var(--mono)}
+.mv.pos{color:var(--green)} .mv.neg{color:var(--red)} .mv.acc{color:var(--accent2)}
+.ms{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card-head{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.card-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--accent2);text-transform:uppercase}
+.card-body{padding:12px}
+
+.list-item{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.list-item:last-child{border-bottom:0}
+.li-main{font-size:12px}
+.li-sub{font-family:var(--mono);font-size:9px;color:var(--muted)}
+
+.strategy-card{border-left:3px solid var(--accent);padding:12px;margin-bottom:10px;border-radius:6px;background:var(--bg3);border:1px solid var(--border)}
+.str-top,.str-stats,.str-actions{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}
+.str-stats{grid-template-columns:repeat(5,minmax(0,1fr));margin-top:8px}
+.str-stat-l{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.str-stat-v{font-family:var(--mono);font-size:12px;font-weight:700}
+.str-actions{grid-template-columns:repeat(4,max-content);margin-top:10px}
+.btn{background:transparent;border:1px solid var(--accent);color:var(--accent2);border-radius:6px;padding:6px 9px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.btn:hover{background:var(--accent);color:var(--bg)}
+.btn.dim{border-color:var(--border);color:var(--dim)}
+.btn.warn{border-color:var(--red);color:var(--red)}
+.btn.green{border-color:var(--green);color:var(--green)}
+.inp,.sel,.txt{width:100%;background:#0f1118;border:1px solid #30263d;color:var(--text);border-radius:6px;padding:8px 10px;font-size:12px}
+.txt{min-height:90px;resize:vertical}
+.table{width:100%;border-collapse:collapse}
+.table th{font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:8px;background:var(--bg2);text-align:left;border-bottom:1px solid var(--border)}
+.table td{padding:9px 8px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
+.table tr:hover td{background:rgba(155,91,182,.05)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tab{background:transparent;border:0;border-bottom:2px solid transparent;color:var(--dim);padding:4px 0;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
+.asset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.asset-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px}
+.asset-t{font-family:var(--mono);font-size:12px;color:var(--teal);font-weight:700}
+.asset-n{font-size:11px;color:var(--dim)}
+.asset-p{font-family:var(--mono);font-size:14px;font-weight:700;margin-top:6px}
+.asset-s{font-size:11px;color:var(--muted);margin-top:6px}
+.lock{display:grid;place-items:center;padding:26px;border:1px dashed var(--border);border-radius:8px;color:var(--dim)}
+
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ach{padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg4);opacity:.34;filter:grayscale(1)}
+.ach.unlocked{opacity:1;filter:none;border-color:rgba(155,91,182,.5);box-shadow:0 0 16px rgba(155,91,182,.18)}
+.ach h4{margin:0 0 4px;font-size:13px}
+.ach p{margin:0;font-size:11px;color:var(--dim)}
+
+.right-block{margin-bottom:10px;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg3)}
+.rb-title{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:8px}
+.age-pill{display:inline-block;background:rgba(0,255,204,0.15);border:1px solid #00FFCC;color:#00FFCC;font-size:10px;padding:2px 6px;border-radius:10px;text-transform:uppercase}
+.age-pill.glow{box-shadow:0 0 8px rgba(0,255,204,0.5)}
+.leader-row.me{background:rgba(155,91,182,.15);font-weight:700}
+.rank-gold{color:#FFD700}.rank-silver{color:#C0C0C0}.rank-bronze{color:#CD7F32}
+
+.modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.76);display:none;align-items:center;justify-content:center;z-index:9000}
+.modal-wrap.open{display:flex}
+.modal{width:min(520px,94vw);background:var(--bg3);border:1px solid var(--accent3,#7b3ba0);border-radius:10px;padding:14px}
+.modal h3{margin:0 0 8px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2)}
+.modal p{margin:0 0 10px;color:var(--dim);font-size:12px}
+
+@media(max-width:1360px){#profile-shell{display:flex;flex-direction:column;min-height:calc(100vh - 80px);}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:980px){#profile-shell{grid-template-columns:1fr}#profile-sidebar,#cs-rail{display:none}.grid2{grid-template-columns:1fr}}
+</style>
+  <link rel="stylesheet" href="/cem-shared.css">
+<script src="/nav.js"></script>
+  <script src="/cem-cursor.js"></script>
+<!-- CEM-BUILD: VISUAL-OVERHAUL-APRIL4 -->
+<!-- CEM-BUILD: COMPREHENSIVE-FIX-APRIL4 -->
+<!-- CEM-BUILD: NAV-LOCK-APRIL4 -->
+</head>
+<body>
+<div class="cem-ambient"></div>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="g-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7B2FFF"/>
+      <stop offset="100%" stop-color="#00C9B1"/>
+    </linearGradient>
+    <linearGradient id="g-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7B2FFF"/>
+      <stop offset="100%" stop-color="#FF2D78"/>
+    </linearGradient>
+    <linearGradient id="g-amber" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#00C9B1"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="ambient-glow"></div>
+
+<!-- nav injected by /nav.js -->
+
+<div id="profile-shell">
+<main id="cs-main">
+  <aside id="profile-sidebar">
+    <div class="side-head">
+      <div class="side-name" id="sidebar-name">Trader</div>
+      <div class="side-sub">// command station</div>
+    </div>
+    <div class="nav-title">// sections</div>
+    <ul class="snav" id="cs-nav">
+      <li><a href="#" class="profile-nav-item active" data-sec="overview">◧ Overview</a></li>
+      <li><a href="#" class="profile-nav-item" data-sec="strategies">◨ My Strategies</a></li>
+      <li><a href="#" class="profile-nav-item" data-sec="performance">◩ Performance</a></li>
+      <li><a href="#" class="profile-nav-item" data-sec="leaderboard">◪ Leaderboard</a></li>
+      <li><a href="#" class="profile-nav-item" data-sec="asset-intel">◫ Asset Intel</a></li>
+      <li><a href="#" class="profile-nav-item" data-sec="earnings">◬ Earnings Ledger</a></li>
+      <li><a href="#" class="profile-nav-item" data-sec="journal">◭ Journal</a></li>
+      <li><a href="#" class="profile-nav-item" data-sec="achievements">◮ Achievements</a></li>
+      <li><a href="#" class="profile-nav-item" data-sec="design-lab">◯ Design Lab</a></li>
+      <li><a href="#" class="profile-nav-item" data-sec="settings">◰ Settings</a></li>
+    </ul>
+  </aside>
+
+  <section id="cs-content">
+    <section class="section active" id="sec-overview">
+      <div class="page-head">
+        <div>
+          <h1>// COMMAND STATION</h1>
+          <p>Your trading intelligence — <span id="display-name-inline">Trader</span></p>
+        </div>
+        <span class="badge" id="profile-line">Explorer Tier</span>
+      </div>
+      <div class="metrics" id="overview-quick-stats" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:12px"></div>
+      <div class="metrics" id="overview-metrics" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:14px"></div>
+      <div class="grid2">
+        <div class="card cem-card"><div class="card-head cem-card"><span class="card-title cem-card">Recent Activity</span></div><div class="card-body cem-card" id="recent-activity"></div></div>
+        <div class="card cem-card"><div class="card-head cem-card"><span class="card-title cem-card">Top Strategies</span></div><div class="card-body cem-card" id="top-strategies"></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="sec-strategies">
+      <div class="page-head"><div><h1>// My Strategies</h1><p>Paper earnings, sharable cards, and live trade logs.</p></div><button class="btn green" id="open-lab-btn">→ Open The Lab</button></div>
+      <div id="strategy-list"></div>
+    </section>
+
+    <section class="section" id="sec-performance">
+      <div class="page-head"><div><h1>// Performance</h1><p>Cumulative paper curve and trade performance.</p></div></div>
+      <div class="card cem-card"><div class="card-head cem-card"><span class="card-title cem-card">Equity Curve</span></div><div class="card-body cem-card"><div id="perf-curve" style="height:280px"></div></div></div>
+      <div class="metrics" id="performance-metrics"></div>
+      <div class="card cem-card"><div class="card-head cem-card"><span class="card-title cem-card">Trade History</span></div><div class="card-body cem-card" id="performance-table"></div></div>
+    </section>
+
+    <section class="section" id="sec-leaderboard">
+      <div class="page-head"><div><h1>// Strategy Leaderboard</h1><p>Paper earnings are real bragging rights. Age doesn't matter. Results do.</p></div></div>
+      <div class="tabs">
+        <button class="tab active" data-sort="earnings">By Earnings</button>
+        <button class="tab" data-sort="return">By Return %</button>
+        <button class="tab" data-sort="winrate">By Win Rate</button>
+        <button class="tab" data-sort="trades">By Trades</button>
+      </div>
+      <div class="card cem-card"><div class="card-body cem-card" id="leaderboard-table"></div></div>
+      <div class="card cem-card" style="margin-top:10px"><div class="card-body cem-card" id="leaderboard-rank-line"></div></div>
+    </section>
+
+    <section class="section" id="sec-asset-intel">
+      <div class="page-head"><div><h1>// Asset Intelligence</h1><p>Most tested assets, live snapshots, and launch links.</p></div></div>
+      <div class="tabs">
+        <button class="tab active" data-asset-tab="futures">Futures</button>
+        <button class="tab" data-asset-tab="stocks">Stocks</button>
+        <button class="tab" data-asset-tab="forex">Forex</button>
+        <button class="tab" data-asset-tab="crypto">Crypto</button>
+      </div>
+      <div class="asset-grid" id="asset-grid"></div>
+    </section>
+
+    <section class="section" id="sec-earnings">
+      <div class="page-head"><div><h1>// Earnings Ledger</h1><p>Every paper dollar earned is yours. Forever.</p></div></div>
+      <div class="tabs">
+        <button class="tab active" data-earn-tab="paper">Paper Earnings</button>
+        <button class="tab" data-earn-tab="real">Real Earnings (Coming Soon)</button>
+      </div>
+      <div id="earn-paper">
+        <div class="card cem-card"><div class="card-body cem-card"><div class="ml">Total Paper Earned</div><div class="mv mono acc" id="paper-earned-big">$0.00</div><div class="ms">Keep running your strategies. Paper earnings never expire.</div></div></div>
+        <div class="card cem-card"><div class="card-head cem-card"><span class="card-title cem-card">Strategy Ledger</span></div><div class="card-body cem-card" id="earnings-table"></div></div>
+        <div class="card cem-card"><div class="card-head cem-card"><span class="card-title cem-card">Strategy Value Score</span></div><div class="card-body cem-card"><div class="ml">Portfolio Score</div><div class="mv mono" id="value-score">0</div><div class="ms">Top scores unlock marketplace listing eligibility.</div><div style="height:8px;background:var(--bg2);border-radius:999px;overflow:hidden;margin-top:8px"><div id="value-score-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#6d28d9,#c084fc)"></div></div></div></div>
+        <button class="btn warn" id="reset-paper-btn">Reset Paper Account</button>
+      </div>
+      <div id="earn-real" style="display:none">
+        <div class="lock"><div><div style="font-size:28px;margin-bottom:8px">🔒</div><div>Real earnings activate when you go live. Your strategies are ready.</div></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="sec-journal">
+      <div class="page-head"><div><h1>// Journal</h1><p>Track mistakes, lessons, and upgrades.</p></div><button class="btn" id="new-note-btn">+ New Note</button></div>
+      <div class="card cem-card"><div class="card-body cem-card"><div class="ms" id="journal-count">Notes: 0/100</div><div id="journal-list"></div></div></div>
+    </section>
+
+    <section class="section" id="sec-achievements">
+      <div class="page-head"><div><h1>// Achievements</h1><p>11 badges, tier progression, and XP momentum.</p></div></div>
+      <div class="card cem-card"><div class="card-body cem-card"><div class="ml">Tier Progress</div><div class="mv mono" id="tier-line">Explorer</div><div class="ms" id="tier-subline">0 XP</div><div style="height:8px;background:var(--bg2);border-radius:999px;overflow:hidden;margin-top:8px"><div id="xp-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#6d28d9,#c084fc)"></div></div></div></div>
+      <div class="badge-grid" id="ach-grid"></div>
+    </section>
+
+    <section class="section" id="sec-design-lab">
+      <div class="page-head"><div><h1>// Design Lab</h1><p>Create charts, generate AI images, build brand assets.</p></div></div>
+      <div class="card cem-card"><div class="card-body cem-card"><button class="btn" onclick="window.location.href='/profile.html'">Open Design Lab →</button></div></div>
+    </section>
+
+    <section class="section" id="sec-settings">
+      <div class="page-head"><div><h1>// Settings</h1><p>Identity, visibility, and paper account controls.</p></div></div>
+      <div class="grid2">
+        <div class="card cem-card"><div class="card-head cem-card"><span class="card-title cem-card">Profile</span></div><div class="card-body cem-card">
+          <div class="ms">Display Name</div><input class="inp" id="settings-display-name">
+          <div class="ms" style="margin-top:8px">Date of Birth</div><input class="inp" id="settings-dob" type="date" min="1900-01-01">
+          <div class="ms" style="margin-top:8px">Paper Account Size</div><input class="inp" id="settings-paper-size" type="number" min="1000" step="100">
+          <div class="ms" style="margin-top:8px">Profile Visibility</div>
+          <label style="display:flex;gap:8px;align-items:center;font-size:12px"><input type="checkbox" id="settings-show-age"> Show my age publicly on leaderboard and profile</label>
+          <div class="ms" id="age-lock-note"></div>
+          <button class="btn" id="save-settings-btn" style="margin-top:10px">Save Settings</button>
+        </div></div>
+        <div class="card cem-card"><div class="card-head cem-card"><span class="card-title cem-card">Color theme + Danger Zone</span></div><div class="card-body cem-card">
+          <div class="ms" style="margin-bottom:6px">Site accent (stored as <code style="font-size:10px">cem_theme</code>)</div>
+          <div class="cem-theme-grid" id="settings-theme-grid">
+            <button type="button" class="theme-card-btn" data-theme="teal"><div class="theme-card-swatch" style="background:#00C9B1"></div>Teal</button>
+            <button type="button" class="theme-card-btn" data-theme="violet"><div class="theme-card-swatch" style="background:#7B5CF5"></div>Violet</button>
+            <button type="button" class="theme-card-btn" data-theme="crimson"><div class="theme-card-swatch" style="background:#E8305A"></div>Crimson</button>
+            <button type="button" class="theme-card-btn" data-theme="aurora"><div class="theme-card-swatch" style="background:#00E5B0"></div>Aurora</button>
+            <button type="button" class="theme-card-btn" data-theme="solar"><div class="theme-card-swatch" style="background:#FF8C00"></div>Solar</button>
+            <button type="button" class="theme-card-btn" data-theme="ghost"><div class="theme-card-swatch" style="background:#C8C8D8"></div>Ghost</button>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
+          <button class="btn warn" id="settings-reset-paper-btn">Reset Paper Account</button>
+          <button class="btn warn" id="clear-journal-btn" style="margin-left:8px">Clear Journal</button>
+        </div></div>
+      </div>
+    </section>
+  </section>
+
+  <aside id="cs-rail">
+    <div class="right-block"><div class="rb-title">Most Tested Asset</div><div class="mv mono" id="rail-asset">--</div><div class="ms" id="rail-asset-price">--</div></div>
+    <div class="right-block"><div class="rb-title">Quick Stats</div><div id="rail-stats"></div></div>
+    <div class="right-block"><div class="rb-title">Quick Actions</div><button class="btn" onclick="window.location.href='/lab.html'">Open Lab</button><button class="btn dim" style="margin-left:6px" onclick="document.querySelector('[data-sec=settings]').click()">Settings</button></div>
+  </aside>
+</main>
+</div>
+
+<div class="modal-wrap" id="dob-modal">
+  <div class="modal">
+    <h3>// COMPLETE YOUR PROFILE</h3>
+    <p>Enter your date of birth to unlock leaderboard and community features.</p>
+    <input class="inp" type="date" id="dob-modal-input" min="1900-01-01">
+    <button class="btn" id="dob-modal-save" style="margin-top:10px">Save And Continue</button>
+  </div>
+</div>
+
+<div class="modal-wrap" id="confirm-modal"><div class="modal"><h3 id="confirm-title">// Confirm Action</h3><p id="confirm-copy">Type RESET to continue.</p><input class="inp" id="confirm-input"><button class="btn warn" id="confirm-go" style="margin-top:10px">Confirm</button></div></div>
+
+<script>
+const SUPABASE_URL = window.SUPABASE_URL;
+const SUPABASE_KEY = window.SUPABASE_ANON_KEY;
+const C = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const AGE_MS = 31557600000;
+const ASSETS = {
+  futures:["MGC","MES","MNQ","MBT","MCL","M2K"],
+  stocks:["AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","SPY","QQQ","IWM","AMD","NFLX","JPM","BAC","GS","V","MA","UNH","XOM","CVX"],
+  forex:["EURUSD","GBPUSD","USDJPY","AUDUSD","USDCAD","NZDUSD","EURGBP","USDCHF","EURJPY","GBPJPY","USDMXN","EURAUD","GBPCAD","AUDJPY","EURCAD"],
+  crypto:["BTC","ETH","SOL","BNB","XRP","ADA","AVAX","DOGE","DOT","LINK","MATIC","UNI","LTC","ATOM","NEAR"]
+};
+const BADGES = [
+  "First Backtest","Five Backtests","Ten Backtests","Green Return","Precision Builder","Sharpe Guardian",
+  "First Paper Trade","Paper $1K","Leaderboard Entry","Favorite Strategy","Journal Streak"
+];
+let S = {
+  user:null,userMeta:null,strategies:[],paperTrades:[],sessions:[],leaderboard:[],assetTab:"futures",lbSort:"earnings",
+  journal:[],theme:localStorage.getItem("cem_theme")||"purple"
+};
+
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}
+function money(v){return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:2}).format(Number(v||0));}
+function pct(v){return `${Number(v||0).toFixed(2)}%`;}
+function ageFromDob(dob){ if(!dob) return null; const dt = new Date(dob); if(Number.isNaN(dt.getTime())) return null; return Math.floor((Date.now()-dt.getTime())/AGE_MS); }
+function anonName(id){ return `Trader #${String(id||"0000").slice(-4)}`; }
+function setSection(sec){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(`sec-${sec}`).classList.add("active");
+  document.querySelectorAll("#cs-nav a").forEach(a=>a.classList.toggle("active",a.dataset.sec===sec));
+}
+async function getSession(){
+  const {data:{session}} = await C.auth.getSession();
+  if(!session?.user){ window.location.href='/?login=1'; return null; }
+  return session.user;
+}
+async function fetchUserMeta(uid){
+  const {data} = await C.from("cem_users").select("*").eq("id",uid).maybeSingle();
+  S.userMeta = data || {id:uid,xp_total:0,show_age:false};
+}
+async function fetchCoreData(){
+  const uid = S.user.id;
+  const [sr,pt,ss] = await Promise.all([
+    C.from("cem_strategy_results").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+    C.from("cem_paper_trades").select("*").eq("user_id",uid).order("created_at",{ascending:false}),
+    C.from("cem_sessions").select("*").eq("user_id",uid).order("created_at",{ascending:false}).limit(5)
+  ]);
+  S.strategies = sr.data || [];
+  S.paperTrades = pt.data || [];
+  S.sessions = ss.data || [];
+}
+function strategyPaper(strategyId){
+  return S.paperTrades.filter(t=>String(t.strategy_id||"")===String(strategyId||"")).reduce((a,b)=>a+Number(b.pnl_usd||0),0);
+}
+function strategyTrades(strategyId){
+  return S.paperTrades.filter(t=>String(t.strategy_id||"")===String(strategyId||""));
+}
+function computeOverview(){
+  const totalPaper = S.paperTrades.reduce((a,b)=>a+Number(b.pnl_usd||0),0);
+  const bestReturn = S.strategies.length ? Math.max(...S.strategies.map(x=>Number(x.return_pct||0))) : 0;
+  const stratBuilt = S.strategies.length;
+  const xp = Number(S.userMeta?.xp_total||0);
+  return {totalPaper,bestReturn,stratBuilt,xp};
+}
+async function fetchLeaderboard(){
+  const {data} = await C.from("cem_paper_trades").select("user_id,strategy_id,pnl_usd,return_pct,asset,contracts").order("created_at",{ascending:false});
+  const {data:users} = await C.from("cem_users").select("id,display_name,date_of_birth,show_age,tier");
+  const byUser = {};
+  (data||[]).forEach(t=>{
+    const u = String(t.user_id||"");
+    if(!byUser[u]) byUser[u] = {user_id:u,total_paper:0,trades:0,best_return:-9999,win_rate:0,wins:0,asset_counts:{}};
+    byUser[u].total_paper += Number(t.pnl_usd||0);
+    byUser[u].trades += 1;
+    byUser[u].best_return = Math.max(byUser[u].best_return, Number(t.return_pct||0));
+    if(Number(t.pnl_usd||0)>0) byUser[u].wins += 1;
+    const a = String(t.asset||"--");
+    byUser[u].asset_counts[a]=(byUser[u].asset_counts[a]||0)+1;
+  });
+  S.leaderboard = Object.values(byUser).map(r=>{
+    const um = (users||[]).find(u=>String(u.id)===String(r.user_id)) || {};
+    const topAsset = Object.entries(r.asset_counts).sort((a,b)=>b[1]-a[1])[0]?.[0]||"--";
+    const wr = r.trades ? (r.wins/r.trades)*100 : 0;
+    return {...r, topAsset, win_rate:wr, display_name:um.display_name||anonName(r.user_id), date_of_birth:um.date_of_birth, show_age:!!um.show_age, tier:um.tier||"Explorer"};
+  });
+}
+async function fetchLeaderboardRankLine(){
+  const total = S.leaderboard.length;
+  const sorted = [...S.leaderboard].sort((a,b)=>b.total_paper-a.total_paper);
+  const rank = sorted.findIndex(r=>String(r.user_id)===String(S.user.id)) + 1;
+  const me = sorted[rank-1];
+  document.getElementById("leaderboard-rank-line").innerHTML = `Your current rank: #${rank||"--"} of ${total||0} traders | Total Paper Earnings: ${money(me?.total_paper||0)}`;
+}
+function ageBadge(row, rank){
+  const age = ageFromDob(row.date_of_birth);
+  if(age===null) return "";
+  const under18 = age < 18;
+  const show = under18 || (!!row.show_age);
+  if(!show) return "";
+  return `<span class="age-pill ${under18 && rank<=3 ? "glow":""}">AGE ${age}</span>`;
+}
+function renderOverview(){
+  try {
+    if (!localStorage.getItem("cem_first_visit")) localStorage.setItem("cem_first_visit", new Date().toISOString());
+  } catch (e) {}
+  const o = computeOverview();
+  const ranked = [...S.leaderboard].sort((a,b)=>b.total_paper-a.total_paper);
+  const myRank = ranked.findIndex(x=>String(x.user_id)===String(S.user.id))+1;
+  const firstVisit = new Date(localStorage.getItem("cem_first_visit") || Date.now());
+  const daysActive = Math.max(1, Math.floor((Date.now() - firstVisit.getTime()) / 86400000));
+  const bestStrat = [...S.strategies].sort((a,b)=>Number(b.return_pct||0)-Number(a.return_pct||0))[0];
+  let bestReturnStr = "—";
+  if (bestStrat) {
+    const r = Number(bestStrat.return_pct||0);
+    bestReturnStr = `${r>=0?"+":""}${r.toFixed(2)}% (${esc(bestStrat.strategy_name||bestStrat.asset||"Strategy")})`;
+  }
+  const wrRec = bestStrat && bestStrat.win_rate != null ? `${Number(bestStrat.win_rate).toFixed(1)}%` : "—";
+  const btCount = Math.max(Number(localStorage.getItem("cem_backtest_count")||0) || 0, S.strategies.length, o.stratBuilt||0);
+  try { localStorage.setItem("cem_backtest_count", String(btCount)); } catch (e) {}
+  const quick = [
+    ["Total Backtests Run", String(btCount), "", "Strategies saved from The Lab"],
+    ["Best Return", bestReturnStr, "acc", "Top strategy by return %"],
+    ["Win Rate Record", wrRec, "", "From your leading strategy"],
+    ["Days Active", String(daysActive), "", "Since first visit to this profile"]
+  ];
+  const qs = document.getElementById("overview-quick-stats");
+  if (qs) qs.innerHTML = quick.map(m=>`<div class="card metric cem-card"><div class="ml">${m[0]}</div><div class="mv mono ${m[2]}">${m[1]}</div><div class="ms">${m[3]}</div></div>`).join("");
+  const metrics = [
+    ["Paper Earnings", money(o.totalPaper), o.totalPaper>=0?"pos":"neg", "Live paper P&L"],
+    ["Community Rank", `#${myRank||"--"} of ${ranked.length||0}`, "", "By paper earnings"],
+    ["XP Earned", String(o.xp), "acc", "Platform XP"]
+  ];
+  document.getElementById("overview-metrics").innerHTML = metrics.map(m=>`<div class="card metric cem-card"><div class="ml">${m[0]}</div><div class="mv mono ${m[2]}">${m[1]}</div><div class="ms">${m[3]}</div></div>`).join("");
+  const byRecent = [...S.strategies].sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0)).slice(0,3);
+  const ra = document.getElementById("recent-activity");
+  if (ra) {
+    if (byRecent.length) {
+      ra.innerHTML = byRecent.map(s=>`<div class="list-item"><div><div class="li-main">${esc(s.strategy_name||"Strategy")}</div><div class="li-sub">${esc(s.asset||"--")} · ${pct(s.return_pct)} return</div></div><div class="mono">${new Date(s.updated_at||s.created_at||Date.now()).toLocaleDateString()}</div></div>`).join("");
+    } else if (S.sessions.length) {
+      ra.innerHTML = S.sessions.slice(0,5).map(s=>`<div class="list-item"><div><div class="li-main">${esc(s.title||s.event_type||"Session event")}</div><div class="li-sub">${new Date(s.created_at).toLocaleString()}</div></div></div>`).join("");
+    } else {
+      ra.innerHTML = '<p class="li-sub" style="margin:0 0 12px">No backtest history yet. Run your first backtest in The Lab.</p><button type="button" class="btn green" onclick="window.location.href=\'/lab.html\'">→ OPEN THE LAB</button>';
+    }
+  }
+  const top = [...S.strategies].sort((a,b)=>strategyPaper(b.id)-strategyPaper(a.id)).slice(0,3);
+  const ts = document.getElementById("top-strategies");
+  if (ts) {
+    ts.innerHTML = top.length ? top.map(s=>`<div class="list-item"><div><div class="li-main">${esc(s.strategy_name||"Untitled Strategy")}</div><div class="li-sub">${esc(s.asset||"--")} · ${esc(s.timeframe||"D")}</div></div><div class="mono">${money(strategyPaper(s.id)||((Number(s.paper_pnl_usd)||0)))}</div></div>`).join("") : '<p class="li-sub" style="margin:0 0 12px">Run backtests in The Lab to see your top performing strategies here.</p><button type="button" class="btn green" onclick="window.location.href=\'/lab.html\'">→ OPEN THE LAB</button>';
+  }
+}
+function strategyCard(s){
+  const pid = s.id;
+  const p = strategyPaper(pid) || Number(s.paper_pnl_usd||0);
+  const trades = strategyTrades(pid);
+  const badge = String(s.status||"active").toUpperCase();
+  const nm = s.strategy_name || "Untitled Strategy";
+  return `<div class="strategy-card cem-card" data-strat="${esc(pid)}">
+    <div class="str-top">
+      <input class="inp" data-rename="${esc(pid)}" value="${esc(nm)}">
+      <div class="badge">${esc(s.asset||"--")}</div>
+      <div class="badge">${esc(s.timeframe||"D")} · ${badge}</div>
+    </div>
+    <div class="str-stats cem-card">
+      <div><div class="str-stat-l cem-card">Paper Earnings</div><div class="str-stat-v cem-card">${money(p)}</div></div>
+      <div><div class="str-stat-l cem-card">Return</div><div class="str-stat-v cem-card">${pct(s.return_pct)}</div></div>
+      <div><div class="str-stat-l cem-card">Win Rate</div><div class="str-stat-v cem-card">${pct(s.win_rate)}</div></div>
+      <div><div class="str-stat-l cem-card">Trades</div><div class="str-stat-v cem-card">${Number(s.total_trades||trades.length||0)}</div></div>
+      <div><div class="str-stat-l cem-card">Sharpe</div><div class="str-stat-v cem-card">${Number(s.sharpe_ratio||0).toFixed(2)}</div></div>
+    </div>
+    <canvas id="curve-${esc(pid)}" style="width:100%;height:80px;margin-top:8px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:6px"></canvas>
+    <div class="str-actions">
+      <button class="btn" data-load="${esc(pid)}">[LOAD IN LAB]</button>
+      <button class="btn dim" data-log="${esc(pid)}">📊 Trade Log</button>
+      <button class="btn dim" data-share="${esc(pid)}">📤 Share</button>
+      <button class="btn dim" data-fav="${esc(pid)}">☆ Favorite</button>
+    </div>
+    <div id="log-${esc(pid)}" style="display:none;margin-top:8px"></div>
+  </div>`;
+}
+function drawMiniCurve(canvasId, trades){
+  const cv = document.getElementById(canvasId);
+  if(!cv) return;
+  const ctx = cv.getContext("2d");
+  const w = cv.clientWidth; const h = cv.clientHeight;
+  cv.width = w*devicePixelRatio; cv.height = h*devicePixelRatio; ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.clearRect(0,0,w,h); ctx.strokeStyle = "#2b2335"; ctx.strokeRect(0,0,w,h);
+  let vals = trades.map(t=>Number(t.pnl_usd||0));
+  if(!vals.length){ vals=[0,0,0,0]; }
+  const cum = []; vals.reduce((a,v)=>{const n=a+v; cum.push(n); return n;},0);
+  const min = Math.min(...cum), max = Math.max(...cum), span=(max-min)||1;
+  ctx.beginPath(); ctx.strokeStyle = "#9B59B6"; ctx.lineWidth=2;
+  cum.forEach((v,i)=>{ const x=(i/(cum.length-1||1))*(w-12)+6; const y=h-8-((v-min)/span)*(h-16); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+  ctx.stroke();
+}
+function renderStrategies(){
+  if(!S.strategies.length){
+    document.getElementById("strategy-list").innerHTML = `<div class="card cem-card"><div class="card-body cem-card"><div class="li-sub">No strategies yet. Build your first in The Lab.</div><button class="btn green" onclick="window.location.href='/lab.html'" style="margin-top:10px">→ Open The Lab</button></div></div>`;
+    return;
+  }
+  document.getElementById("strategy-list").innerHTML = S.strategies.map(strategyCard).join("");
+  S.strategies.forEach(s=>drawMiniCurve(`curve-${s.id}`, strategyTrades(s.id)));
+  document.querySelectorAll("[data-load]").forEach(b=>b.onclick=()=>{window.location.href=`/lab.html?strategy_id=${b.dataset.load}`;});
+  document.querySelectorAll("[data-log]").forEach(b=>b.onclick=()=>toggleTradeLog(b.dataset.log));
+  document.querySelectorAll("[data-share]").forEach(b=>b.onclick=()=>shareCard(b.dataset.share));
+  document.querySelectorAll("[data-fav]").forEach(b=>b.onclick=()=>toggleFavorite(b.dataset.fav));
+  document.querySelectorAll("[data-rename]").forEach(inp=>inp.addEventListener("change",()=>renameStrategy(inp.dataset.rename, inp.value)));
+}
+async function renameStrategy(id, name){
+  await C.from("cem_strategy_results").update({strategy_name:name}).eq("id",id);
+}
+async function toggleFavorite(id){
+  const cur = S.strategies.find(s=>String(s.id)===String(id)); if(!cur) return;
+  await C.from("cem_strategy_results").update({is_favorite:!cur.is_favorite}).eq("id",id);
+  cur.is_favorite = !cur.is_favorite;
+}
+function toggleTradeLog(id){
+  const wrap = document.getElementById(`log-${id}`); if(!wrap) return;
+  wrap.style.display = wrap.style.display === "none" ? "block" : "none";
+  if(wrap.dataset.loaded) return;
+  const rows = strategyTrades(id).slice(0,20);
+  wrap.innerHTML = rows.length ? `<table class="table"><thead><tr><th>Date</th><th>Asset</th><th>Direction</th><th>Entry</th><th>Exit</th><th>P&L</th><th>Cumulative</th></tr></thead><tbody>${
+    (()=>{let c=0; return rows.map(t=>{c+=Number(t.pnl_usd||0); return `<tr><td>${new Date(t.created_at).toLocaleDateString()}</td><td>${esc(t.asset||"--")}</td><td>${esc(t.direction||"--")}</td><td>${Number(t.entry_price||0).toFixed(2)}</td><td>${Number(t.exit_price||0).toFixed(2)}</td><td>${money(t.pnl_usd)}</td><td>${money(c)}</td></tr>`;}).join("");})()
+  }</tbody></table>` : '<div class="li-sub">No paper trades for this strategy yet.</div>';
+  wrap.dataset.loaded = "1";
+}
+function shareCard(id){
+  const s = S.strategies.find(x=>String(x.id)===String(id)); if(!s) return;
+  const earn = strategyPaper(id)||Number(s.paper_pnl_usd||0);
+  const cv = document.createElement("canvas"); cv.width=1200; cv.height=628;
+  const ctx = cv.getContext("2d");
+  ctx.fillStyle="#070911"; ctx.fillRect(0,0,1200,628);
+  ctx.strokeStyle="#9B59B6"; ctx.lineWidth=2; ctx.strokeRect(24,24,1152,580);
+  ctx.fillStyle="#00ffcc"; ctx.font="700 56px Inter"; ctx.fillText(`MY STRATEGY EARNED ${money(earn)} IN PAPER TRADING`,52,170);
+  ctx.fillStyle="#c084fc"; ctx.font="700 44px Inter"; ctx.fillText(esc(s.strategy_name||"Untitled Strategy"),52,260);
+  ctx.fillStyle="#e8def5"; ctx.font="500 30px Inter"; ctx.fillText(`${esc(s.asset||"--")}  |  ${pct(s.return_pct)} Return  |  ${pct(s.win_rate)} Win Rate`,52,320);
+  ctx.fillStyle="#9b59b6"; ctx.font="500 28px JetBrains Mono"; ctx.fillText("cemtrading888.com",52,560);
+  const a = document.createElement("a"); a.href = cv.toDataURL("image/png"); a.download = "cem_strategy_share.png"; a.click();
+}
+function renderPerformance(){
+  const trades = [...S.paperTrades].reverse();
+  const lineData=[]; let c=0;
+  trades.forEach((t,i)=>{c+=Number(t.pnl_usd||0); lineData.push({time:i+1,value:c});});
+  const host = document.getElementById("perf-curve"); host.innerHTML="";
+  const chart = LightweightCharts.createChart(host,{layout:{background:{color:"#0f1520"},textColor:"#8f84aa"},rightPriceScale:{borderColor:"#2b2238"},timeScale:{borderColor:"#2b2238"},grid:{vertLines:{color:"rgba(255,255,255,0.03)"},horzLines:{color:"rgba(255,255,255,0.03)"}}});
+  const series = chart.addLineSeries({color:"#9B59B6",lineWidth:2}); series.setData(lineData.length?lineData:[{time:1,value:0},{time:2,value:0}]); chart.timeScale().fitContent();
+  const total = S.paperTrades.reduce((a,b)=>a+Number(b.pnl_usd||0),0);
+  const avgRet = S.strategies.length ? S.strategies.reduce((a,b)=>a+Number(b.return_pct||0),0)/S.strategies.length : 0;
+  const wr = S.paperTrades.length ? (S.paperTrades.filter(t=>Number(t.pnl_usd||0)>0).length/S.paperTrades.length)*100 : 0;
+  const best = [...S.strategies].sort((a,b)=>strategyPaper(b.id)-strategyPaper(a.id))[0];
+  const m = [
+    ["Total Paper Earnings",money(total),"acc"],["Total Return Avg",pct(avgRet),""],["Overall Win Rate",pct(wr),""],
+    ["Total Trades",String(S.paperTrades.length),""],["Best Strategy Name",esc(best?.strategy_name||"--"),""],["Total Paper Trades",String(S.paperTrades.length),""]
+  ];
+  document.getElementById("performance-metrics").innerHTML = m.map(x=>`<div class="card metric cem-card"><div class="ml">${x[0]}</div><div class="mv mono ${x[2]}">${x[1]}</div></div>`).join("");
+  const byId = Object.fromEntries(S.strategies.map(s=>[String(s.id),s]));
+  document.getElementById("performance-table").innerHTML = `<table class="table"><thead><tr><th>Date</th><th>Asset</th><th>Direction</th><th>Entry</th><th>Exit</th><th>P&L</th><th>Strategy Name</th></tr></thead><tbody>${
+    S.paperTrades.slice(0,20).map(t=>`<tr><td>${new Date(t.created_at).toLocaleDateString()}</td><td>${esc(t.asset||"--")}</td><td>${esc(t.direction||"--")}</td><td>${Number(t.entry_price||0).toFixed(2)}</td><td>${Number(t.exit_price||0).toFixed(2)}</td><td>${money(t.pnl_usd)}</td><td>${esc(byId[String(t.strategy_id)]?.strategy_name||"--")}</td></tr>`).join("")
+  }</tbody></table>`;
+}
+function sortedLeaderboard(){
+  const arr=[...S.leaderboard];
+  const key = S.lbSort;
+  if(key==="earnings") arr.sort((a,b)=>b.total_paper-a.total_paper);
+  if(key==="return") arr.sort((a,b)=>b.best_return-a.best_return);
+  if(key==="winrate") arr.sort((a,b)=>b.win_rate-a.win_rate);
+  if(key==="trades") arr.sort((a,b)=>b.trades-a.trades);
+  return arr;
+}
+function renderLeaderboard(){
+  const rows = sortedLeaderboard().slice(0,50);
+  if(!rows.length){
+    document.getElementById("leaderboard-table").innerHTML = '<div class="li-sub">Be the first trader on the leaderboard. Run a backtest and start earning.</div>';
+    return;
+  }
+  document.getElementById("leaderboard-table").innerHTML = `<table class="table"><thead><tr><th>Rank</th><th>Trader</th><th>Best Return</th><th>Top Asset</th><th>Paper Earnings</th><th>Win Rate</th><th>Tier Badge</th></tr></thead><tbody>${
+    rows.map((r,i)=>{
+      const rank=i+1;
+      const c = rank===1?"rank-gold":rank===2?"rank-silver":rank===3?"rank-bronze":"";
+      const mine = String(r.user_id)===String(S.user.id) ? "leader-row me" : "";
+      return `<tr class="${mine}"><td class="${c}">#${rank}</td><td>${ageBadge(r,rank)} ${esc(r.display_name||anonName(r.user_id))}</td><td>${pct(r.best_return)}</td><td>${esc(r.topAsset||"--")}</td><td>${money(r.total_paper)}</td><td>${pct(r.win_rate)}</td><td>${esc(String(r.tier||"Explorer")).toUpperCase()}</td></tr>`;
+    }).join("")
+  }</tbody></table>`;
+}
+async function renderAssetIntel(){
+  const t = S.assetTab;
+  const grid = document.getElementById("asset-grid");
+  grid.innerHTML = "";
+  const list = ASSETS[t] || [];
+  for(const sym of list){
+    const card = document.createElement("div"); card.className="asset-card";
+    card.innerHTML = `<div class="asset-t">${sym}</div><div class="asset-n">${sym}</div><div class="asset-p mono" id="px-${sym}">--</div><div class="asset-s" id="sig-${sym}">Loading intel...</div><button class="btn" style="margin-top:8px" onclick="window.location.href='/lab.html?asset=${sym}'">Build Strategy →</button>`;
+    grid.appendChild(card);
+    fetch(`/api/price/${sym}`).then(r=>r.json()).then(d=>{
+      const p = Number(d?.price); const ch = Number(d?.change_24h||0);
+      const el = document.getElementById(`px-${sym}`);
+      if(el) el.textContent = Number.isFinite(p) ? `${p.toLocaleString()}` : "--";
+      const sig = document.getElementById(`sig-${sym}`);
+      if(sig) sig.innerHTML = `${ch>=0?'<span style="color:var(--green)">':'<span style="color:var(--red)">'}${ch.toFixed(2)}%</span> · Be the first to test ${sym}`;
+    }).catch(()=>{
+      const sig = document.getElementById(`sig-${sym}`); if(sig) sig.textContent=`Be the first to test ${sym}`;
+    });
+  }
+}
+function renderEarnings(){
+  const total = S.paperTrades.reduce((a,b)=>a+Number(b.pnl_usd||0),0);
+  document.getElementById("paper-earned-big").textContent = money(total);
+  document.getElementById("earnings-table").innerHTML = `<table class="table"><thead><tr><th>Date</th><th>Strategy</th><th>Asset</th><th>Return %</th><th>Paper P&L</th><th>Total Trades</th></tr></thead><tbody>${
+    S.strategies.map(s=>`<tr><td>${new Date(s.created_at).toLocaleDateString()}</td><td>${esc(s.strategy_name||"--")}</td><td>${esc(s.asset||"--")}</td><td>${pct(s.return_pct)}</td><td>${money(strategyPaper(s.id)||Number(s.paper_pnl_usd||0))}</td><td>${strategyTrades(s.id).length||Number(s.total_trades||0)}</td></tr>`).join("")
+  }</tbody></table>`;
+  const bestReturn = S.strategies.length ? Math.max(...S.strategies.map(s=>Number(s.return_pct||0))) : 0;
+  const avgWin = S.strategies.length ? S.strategies.reduce((a,s)=>a+Number(s.win_rate||0),0)/S.strategies.length : 0;
+  const bestSharpe = S.strategies.length ? Math.max(...S.strategies.map(s=>Number(s.sharpe_ratio||0))) : 0;
+  const totalTrades = S.paperTrades.length;
+  const score = Math.max(0,Math.min(1000,Math.round((bestReturn*10)+(avgWin*5)+(bestSharpe*50)+(totalTrades*0.1))));
+  document.getElementById("value-score").textContent = String(score);
+  document.getElementById("value-score-fill").style.width = `${(score/1000)*100}%`;
+}
+function getJournalKey(){ return `cem_journal_${S.user.id}`; }
+function loadJournal(){ S.journal = JSON.parse(localStorage.getItem(getJournalKey())||"[]"); }
+function saveJournal(){ localStorage.setItem(getJournalKey(), JSON.stringify(S.journal.slice(0,100))); }
+function renderJournal(){
+  loadJournal();
+  document.getElementById("journal-count").textContent = `Notes: ${S.journal.length}/100`;
+  const list = document.getElementById("journal-list");
+  if(!S.journal.length){ list.innerHTML = '<div class="li-sub">No notes yet.</div>'; return; }
+  list.innerHTML = S.journal.map(n=>`<div class="card cem-card" style="margin:8px 0"><div class="card-body cem-card"><div class="li-sub">${new Date(n.updated_at||n.created_at).toLocaleString()}</div><div style="margin:8px 0;white-space:pre-wrap">${esc(n.text)}</div><button class="btn dim" data-edit="${n.id}">✏ Edit</button><button class="btn warn" data-del="${n.id}" style="margin-left:6px">🗑 Delete</button></div></div>`).join("");
+  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ S.journal=S.journal.filter(x=>String(x.id)!==String(b.dataset.del)); saveJournal(); renderJournal(); });
+  document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>editJournal(b.dataset.edit));
+}
+function editJournal(id){
+  const n = S.journal.find(x=>String(x.id)===String(id)); if(!n) return;
+  const text = prompt("Edit note", n.text);
+  if(text===null) return;
+  n.text = text; n.updated_at = new Date().toISOString(); saveJournal(); renderJournal();
+}
+function addJournal(){
+  const text = prompt("New note");
+  if(!text) return;
+  S.journal.unshift({id:crypto.randomUUID(),text,created_at:new Date().toISOString(),updated_at:new Date().toISOString()});
+  saveJournal(); renderJournal();
+}
+function renderAchievements(){
+  const xp = Number(S.userMeta?.xp_total||0);
+  let tier="Explorer",next=500,min=0;
+  if(xp>=500&&xp<2000){tier="Analyst";min=500;next=2000;}
+  if(xp>=2000&&xp<5000){tier="Strategist";min=2000;next=5000;}
+  if(xp>=5000){tier="Elite";min=5000;next=5000;}
+  const pctFill = next===min?100:Math.min(100,Math.max(0,((xp-min)/(next-min))*100));
+  document.getElementById("tier-line").textContent = tier;
+  document.getElementById("tier-subline").textContent = `${xp} XP`;
+  document.getElementById("xp-fill").style.width = `${pctFill}%`;
+  const unlockedRaw = S.userMeta?.badges_unlocked;
+  const unlocked = Array.isArray(unlockedRaw) ? unlockedRaw : [];
+  const hasBacktest = S.strategies.length>0;
+  document.getElementById("ach-grid").innerHTML = BADGES.map((b,i)=>{
+    const on = unlocked.includes(b) || (i===0 && hasBacktest);
+    return `<div class="ach ${on?"unlocked":""}"><h4>${esc(b)}</h4><p>${on?"Unlocked":"Locked"}</p></div>`;
+  }).join("");
+}
+function renderSettings(){
+  const name = S.userMeta?.display_name || S.user?.user_metadata?.display_name || anonName(S.user.id);
+  document.getElementById("settings-display-name").value = name;
+  document.getElementById("settings-dob").value = S.userMeta?.date_of_birth || "";
+  document.getElementById("settings-paper-size").value = localStorage.getItem("cem_paper_account_size") || "10000";
+  const age = ageFromDob(S.userMeta?.date_of_birth);
+  const isUnder18 = age!==null && age<18;
+  const chk = document.getElementById("settings-show-age");
+  chk.checked = isUnder18 ? true : !!S.userMeta?.show_age;
+  chk.disabled = isUnder18;
+  document.getElementById("age-lock-note").textContent = isUnder18 ? "Your age is shown automatically - young traders earn extra recognition on the leaderboard." : "";
+}
+async function saveSettings(){
+  const displayName = document.getElementById("settings-display-name").value.trim();
+  const dob = document.getElementById("settings-dob").value;
+  const age = ageFromDob(dob);
+  if(!dob){ alert("Date of birth is required."); return; }
+  if(age!==null && age<13){ alert("You must be at least 13 to create an account."); return; }
+  const isUnder18 = age!==null && age<18;
+  const showAge = isUnder18 ? true : !!document.getElementById("settings-show-age").checked;
+  const {error} = await C.from("cem_users").upsert({id:S.user.id,display_name:displayName,date_of_birth:dob,show_age:showAge}, {onConflict:"id"});
+  if(error){ alert("Failed to save settings."); return; }
+  localStorage.setItem("cem_paper_account_size", String(Number(document.getElementById("settings-paper-size").value||10000)));
+  localStorage.setItem("cem_theme", S.theme);
+  await fetchUserMeta(S.user.id);
+  applyIdentity();
+  renderSettings();
+  renderLeaderboard();
+  alert("Settings saved.");
+}
+function applyIdentity(){
+  const displayName = S.userMeta?.display_name || S.user?.user_metadata?.display_name || anonName(S.user.id);
+  document.getElementById("sidebar-name").textContent = displayName;
+  document.getElementById("display-name-inline").textContent = displayName;
+  const initials = displayName.split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase()||"TR";
+  const av = document.getElementById("user-avatar");
+  if (av) av.textContent = initials.slice(0,2);
+  const age = ageFromDob(S.userMeta?.date_of_birth);
+  const tier = String(S.userMeta?.tier||"Explorer");
+  const member = S.user?.created_at ? new Date(S.user.created_at).toLocaleString("en-US",{month:"short",year:"numeric"}) : "--";
+  if(age!==null){
+    const under = age<18;
+    const show = under || !!S.userMeta?.show_age;
+    document.getElementById("profile-line").innerHTML = `${esc(displayName)} ${show?`| Age ${age} `:""}| ${esc(tier)} Tier | Member since ${member}`;
+  }else{
+    document.getElementById("profile-line").textContent = `${displayName} | ${tier} Tier | Member since ${member}`;
+  }
+}
+function renderRail(){
+  const counts = {};
+  S.strategies.forEach(s=>{ const a=s.asset||"--"; counts[a]=(counts[a]||0)+1; });
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0] || "--";
+  document.getElementById("rail-asset").textContent = top;
+  if(top!=="--"){
+    fetch(`/api/price/${top}`).then(r=>r.json()).then(d=>{ document.getElementById("rail-asset-price").textContent = d?.price ? `${top} ${Number(d.price).toLocaleString()}` : `${top} --`; }).catch(()=>{});
+  }
+  const totalPaper = S.paperTrades.reduce((a,b)=>a+Number(b.pnl_usd||0),0);
+  const wr = S.paperTrades.length ? (S.paperTrades.filter(t=>Number(t.pnl_usd||0)>0).length/S.paperTrades.length)*100 : 0;
+  document.getElementById("rail-stats").innerHTML = `<div class="list-item"><div class="li-main">Paper Earnings</div><div class="mono">${money(totalPaper)}</div></div>
+  <div class="list-item"><div class="li-main">Win Rate</div><div class="mono">${pct(wr)}</div></div>
+  <div class="list-item"><div class="li-main">Strategies</div><div class="mono">${S.strategies.length}</div></div>`;
+}
+function setupResetButtons(){
+  const openConfirm = (title,copy,word,onConfirm)=>{
+    document.getElementById("confirm-title").textContent = title;
+    document.getElementById("confirm-copy").textContent = copy;
+    document.getElementById("confirm-input").value = "";
+    document.getElementById("confirm-modal").classList.add("open");
+    document.getElementById("confirm-go").onclick = async ()=>{
+      if((document.getElementById("confirm-input").value||"").trim().toUpperCase()!==word){ alert(`Type ${word} to confirm.`); return; }
+      document.getElementById("confirm-modal").classList.remove("open");
+      await onConfirm();
+    };
+  };
+  const resetFn = async ()=>{
+    await C.from("cem_paper_trades").delete().eq("user_id",S.user.id);
+    await fetchCoreData(); renderAll();
+  };
+  document.getElementById("reset-paper-btn").onclick = ()=>openConfirm("// Reset Paper Account","Type RESET to wipe all paper trades.","RESET",resetFn);
+  document.getElementById("settings-reset-paper-btn").onclick = ()=>openConfirm("// Reset Paper Account","Type RESET to wipe all paper trades.","RESET",resetFn);
+  document.getElementById("clear-journal-btn").onclick = ()=>openConfirm("// Clear Journal","Type CLEAR to remove all journal notes.","CLEAR",async()=>{localStorage.removeItem(getJournalKey()); renderJournal();});
+}
+function setCEMTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("cem_theme", theme);
+  S.theme = theme;
+  document.querySelectorAll(".theme-card-btn").forEach(b=>b.classList.toggle("active", b.dataset.theme===theme));
+}
+function setupInteractions(){
+  document.querySelectorAll("#cs-nav a").forEach(a=>a.onclick=(e)=>{e.preventDefault(); setSection(a.dataset.sec);});
+  document.getElementById("open-lab-btn").onclick = ()=>window.location.href="/lab.html";
+  document.querySelectorAll("[data-asset-tab]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-asset-tab]").forEach(x=>x.classList.remove("active")); b.classList.add("active"); S.assetTab=b.dataset.assetTab; renderAssetIntel();});
+  document.querySelectorAll("[data-sort]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-sort]").forEach(x=>x.classList.remove("active")); b.classList.add("active"); S.lbSort=b.dataset.sort; renderLeaderboard(); fetchLeaderboardRankLine();});
+  document.querySelectorAll("[data-earn-tab]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-earn-tab]").forEach(x=>x.classList.remove("active")); b.classList.add("active"); const paper=b.dataset.earnTab==="paper"; document.getElementById("earn-paper").style.display=paper?"block":"none"; document.getElementById("earn-real").style.display=paper?"none":"block";});
+  document.getElementById("new-note-btn").onclick = addJournal;
+  document.getElementById("save-settings-btn").onclick = saveSettings;
+  document.querySelectorAll("#settings-theme-grid .theme-card-btn").forEach(b=>b.onclick=()=>setCEMTheme(b.dataset.theme));
+  document.getElementById("confirm-modal").onclick = (e)=>{ if(e.target.id==="confirm-modal") e.currentTarget.classList.remove("open"); };
+}
+async function enforceDob(){
+  if(S.userMeta?.date_of_birth) return;
+  const modal = document.getElementById("dob-modal");
+  modal.classList.add("open");
+  document.getElementById("dob-modal-save").onclick = async ()=>{
+    const dob = document.getElementById("dob-modal-input").value;
+    const age = ageFromDob(dob);
+    if(!dob){ alert("Date of birth is required."); return; }
+    if(age!==null && age<13){ alert("You must be at least 13 to create an account."); return; }
+    await C.from("cem_users").upsert({id:S.user.id,date_of_birth:dob,show_age:age<18}, {onConflict:"id"});
+    modal.classList.remove("open");
+    await fetchUserMeta(S.user.id);
+    applyIdentity(); renderLeaderboard();
+  };
+}
+function renderAll(){
+  renderOverview();
+  renderStrategies();
+  renderPerformance();
+  renderLeaderboard();
+  fetchLeaderboardRankLine();
+  renderAssetIntel();
+  renderEarnings();
+  renderJournal();
+  renderAchievements();
+  renderSettings();
+  renderRail();
+}
+async function init(){
+  const user = await getSession(); if(!user) return;
+  S.user = user;
+  await fetchUserMeta(user.id);
+  await fetchCoreData();
+  await fetchLeaderboard();
+  setCEMTheme(localStorage.getItem("cem_theme") || "teal");
+  setupInteractions();
+  setupResetButtons();
+  applyIdentity();
+  renderAll();
+  await enforceDob();
+}
+init();
+</script>
+<script>
+async function updateTicker(){
+  try{
+    const r=await fetch('/api/ticker-prices');
+    const data=await r.json();
+    if(!data.success)return;
+    for(const [sym,info] of Object.entries(data.prices||{})){
+      const priceEl=document.getElementById(`tp-${sym}`);
+      const changeEl=document.getElementById(`tc-${sym}`);
+      if(priceEl){
+        if(info.price!==null && info.price!==undefined){priceEl.textContent=Number(info.price).toLocaleString('en-US',{maximumFractionDigits:2});}
+        else{priceEl.textContent='—';}
+      }
+      if(changeEl && info.change_pct!==null && info.change_pct!==undefined){
+        const pct=Number(info.change_pct);
+        changeEl.textContent=`${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%`;
+        changeEl.className=`chg-pill ${pct>=0?'pos':'neg'}`;
+      }
+    }
+    document.querySelectorAll('#ticker-bar .ticker-item').forEach(el=>{
+      if(!el.querySelector('.delayed-label')){const d=document.createElement('span');d.className='delayed-label';d.style.fontSize='8px';d.style.color='rgba(255,255,255,0.28)';d.style.marginLeft='6px';d.textContent='DELAYED';el.appendChild(d);}
+    });
+  }catch(e){console.error('Ticker update failed:',e);}
+}
+updateTicker();
+setInterval(updateTicker,60000);
+</script>
+<script id="cem-v3-profile">
+(function(){
+  const add=(sel,cls)=>document.querySelectorAll(sel).forEach(el=>el.classList.add(...cls.split(' ')));
+  add('button,a.btn,.btn,.action-btn','cem-btn');
+  add('.stat-card,.card,.metric,.tile,.panel','.cem-card');
+  [...document.querySelectorAll('h2,h3,h4,.section-title,.section-header')].forEach(h=>h.classList.add('cem-section-label'));
+})();
+</script>
+</body>
+</html>

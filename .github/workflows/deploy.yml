@@ -1,0 +1,426 @@
+name: Deploy to Droplet
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          command_timeout: 30m
+          script: |
+            set -e
+            TOKEN="${{ secrets.GH_TOKEN }}"
+            REPO="CEMTrading888/cem-bot-builder"
+            WEBROOT="/var/www/cemtrading888"
+
+            echo "Pulling index.html..."
+            curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/index.html?ref=main" \
+              > /tmp/index_deploy.html
+            cp /tmp/index_deploy.html "$WEBROOT/index.html"
+
+            echo "Pulling profile.html..."
+            curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/profile.html?ref=main" \
+              > /tmp/profile_deploy.html
+            cp /tmp/profile_deploy.html "$WEBROOT/profile.html"
+
+            echo "Pulling kayla.html..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/kayla.html?ref=main" \
+              > /tmp/kayla_deploy.html; then
+              cp /tmp/kayla_deploy.html "$WEBROOT/kayla.html"
+            else
+              echo "Repo kayla.html not found; leaving $WEBROOT/kayla.html unchanged"
+            fi
+
+            echo "Pulling user-profile.html..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/user-profile.html?ref=main" \
+              > /tmp/user_profile_deploy.html; then
+              cp /tmp/user_profile_deploy.html "$WEBROOT/user-profile.html"
+            else
+              echo "Repo user-profile.html not found; leaving $WEBROOT/user-profile.html unchanged"
+            fi
+
+            echo "Pulling lab-dashboard.html..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/lab-dashboard.html?ref=main" \
+              > /tmp/lab_dashboard_deploy.html; then
+              cp /tmp/lab_dashboard_deploy.html "$WEBROOT/lab-dashboard.html"
+            else
+              echo "Repo lab-dashboard.html not found; leaving $WEBROOT/lab-dashboard.html unchanged"
+            fi
+
+            echo "Pulling lab.html..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/lab.html?ref=main" \
+              > /tmp/lab_deploy.html; then
+              cp /tmp/lab_deploy.html "$WEBROOT/lab.html"
+            else
+              echo "Repo lab.html not found; leaving $WEBROOT/lab.html unchanged"
+            fi
+
+            echo "Pulling cem-shared.css..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/cem-shared.css?ref=main" \
+              > /tmp/cem_shared_deploy.css; then
+              cp /tmp/cem_shared_deploy.css "$WEBROOT/cem-shared.css"
+            else
+              echo "Repo cem-shared.css not found; leaving $WEBROOT/cem-shared.css unchanged"
+            fi
+
+            echo "Pulling nav.js..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/nav.js?ref=main" \
+              > /tmp/nav_deploy.js; then
+              cp /tmp/nav_deploy.js "$WEBROOT/nav.js"
+            else
+              echo "Repo nav.js not found; leaving $WEBROOT/nav.js unchanged"
+            fi
+
+            echo "Pulling shared Mission Studio asset..."
+            mkdir -p "$WEBROOT/static"
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/static/mission_studio.js?ref=main" \
+              > /tmp/mission_studio.js; then
+              cp /tmp/mission_studio.js "$WEBROOT/static/mission_studio.js"
+            else
+              echo "Repo static/mission_studio.js not found; leaving deployed studio asset unchanged"
+            fi
+
+            echo "Verifying deploy..."
+            DEPLOYED_SIZE=$(wc -c < "$WEBROOT/index.html")
+            echo "File size on disk: $DEPLOYED_SIZE bytes"
+
+            echo "Pulling main.py..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/main.py?ref=main" \
+              > /tmp/main_deploy.py; then
+              cp /tmp/main_deploy.py "$WEBROOT/main.py"
+            else
+              echo "Repo main.py not found; leaving $WEBROOT/main.py unchanged"
+            fi
+
+            echo "Removing legacy PHP files..."
+            rm -f \
+              "$WEBROOT/proxy.php" \
+              "$WEBROOT/api/backtest.php" \
+              "$WEBROOT/api/history.php" \
+              "$WEBROOT/api/_cem_yahoo_bars.inc.php"
+
+            echo "Resolving Python 3.11 interpreter..."
+            PY311_BIN=""
+            if command -v python3.11 >/dev/null 2>&1; then
+              PY311_BIN="$(command -v python3.11)"
+            else
+              for candidate in \
+                /usr/bin/python3.11 \
+                /usr/local/bin/python3.11 \
+                /bin/python3.11 \
+                /opt/python3.11/bin/python3.11 \
+                /opt/python/3.11/bin/python3.11 \
+                /root/.pyenv/shims/python3.11 \
+                /root/.pyenv/versions/3.11*/bin/python3.11 \
+                /home/*/.pyenv/shims/python3.11 \
+                /home/*/.pyenv/versions/3.11*/bin/python3.11
+              do
+                if [ -x "$candidate" ]; then
+                  PY311_BIN="$candidate"
+                  break
+                fi
+              done
+            fi
+            if [ -z "$PY311_BIN" ]; then
+              echo "No Python 3.11 interpreter found on server"
+              echo "Python candidates:"
+              ls -1 \
+                /usr/bin/python* \
+                /usr/local/bin/python* \
+                /bin/python* \
+                /root/.pyenv/shims/python* \
+                /root/.pyenv/versions/*/bin/python* \
+                /home/*/.pyenv/shims/python* \
+                /home/*/.pyenv/versions/*/bin/python* 2>/dev/null || true
+              exit 1
+            fi
+            "$PY311_BIN" <<'PYEOF'
+            import sys
+            print(f"Using Python: {sys.executable}")
+            print(f"Version: {sys.version}")
+            if sys.version_info[:2] != (3, 11):
+                raise SystemExit(f"Expected Python 3.11 on server, got {sys.version}")
+            PYEOF
+
+            echo "Ensuring LEAN Phase 1 tooling..."
+            curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/setup_lean_phase1.sh?ref=main" \
+              > /tmp/setup_lean_phase1.sh
+            chmod +x /tmp/setup_lean_phase1.sh
+            /tmp/setup_lean_phase1.sh "$PY311_BIN"
+
+            echo "Syncing Databento futures fetcher..."
+            mkdir -p /home/lean-workspace
+            curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/fetch_futures_data.py?ref=main" \
+              > /home/lean-workspace/fetch_futures_data.py
+            chmod 755 /home/lean-workspace/fetch_futures_data.py
+
+            echo "Applying /api/prices route..."
+            curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/inject_prices.py?ref=main" \
+              > /tmp/inject_prices.py
+            "$PY311_BIN" /tmp/inject_prices.py
+
+            echo "Applying /api/backtest-replay route..."
+            curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/inject_backtest_replay.py?ref=main" \
+              > /tmp/inject_backtest_replay.py
+            "$PY311_BIN" /tmp/inject_backtest_replay.py
+
+            echo "Applying /api/backtest route..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/inject_backtest_engine.py?ref=main" \
+              > /tmp/inject_backtest_engine.py; then
+              "$PY311_BIN" /tmp/inject_backtest_engine.py
+            else
+              echo "Repo api/inject_backtest_engine.py not found; leaving /api/backtest unchanged"
+            fi
+
+            echo "Applying /api/generate_code route..."
+            curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/inject_generate_code.py?ref=main" \
+              > /tmp/inject_generate_code.py
+            "$PY311_BIN" /tmp/inject_generate_code.py
+
+            echo "Applying /api/coach route..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/inject_coach.py?ref=main" \
+              > /tmp/inject_coach.py; then
+              "$PY311_BIN" /tmp/inject_coach.py
+            else
+              echo "Repo api/inject_coach.py not found; leaving /api/coach unchanged"
+            fi
+
+            echo "Applying /api/generate-image route..."
+            if curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/inject_generate_image.py?ref=main" \
+              > /tmp/inject_generate_image.py; then
+              "$PY311_BIN" /tmp/inject_generate_image.py
+            else
+              echo "Repo api/inject_generate_image.py not found; leaving /api/generate-image unchanged"
+            fi
+
+            echo "Applying /api/candles Databento route..."
+            curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/inject_candles_databento.py?ref=main" \
+              > /tmp/inject_candles_databento.py
+            "$PY311_BIN" /tmp/inject_candles_databento.py
+
+            echo "Configuring lab subdomain nginx route..."
+            curl -fsS -H "Authorization: token $TOKEN" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              "https://api.github.com/repos/$REPO/contents/api/configure_lab_subdomain.py?ref=main" \
+              > /tmp/configure_lab_subdomain.py
+            "$PY311_BIN" /tmp/configure_lab_subdomain.py
+
+            echo "Ensuring Cloudflare lab DNS record..."
+            "$PY311_BIN" <<'PYEOF'
+            import json
+            import urllib.parse
+            import urllib.request
+
+            token = """${{ secrets.CLOUDFLARE_API_TOKEN }}"""
+            zone_id = "c14a615c8880fcc0567d3bc13bb94abc"
+            record_name = "lab.cemtrading888.com"
+            api_root = f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+            }
+
+            def request(method, url, payload=None):
+                data = None if payload is None else json.dumps(payload).encode()
+                req = urllib.request.Request(url, data=data, headers=headers, method=method)
+                with urllib.request.urlopen(req) as resp:
+                    return json.loads(resp.read().decode())
+
+            try:
+                encoded_name = urllib.parse.quote(record_name, safe="")
+                existing = request("GET", f"{api_root}?type=CNAME&name={encoded_name}")
+                payload = {
+                    "type": "CNAME",
+                    "name": record_name,
+                    "content": "cemtrading888.com",
+                    "ttl": 1,
+                    "proxied": True,
+                }
+                results = existing.get("result", [])
+                if results:
+                    request("PUT", f"{api_root}/{results[0]['id']}", payload)
+                    print("Updated Cloudflare lab DNS record.")
+                else:
+                    request("POST", api_root, payload)
+                    print("Created Cloudflare lab DNS record.")
+            except Exception as exc:
+                print(f"Warning: unable to ensure Cloudflare lab DNS record: {exc}")
+            PYEOF
+
+            echo "Ensuring market data provider env entries..."
+            "$PY311_BIN" <<'PYEOF'
+            from pathlib import Path
+
+            env_path = Path("/var/www/cemtrading888/.env")
+            defaults = {
+                "DATABENTO_API_KEY": "",
+                "ALPHA_VANTAGE_KEY": "",
+                "TWELVE_DATA_KEY": "",
+                "COINGECKO_KEY": "",
+                "CFTC_COT_BASE_URL": "https://publicreporting.cftc.gov",
+            }
+
+            existing_lines = env_path.read_text(encoding="utf-8").splitlines() if env_path.exists() else []
+            existing_keys = set()
+            for line in existing_lines:
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#") or "=" not in line:
+                    continue
+                key, _ = line.split("=", 1)
+                existing_keys.add(key.strip())
+
+            added = []
+            for key, default in defaults.items():
+                if key in existing_keys:
+                    continue
+                existing_lines.append(f"{key}={default}")
+                added.append(key)
+
+            env_path.write_text("\n".join(existing_lines).rstrip() + "\n", encoding="utf-8")
+            print("Added env keys:" if added else "Provider env keys already present.")
+            print(", ".join(added) if added else ", ".join(defaults.keys()))
+            PYEOF
+
+            "$PY311_BIN" <<'PYEOF'
+            import os
+            import signal
+            import subprocess
+
+            current_pids = {os.getpid(), os.getppid()}
+            killed = []
+
+            ps = subprocess.run(["ps", "-eo", "pid=,args="], capture_output=True, text=True, check=True)
+            for line in ps.stdout.splitlines():
+                parts = line.strip().split(None, 1)
+                if len(parts) != 2:
+                    continue
+                pid = int(parts[0])
+                args = parts[1].strip()
+                lower = args.lower()
+                if pid in current_pids:
+                    continue
+                if not (
+                    lower.startswith("uvicorn ")
+                    or " -m uvicorn" in lower
+                    or lower.endswith("/uvicorn")
+                    or "/uvicorn " in lower
+                ):
+                    continue
+                try:
+                    os.kill(pid, signal.SIGTERM)
+                    killed.append((pid, args))
+                except ProcessLookupError:
+                    continue
+
+            if killed:
+                print("Terminated uvicorn workers:")
+                for pid, args in killed:
+                    print(f" - pid={pid} args={args}")
+            else:
+                print("No orphaned uvicorn workers found.")
+            PYEOF
+            sleep 1
+            systemctl restart cemtrading888 || true
+            grep -q "no-cache" /etc/nginx/sites-available/cemtrading888 2>/dev/null || \
+            sed -i 's/location \/ {/location \/ {\n        add_header Cache-Control "no-cache, no-store, must-revalidate" always;\n        add_header Pragma "no-cache" always;\n        add_header Expires "0" always;/' \
+            /etc/nginx/sites-available/cemtrading888 2>/dev/null || true
+            nginx -t 2>/dev/null && systemctl reload nginx 2>/dev/null || true
+
+            echo "Smoke testing /api/generate-image route..."
+            "$PY311_BIN" <<'PYEOF'
+            import json
+            import ssl
+            import time
+            import urllib.error
+            import urllib.request
+
+            url = "https://cemtrading888.com/api/generate-image"
+            payload = json.dumps({"prompt": "", "model": "grok"}).encode("utf-8")
+            headers = {"Content-Type": "application/json"}
+            ctx = ssl._create_unverified_context()
+            last_error = "route did not respond"
+
+            for attempt in range(1, 11):
+                req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
+                try:
+                    with urllib.request.urlopen(req, context=ctx, timeout=30) as resp:
+                        body = resp.read().decode("utf-8", errors="replace")
+                        print(f"generate-image smoke status={resp.status} body={body[:240]}")
+                        if resp.status == 200 and (
+                            "Prompt required for image generation" in body
+                            or "\"placeholder\": true" in body
+                            or "\"placeholder\":true" in body
+                            or "\"image_url\":" in body
+                        ):
+                            print("/api/generate-image smoke test passed.")
+                            break
+                        last_error = f"unexpected body: {body[:240]}"
+                except urllib.error.HTTPError as exc:
+                    body = exc.read().decode("utf-8", errors="replace")
+                    last_error = f"HTTP {exc.code}: {body[:240]}"
+                    print(f"Attempt {attempt}: {last_error}")
+                except Exception as exc:
+                    last_error = str(exc)
+                    print(f"Attempt {attempt}: {exc}")
+                time.sleep(3)
+            else:
+                raise SystemExit(f"/api/generate-image smoke test failed: {last_error}")
+            PYEOF
+            echo "Deploy complete."
+            curl -s -X POST "https://api.cloudflare.com/client/v4/zones/c14a615c8880fcc0567d3bc13bb94abc/purge_cache" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              --data '{"purge_everything":true}' \
+              && echo "Cloudflare purged." || true
+            curl -s -X POST "https://api.cloudflare.com/client/v4/zones/c14a615c8880fcc0567d3bc13bb94abc/purge_cache" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              --data '{"files":["https://cemtrading888.com/static/mission_studio.js"]}' \
+              && echo "Mission Studio JS purged." || true

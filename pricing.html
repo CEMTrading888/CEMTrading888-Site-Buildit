@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('cem_theme')||'teal');})();</script>
+<!-- CEM-BUILD: APRIL4-MASTER -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CEM//TRADING_888 - Pricing</title>
+  <style>
+    :root { --teal: #1D9E75; --orange: #D85A30; --dark: #0a0a0a; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--dark); color: #eee; font-family: 'Space Mono', monospace; }
+    .header { background: #111; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--teal); position: sticky; top: 0; z-index: 300; }
+    .logo { color: var(--teal); font-size: 22px; font-weight: 700; letter-spacing: 3px; text-decoration: none; }
+    .nav a { color: #ccc; text-decoration: none; margin-left: 20px; font-size: 13px; letter-spacing: 1px; transition: color 0.2s; }
+    .nav a:hover, .nav a.active { color: var(--teal); }
+    .nav a.nav-cta { background: var(--orange); color: #fff; padding: 8px 16px; border-radius: 6px; margin-left: 20px; }
+    .ticker { background: #0d0d0d; padding: 8px 24px; border-bottom: 1px solid #222; font-size: 12px; display: flex; gap: 32px; }
+    .page-hero { text-align: center; padding: 60px 24px 40px; border-bottom: 1px solid #222; }
+    .page-hero h1 { color: var(--teal); font-size: 32px; letter-spacing: 4px; margin-bottom: 16px; }
+    .page-hero p { color: #aaa; font-size: 14px; max-width: 600px; margin: 0 auto; line-height: 1.8; }
+    .content { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 60px; }
+    .plan { background: #111; border: 1px solid #222; border-radius: 16px; padding: 32px; position: relative; }
+    .plan.featured { border-color: var(--teal); box-shadow: 0 0 40px rgba(29,158,117,0.2); }
+    .plan-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--orange); color: #fff; font-size: 11px; padding: 4px 16px; border-radius: 20px; letter-spacing: 1px; white-space: nowrap; }
+    .plan-name { color: var(--teal); font-size: 14px; letter-spacing: 3px; margin-bottom: 12px; }
+    .plan-price { font-size: 42px; font-weight: 700; margin-bottom: 4px; }
+    .plan-price span { font-size: 16px; color: #aaa; font-weight: 400; }
+    .plan-desc { color: #aaa; font-size: 13px; margin-bottom: 24px; line-height: 1.6; }
+    .plan-features { list-style: none; margin-bottom: 32px; }
+    .plan-features li { font-size: 13px; padding: 8px 0; border-bottom: 1px solid #1a1a1a; color: #ccc; }
+    .plan-features li::before { content: "✓ "; color: var(--teal); }
+    .plan-features li.locked { color: #555; }
+    .plan-features li.locked::before { content: "✗ "; color: #555; }
+    .plan-btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 1px; }
+    .plan-btn.free { background: #1a1a1a; color: var(--teal); border: 1px solid var(--teal); }
+    .plan-btn.paid { background: linear-gradient(90deg,#D85A30,#ff7a4d); color: #fff; }
+    .faq { max-width: 700px; margin: 0 auto; }
+    .faq h2 { color: var(--teal); font-size: 18px; letter-spacing: 3px; margin-bottom: 24px; }
+    .faq-item { border-bottom: 1px solid #222; padding: 20px 0; }
+    .faq-item h4 { color: #eee; font-size: 14px; margin-bottom: 8px; }
+    .faq-item p { color: #aaa; font-size: 13px; line-height: 1.7; }
+    #grokCoach { position: fixed; bottom: 30px; right: 30px; width: 340px; background: #111; border: 2px solid var(--teal); border-radius: 12px; padding: 16px; box-shadow: 0 0 30px rgba(29,158,117,0.6); display: none; z-index: 500; }
+  </style>
+
+<link rel="stylesheet" href="/cem-shared.css">
+</head>
+<body>
+<div id="topbar">
+  <div class="logo" onclick="window.location.href='/'" style="cursor:pointer">CEM<em>TRADING</em>888</div>
+  <div class="nav-links" style="display:flex;align-items:center;gap:2px;flex:1">
+    <a href="/lab.html" class="nav-btn">THE LAB</a>
+    <a href="/user-profile.html" class="nav-btn">STRATEGIES</a>
+    <a href="/research.html" class="nav-btn">RESEARCH</a>
+    <a href="/user-profile.html" class="nav-btn">PROFILE</a>
+    <a href="/about.html" class="nav-btn">ABOUT</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="display:flex;align-items:center;gap:5px"><div class="status-dot"></div><span style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text-muted)">LIVE</span></div>
+    <button class="avatar-btn" onclick="window.location.href='/profile.html'">CM</button>
+  </div>
+</div>
+<script>
+document.querySelectorAll('.nav-btn').forEach(a=>{if(location.pathname.includes(a.getAttribute('href').replace('.html','').replace('/',''))||location.pathname===a.getAttribute('href'))a.classList.add('active');});
+</script>
+<div id="ticker-bar">
+  <div class="ticker-item"><span class="ticker-sym">MGC</span><span class="ticker-price" id="tp-MGC">1,926</span><span class="chg-pill pos" id="tc-MGC">▲ +0.31%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">MES</span><span class="ticker-price" id="tp-MES">5,241</span><span class="chg-pill neg" id="tc-MES">▼ -0.18%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">MNQ</span><span class="ticker-price" id="tp-MNQ">18,302</span><span class="chg-pill neg" id="tc-MNQ">▼ -0.30%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">BTC</span><span class="ticker-price" id="tp-BTC">83,441</span><span class="chg-pill pos" id="tc-BTC">▲ +1.24%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">ETH</span><span class="ticker-price" id="tp-ETH">1,643</span><span class="chg-pill neg" id="tc-ETH">▼ -0.44%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">GOLD</span><span class="ticker-price" id="tp-GOLD">3,127</span><span class="chg-pill pos" id="tc-GOLD">▲ +0.38%</span></div>
+  <div class="ticker-item" style="border-right:none"><span class="ticker-sym">BEST RETURN</span><span class="ticker-price">+17.99%</span><span class="chg-pill pos">MGC SCALPER</span></div>
+</div>
+
+<div class="header">
+  <a href="index.html" class="logo">CEM//TRADING_888</a>
+  <div class="nav">
+    <a href="index.html">Simulator</a>
+    <a href="education.html">Education</a>
+    <a href="pricing.html" class="active">Pricing</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="dashboard.html" class="nav-cta">Login / Sign Up</a>
+  </div>
+</div>
+
+<div class="ticker">
+  <span>MES 5,847.25 <span style="color:#1D9E75">+12.50 ▲</span></span>
+  <span>MNQ 20,412.50 <span style="color:#1D9E75">+38.75 ▲</span></span>
+  <span>MGC 3,021.40 <span style="color:#ff5a5a">-4.20 ▼</span></span>
+</div>
+
+<div class="page-hero">
+  <h1>// PRICING</h1>
+  <p>Start free. Upgrade when you're ready. Own your bot forever — no lock-in, no nonsense.</p>
+</div>
+
+<div class="content">
+  <div class="pricing-grid">
+
+    <div class="plan">
+      <div class="plan-name">FREE</div>
+      <div class="plan-price">$0 <span>/ forever</span></div>
+      <div class="plan-desc">Full simulator access. Build and backtest unlimited strategies. No email gate — just follow us on X.</div>
+      <ul class="plan-features">
+        <li>Full strategy simulator</li>
+        <li>Unlimited backtests</li>
+        <li>All indicators (EMA, MACD, VWAP, ATR+)</li>
+        <li>Backtest result charts</li>
+        <li>Free education library</li>
+        <li class="locked">Save bots to profile</li>
+        <li class="locked">Paper trading (live sim)</li>
+        <li class="locked">Bot modification history</li>
+      </ul>
+      <button class="plan-btn free" onclick="window.location='index.html'">START BUILDING →</button>
+    </div>
+
+    <div class="plan featured">
+      <div class="plan-badge">MOST POPULAR</div>
+      <div class="plan-name">LIVING BOT</div>
+      <div class="plan-price">$97 <span>/ month</span></div>
+      <div class="plan-desc">Your bot stays alive. Modify it anytime, retest it on new data, and track every change with full history. The bot that grows with you.</div>
+      <ul class="plan-features">
+        <li>Everything in Free</li>
+        <li>Save unlimited bots to dashboard</li>
+        <li>Unlimited bot modifications + retests</li>
+        <li>Full modification history</li>
+        <li>Paper trading with live market data</li>
+        <li>AI Coach personalized tips</li>
+        <li>Performance leaderboard</li>
+        <li>Priority support</li>
+      </ul>
+      <button class="plan-btn paid" onclick="document.getElementById('coachMessage').innerHTML='Subscriptions coming soon! Drop us a follow on X @CEMTrading888 to get notified when Living Bot launches.'; document.getElementById('grokCoach').style.display='block'">GET LIVING BOT →</button>
+    </div>
+
+    <div class="plan">
+      <div class="plan-name">LIFETIME</div>
+      <div class="plan-price">$497 <span>/ once</span></div>
+      <div class="plan-desc">Pay once, own forever. All Living Bot features, all future updates, no monthly bill. Best value for serious traders.</div>
+      <ul class="plan-features">
+        <li>Everything in Living Bot</li>
+        <li>Lifetime access — no monthly fee</li>
+        <li>All future feature updates</li>
+        <li>Early access to new indicators</li>
+        <li>Founding member badge</li>
+        <li>Direct access to Chandler</li>
+      </ul>
+      <button class="plan-btn paid" onclick="document.getElementById('coachMessage').innerHTML='Lifetime plan coming soon! Follow @CEMTrading888 on X for the launch announcement.'; document.getElementById('grokCoach').style.display='block'">GET LIFETIME →</button>
+    </div>
+
+  </div>
+
+  <div class="faq">
+    <h2>// FAQ</h2>
+    <div class="faq-item">
+      <h4>Do I need to give my email to use the free simulator?</h4>
+      <p>No. The simulator is completely free and open. Just follow us on X (@CEMTrading888) to stay updated. That's all we ask.</p>
+    </div>
+    <div class="faq-item">
+      <h4>What does "own your bot forever" mean?</h4>
+      <p>Your bot strategy and all its parameters are yours. We don't lock your configurations to the platform. If you cancel, you keep your strategy docs.</p>
+    </div>
+    <div class="faq-item">
+      <h4>What is paper trading?</h4>
+      <p>Paper trading runs your bot in real-time market conditions but with simulated money. It's the safest way to validate a strategy before going live with real capital.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Can I cancel anytime?</h4>
+      <p>Yes. Cancel anytime, no questions asked. Your saved bots and history remain accessible for 30 days after cancellation.</p>
+    </div>
+  </div>
+</div>
+
+<div id="grokCoach">
+  <strong style="color:#1D9E75;">// AI COACH</strong>
+  <div id="coachMessage" style="margin-top:12px; font-size:13px; line-height:1.5;"></div>
+  <button onclick="document.getElementById('grokCoach').style.display='none'" style="margin-top:12px; padding:8px 16px; background:#1D9E75; color:#000; border:none; border-radius:6px; cursor:pointer;">Got it</button>
+</div>
+
+<script>
+window.onload = () => {
+  setTimeout(() => {
+    document.getElementById('coachMessage').innerHTML = "The Free plan gives you full simulator access — no strings attached. Upgrade to Living Bot when you want to save your strategies, run paper trading with live data, and track your bot over time.";
+    document.getElementById('grokCoach').style.display = 'block';
+  }, 1000);
+};
+</script>
+
+<script id="cem-live-ticker-apr4">
+async function updateTicker(){
+  try{
+    const r=await fetch('/api/ticker-prices');
+    const data=await r.json();
+    if(!data.success)return;
+    for(const [sym,info] of Object.entries(data.prices||{})){
+      const priceEl=document.getElementById(`tp-${sym}`);
+      const changeEl=document.getElementById(`tc-${sym}`);
+      if(priceEl){
+        if(info.price!==null&&info.price!==undefined){priceEl.textContent=Number(info.price).toLocaleString('en-US',{maximumFractionDigits:2});}
+        else{priceEl.textContent='—';}
+      }
+      if(changeEl&&info.change_pct!==null&&info.change_pct!==undefined){
+        const pct=Number(info.change_pct);
+        changeEl.textContent=`${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%`;
+        changeEl.className=`chg-pill ${pct>=0?'pos':'neg'}`;
+      }
+    }
+    document.querySelectorAll('.ticker-item').forEach(el=>{
+      if(!el.querySelector('.delayed-label')){const d=document.createElement('span');d.className='delayed-label';d.textContent='DELAYED';el.appendChild(d);}
+    });
+  }catch(e){console.error('Ticker update failed:',e);}
+}
+updateTicker();
+setInterval(updateTicker,60000);
+</script>
+<script id="cem-ticker-v2">
+async function updateTicker(){
+  try{
+    const r = await fetch('/api/ticker-prices');
+    const data = await r.json();
+    if(!data.success) return;
+    for(const [sym,info] of Object.entries(data.prices||{})){
+      const priceEl = document.getElementById(`tp-${sym}`);
+      const changeEl = document.getElementById(`tc-${sym}`);
+      if(priceEl){priceEl.textContent = info.price!=null ? Number(info.price).toLocaleString('en-US',{maximumFractionDigits:2}) : '—';}
+      if(changeEl && info.change_pct!=null){
+        const pct = Number(info.change_pct);
+        changeEl.textContent = `${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%`;
+        changeEl.className = `chg-pill ${pct>=0?'pos':'neg'}`;
+      }
+    }
+    document.querySelectorAll('.ticker-item').forEach(el=>{
+      if(!el.querySelector('.delayed-label')){const d=document.createElement('span');d.className='delayed-label';d.textContent='DELAYED';el.appendChild(d);}
+    });
+  }catch(e){}
+}
+updateTicker();
+setInterval(updateTicker,60000);
+</script>
+</body>
+</html>

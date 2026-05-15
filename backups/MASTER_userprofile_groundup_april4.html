@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- CEM-BUILD: GROUNDUP-APRIL4 -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Command Station — CEMTrading888</title>
+  <link rel="stylesheet" href="/cem-shared.css">
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cem_theme') || 'teal');</script>
+  <style>
+    html, body { height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+    #profile-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding-top: 78px; }
+    .profile-tabs { display: flex; border-bottom: 1px solid var(--border-faint); padding: 0 24px; flex-shrink: 0; background: rgba(0,4,12,0.5); }
+    .profile-tab {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px;
+      color: var(--text-muted); text-transform: uppercase; padding: 12px 18px;
+      border: none; background: none; border-bottom: 2px solid transparent;
+      transition: all 0.15s; position: relative;
+    }
+    .profile-tab:hover { color: var(--text-primary); }
+    .profile-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .profile-content { flex: 1; overflow-y: auto; padding: 24px; }
+    .profile-content > div { display: none; }
+    .profile-content > div.active { display: block; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .strat-row {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      background: var(--bg-card); border: 1px solid var(--border-faint);
+      border-radius: 8px; margin-bottom: 8px; transition: border-color 0.15s;
+    }
+    .strat-row:hover { border-color: var(--accent-border); }
+    .strat-info { flex: 1; }
+    .strat-name { font-family: var(--font-mono); font-size: 12px; color: var(--text-primary); font-weight: 600; }
+    .strat-meta { font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); margin-top: 4px; }
+    .strat-return { font-family: var(--font-mono); font-size: 14px; font-weight: 700; }
+    .bot-card {
+      background: var(--bg-card); border: 1px solid var(--border-faint); border-radius: 12px;
+      padding: 20px; position: relative; overflow: hidden; margin-bottom: 12px;
+    }
+    .bot-card::before { content:''; position:absolute; top:0; left:15%; right:15%; height:1px;
+      background:linear-gradient(90deg,transparent,var(--accent-border),transparent); }
+  </style>
+</head>
+<body>
+<div class="tron-grid"></div>
+
+<div id="topbar">
+  <a href="/" class="cem-logo" style="text-decoration:none;margin-right:36px;">
+    <span class="logo-cem">CEM</span><em>TRADING</em><span class="logo-888">888</span>
+  </a>
+  <div class="nav-links">
+    <a href="/lab.html" class="nav-btn" id="nav-lab">THE LAB</a>
+    <a href="/user-profile.html" class="nav-btn active" id="nav-profile">PROFILE</a>
+  </div>
+  <div class="topbar-right">
+    <div class="live-indicator"><div class="live-dot"></div><span class="live-label">LIVE</span></div>
+    <button class="avatar-btn" id="user-avatar">C</button>
+  </div>
+</div>
+
+<div id="ticker-bar">
+  <div class="ticker-item"><span class="ticker-sym">MGC</span><span class="ticker-price" id="tp-MGC">—</span><span class="chg-pill pos" id="tc-MGC">—</span></div>
+  <div class="ticker-item"><span class="ticker-sym">MES</span><span class="ticker-price" id="tp-MES">—</span><span class="chg-pill neg" id="tc-MES">—</span></div>
+  <div class="ticker-item"><span class="ticker-sym">MNQ</span><span class="ticker-price" id="tp-MNQ">—</span><span class="chg-pill neg" id="tc-MNQ">—</span></div>
+  <div class="ticker-item"><span class="ticker-sym">BTC</span><span class="ticker-price" id="tp-BTC">—</span><span class="chg-pill pos" id="tc-BTC">—</span></div>
+  <div class="ticker-item"><span class="ticker-sym">ETH</span><span class="ticker-price" id="tp-ETH">—</span><span class="chg-pill neg" id="tc-ETH">—</span></div>
+  <div class="ticker-item" style="border-right:none"><span class="ticker-sym">DELAYED</span><span class="ticker-price" style="font-size:8px;color:var(--text-muted)">15 MIN</span></div>
+</div>
+
+<div id="profile-main">
+  <div class="profile-tabs">
+    <button class="profile-tab active" onclick="profileTab(this,'overview')">Overview</button>
+    <button class="profile-tab" onclick="profileTab(this,'strategies')">My Strategies</button>
+    <button class="profile-tab" onclick="profileTab(this,'bots')">My Bots</button>
+    <button class="profile-tab" onclick="profileTab(this,'journal')">Journal</button>
+    <button class="profile-tab" onclick="profileTab(this,'settings')">Settings</button>
+  </div>
+
+  <div class="profile-content">
+    <!-- OVERVIEW -->
+    <div id="ptab-overview" class="active">
+      <div class="stat-grid">
+        <div class="stat-card"><span class="stat-label">TOTAL STRATEGIES</span><div class="stat-value accent" id="ov-strats">0</div></div>
+        <div class="stat-card"><span class="stat-label">BEST RETURN</span><div class="stat-value accent" id="ov-best">—</div></div>
+        <div class="stat-card"><span class="stat-label">TOTAL BACKTESTS</span><div class="stat-value" id="ov-backtests">0</div></div>
+        <div class="stat-card"><span class="stat-label">AVG WIN RATE</span><div class="stat-value" id="ov-winrate">—</div></div>
+        <div class="stat-card"><span class="stat-label">PAPER P&L</span><div class="stat-value accent" id="ov-paper">$0.00</div></div>
+        <div class="stat-card"><span class="stat-label">BEST SHARPE</span><div class="stat-value" id="ov-sharpe">—</div></div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);padding:12px 0">
+        Your trading journey at a glance. Build strategies in <a href="/lab.html" style="color:var(--accent)">The Lab</a> to populate these stats.
+      </div>
+    </div>
+
+    <!-- MY STRATEGIES -->
+    <div id="ptab-strategies">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary)">Saved Strategies</span>
+        <a href="/lab.html" class="btn-primary" style="font-size:8px;padding:6px 14px">+ BUILD NEW</a>
+      </div>
+      <div id="strat-list">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);padding:20px;text-align:center">
+          No strategies saved yet. <a href="/lab.html" style="color:var(--accent)">Go to The Lab</a> to create one.
+        </div>
+      </div>
+    </div>
+
+    <!-- MY BOTS -->
+    <div id="ptab-bots">
+      <div class="bot-card">
+        <div style="font-family:var(--font-mono);font-size:7px;letter-spacing:3px;color:var(--accent-dim);margin-bottom:12px">// YOUR BOTS</div>
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary);line-height:1.8">
+          <strong style="color:var(--text-primary)">CEMBOT — $497</strong><br>
+          Purpose-built for one asset. One strategy. One job. Does it perfectly.<br><br>
+          Each CEMBOT is generated from your best backtest in The Lab, customized for your broker, your asset, and your account size.<br><br>
+          <a href="/lab.html" class="btn-primary" style="font-size:9px;padding:8px 18px;margin-top:8px">BUILD YOUR EDGE FIRST →</a>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-muted);margin-top:12px">
+        Supported brokers: IBKR · Tradovate · Alpaca · TopstepX · Apex · TradeLocker
+      </div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div id="ptab-journal">
+      <div style="font-family:var(--font-mono);font-size:7px;letter-spacing:3px;color:var(--accent-dim);margin-bottom:12px">// TRADING JOURNAL</div>
+      <div id="journal-entries" style="min-height:200px">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);padding:20px;text-align:center">
+          Your journal captures every insight, eureka moment, and strategy discovery automatically.<br>
+          Start backtesting in <a href="/lab.html" style="color:var(--accent)">The Lab</a> to begin logging.
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="ptab-settings">
+      <div style="font-family:var(--font-mono);font-size:7px;letter-spacing:3px;color:var(--accent-dim);margin-bottom:16px">// DISPLAY</div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);margin-bottom:12px">Platform Theme — changes the entire look across Lab and Profile</div>
+      <div class="theme-picker-grid" id="theme-grid">
+        <div class="theme-card active" onclick="pickTheme('teal')" data-theme-name="teal" style="background:#0A1820">
+          <div class="theme-card-dot" style="background:#00C9B1;color:#00C9B1"></div>
+          <div class="theme-card-name">Teal Command</div>
+        </div>
+        <div class="theme-card" onclick="pickTheme('violet')" data-theme-name="violet" style="background:#10102A">
+          <div class="theme-card-dot" style="background:#7B5CF5;color:#7B5CF5"></div>
+          <div class="theme-card-name">Midnight Violet</div>
+        </div>
+        <div class="theme-card" onclick="pickTheme('crimson')" data-theme-name="crimson" style="background:#150808">
+          <div class="theme-card-dot" style="background:#DC3232;color:#DC3232"></div>
+          <div class="theme-card-name">Crimson Edge</div>
+        </div>
+        <div class="theme-card" onclick="pickTheme('aurora')" data-theme-name="aurora" style="background:#041210">
+          <div class="theme-card-dot" style="background:#00FF9F;color:#00FF9F"></div>
+          <div class="theme-card-name">Aurora Pulse</div>
+        </div>
+        <div class="theme-card" onclick="pickTheme('solar')" data-theme-name="solar" style="background:#120E00">
+          <div class="theme-card-dot" style="background:#FFB800;color:#FFB800"></div>
+          <div class="theme-card-name">Solar Storm</div>
+        </div>
+        <div class="theme-card" onclick="pickTheme('ghost')" data-theme-name="ghost" style="background:#111114">
+          <div class="theme-card-dot" style="background:#C8C8D8;color:#C8C8D8"></div>
+          <div class="theme-card-name">Ghost Mode</div>
+        </div>
+      </div>
+
+      <div style="font-family:var(--font-mono);font-size:7px;letter-spacing:3px;color:var(--accent-dim);margin:24px 0 12px">// ACCOUNT</div>
+      <div style="display:flex;flex-direction:column;gap:8px;max-width:400px">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-faint);font-family:var(--font-mono);font-size:10px">
+          <span style="color:var(--text-muted)">Email</span><span id="set-email" style="color:var(--text-secondary)">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-faint);font-family:var(--font-mono);font-size:10px">
+          <span style="color:var(--text-muted)">Member Since</span><span id="set-joined" style="color:var(--text-secondary)">—</span>
+        </div>
+        <button class="btn-danger" style="margin-top:16px;width:fit-content" onclick="signOut()">SIGN OUT</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="cem-toast"></div>
+
+<script>
+(function() {
+  function loadTickerPrices() {
+    var syms = ['MGC','MES','MNQ','BTC','ETH'];
+    syms.forEach(function(sym) {
+      fetch('/api/prices?symbol=' + encodeURIComponent(sym) + '&interval=1d&range=1mo', {cache:'no-store'})
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          var bars = d.bars || [];
+          if (!bars.length) return;
+          var last = bars[bars.length - 1]; var prev = bars.length > 1 ? bars[bars.length - 2] : last;
+          var price = last.c != null ? Number(last.c) : null; var change_pct = null;
+          if (prev && prev.c && Number(prev.c) !== 0) change_pct = ((Number(last.c) - Number(prev.c)) / Number(prev.c)) * 100;
+          var pe = document.getElementById('tp-' + sym); var ce = document.getElementById('tc-' + sym);
+          if (pe && price != null && !isNaN(price)) pe.textContent = price.toLocaleString(undefined,{maximumFractionDigits:2});
+          if (ce && change_pct != null && !isNaN(change_pct)) {
+            var pos = change_pct >= 0;
+            ce.textContent = (pos ? '\u25B2' : '\u25BC') + ' ' + (pos ? '+' : '') + Math.abs(change_pct).toFixed(2) + '%';
+            ce.className = 'chg-pill ' + (pos ? 'pos' : 'neg');
+          }
+        }).catch(function() {});
+    });
+  }
+  setTimeout(loadTickerPrices, 300);
+  setInterval(loadTickerPrices, 60000);
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var sb = supabase.createClient('https://gsnbqohzprencuzkirui.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdzbmJxb2h6cHJlbmN1emtpcnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyOTYzMjMsImV4cCI6MjA4OTg3MjMyM30.YsMOVJyz4XYWOT0e_lQjNHDArNLiEdF38RXZuoR1iq8');
+var cemUser = null;
+
+function profileTab(btn, name) {
+  document.querySelectorAll('.profile-tab').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.profile-content > div').forEach(function(d) { d.classList.remove('active'); });
+  var el = document.getElementById('ptab-' + name);
+  if (el) el.classList.add('active');
+}
+
+function pickTheme(name) {
+  localStorage.setItem('cem_theme', name);
+  document.documentElement.setAttribute('data-theme', name);
+  document.querySelectorAll('.theme-card').forEach(function(c) {
+    c.classList.toggle('active', c.getAttribute('data-theme-name') === name);
+  });
+}
+
+function showToast(msg, type) {
+  var el = document.getElementById('cem-toast');
+  el.textContent = msg; el.className = 'show ' + (type || 'success');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(function() { el.className = ''; }, 3000);
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  window.location.href = '/';
+}
+
+async function loadStrategies() {
+  if (!cemUser) return;
+  var res = await sb.from('cem_strategy_results')
+    .select('id,strategy_name,asset,return_pct,win_rate,sharpe_ratio,created_at')
+    .eq('user_id', cemUser.id).order('created_at', { ascending: false }).limit(50);
+  var data = res.data || [];
+  var list = document.getElementById('strat-list');
+  if (!data.length) return;
+  list.innerHTML = '';
+  data.forEach(function(s) {
+    var ret = Number(s.return_pct || 0);
+    var row = document.createElement('div');
+    row.className = 'strat-row';
+    row.innerHTML = '<div class="strat-info"><div class="strat-name">' + (s.strategy_name || 'Untitled') + '</div>' +
+      '<div class="strat-meta">' + s.asset + ' · ' + new Date(s.created_at).toLocaleDateString() + '</div></div>' +
+      '<div class="strat-return" style="color:' + (ret >= 0 ? 'var(--accent)' : 'var(--negative)') + '">' +
+      (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%</div>' +
+      '<a href="/lab.html?strategy_id=' + s.id + '" class="btn-ghost" style="font-size:7px;padding:4px 10px">LOAD IN LAB</a>';
+    list.appendChild(row);
+  });
+  // Update overview stats
+  document.getElementById('ov-strats').textContent = data.length;
+  var best = Math.max.apply(null, data.map(function(s) { return Number(s.return_pct || 0); }));
+  document.getElementById('ov-best').textContent = (best >= 0 ? '+' : '') + best.toFixed(2) + '%';
+  document.getElementById('ov-backtests').textContent = data.length;
+  var avgWr = data.reduce(function(a, s) { return a + Number(s.win_rate || 0); }, 0) / data.length;
+  document.getElementById('ov-winrate').textContent = avgWr.toFixed(1) + '%';
+  var bestSh = Math.max.apply(null, data.map(function(s) { return Number(s.sharpe_ratio || 0); }));
+  document.getElementById('ov-sharpe').textContent = bestSh.toFixed(2);
+}
+
+async function init() {
+  try {
+    var sess = await sb.auth.getSession();
+    if (sess && sess.data && sess.data.session) {
+      cemUser = sess.data.session.user;
+      document.getElementById('user-avatar').textContent = cemUser.email ? cemUser.email[0].toUpperCase() : '?';
+      document.getElementById('set-email').textContent = cemUser.email || '—';
+      document.getElementById('set-joined').textContent = new Date(cemUser.created_at).toLocaleDateString();
+      loadStrategies();
+    }
+  } catch(e) { console.warn('auth', e); }
+  var saved = localStorage.getItem('cem_theme') || 'teal';
+  document.querySelectorAll('.theme-card').forEach(function(c) {
+    c.classList.toggle('active', c.getAttribute('data-theme-name') === saved);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+<script src="/cem-cursor.js"></script>
+</body>
+</html>

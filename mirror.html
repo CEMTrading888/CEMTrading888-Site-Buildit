@@ -1,0 +1,2976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEMTRADING888 | The Strategist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #000C14;
+    --bg-raised: #001220;
+    --bg-card: #00182B;
+    --teal: #00C9B1;
+    --teal-dim: rgba(0, 201, 177, 0.15);
+    --orange: #FF6218;
+    --orange-dim: rgba(255, 98, 24, 0.12);
+    --merlot: #7D1A2E;
+    --text: #E8EDF2;
+    --text-dim: #6B8299;
+    --red: #FF3B5C;
+    --green: #00E676;
+    --border: rgba(0, 201, 177, 0.08);
+  }
+
+  html, body {
+    height: 100%; width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* PIN GATE */
+  #pin-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 24px;
+  }
+  #pin-gate h1 {
+    font-size: 14px; letter-spacing: 6px; text-transform: uppercase;
+    color: var(--teal); font-weight: 700;
+  }
+  #pin-gate input {
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text); padding: 14px 24px; font-size: 22px;
+    text-align: center; border-radius: 8px; outline: none;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 12px;
+    width: 200px; transition: border-color 0.2s;
+  }
+  #pin-gate input:focus { border-color: var(--teal); }
+  #pin-gate .error { color: var(--red); font-size: 13px; height: 18px; }
+
+  /* ACCESS DENIED */
+  #denied {
+    position: fixed; inset: 0; z-index: 10000;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+  }
+  #denied h1 { color: var(--red); font-size: 28px; font-weight: 800; }
+  #denied p { color: var(--text-dim); font-size: 14px; }
+
+  /* LAYOUT */
+  #app {
+    display: none;
+    height: 100vh; width: 100vw;
+    flex-direction: column;
+  }
+
+  /* TOP BAR */
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border);
+    height: 48px; min-height: 48px;
+  }
+  .top-bar .brand {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .top-bar .brand h1 {
+    font-size: 15px; font-weight: 800; letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--teal), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255, 59, 92, 0.12); padding: 4px 10px;
+    border-radius: 4px; font-size: 11px; font-weight: 700;
+    color: var(--red); letter-spacing: 2px;
+  }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--red);
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 59, 92, 0.6); }
+    50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(255, 59, 92, 0); }
+  }
+  .top-bar .status {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 12px; color: var(--text-dim);
+  }
+  .top-bar .status .ai-status {
+    color: var(--teal); font-weight: 600;
+    animation: ai-pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes ai-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .meta-pill {
+    background: var(--bg-card); padding: 4px 10px;
+    border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-dim);
+  }
+  .meta-pill span { color: var(--teal); font-weight: 600; }
+
+  /* VOICE TOGGLE */
+  .voice-toggle {
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text); padding: 4px 10px; border-radius: 4px;
+    font-size: 16px; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+    line-height: 1;
+  }
+  .voice-toggle:hover { border-color: var(--teal); background: var(--teal-dim); }
+
+  /* CHARTS */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1px;
+    background: var(--border);
+    min-height: 0;
+    flex: 1 1 65%;
+  }
+  .chart-panel {
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+  .chart-panel .chart-label {
+    position: absolute; top: 10px; left: 14px; z-index: 10;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-dim); font-weight: 600;
+  }
+  .chart-panel .chart-label span { color: var(--teal); }
+
+  /* SVG TRADE ANNOTATION LAYER */
+  .trade-annotation-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 20;
+  }
+
+  /* TRADE CARD POPUP */
+  .trade-card-popup {
+    position: absolute; z-index: 30;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text); pointer-events: none;
+    opacity: 1; transition: opacity 0.6s ease-out;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    white-space: nowrap;
+  }
+  .trade-card-popup.fade-out { opacity: 0; }
+  .trade-card-popup .tc-side { font-weight: 700; font-size: 10px; letter-spacing: 1px; }
+  .trade-card-popup .tc-side.long { color: var(--teal); }
+  .trade-card-popup .tc-side.short { color: var(--orange); }
+  .trade-card-popup .tc-price { color: var(--text-dim); margin-top: 2px; }
+  .trade-card-popup .tc-pnl { font-weight: 700; margin-top: 2px; }
+  .trade-card-popup .tc-pnl.win { color: var(--teal); }
+  .trade-card-popup .tc-pnl.loss { color: var(--merlot); }
+
+  /* <div id="mini-charts-strip" style="display:flex;gap:6px;padding:6px 8px;background:#050709;border-top:1px solid #111;min-height:160px;max-height:180px;overflow-x:auto;align-items:center;flex-shrink:0">
+  <div id="mini-placeholder" style="color:#2a2a2a;font-size:11px;margin:auto;font-family:monospace">Confirmed strategies will appear here as live paper trades...</div>
+</div>
+<script>
+function addMiniWindow(strategy){
+  var strip=document.getElementById("mini-portfolio-strip") || document.getElementById("mini-charts-strip");
+  if(!strip)return;
+  var ph=document.getElementById("mini-placeholder");
+  if(ph)ph.remove();
+  var id=strategy.id||("mini_"+Date.now());
+  var div=document.createElement("div");
+  div.id="mini-slot-"+id;
+  div.style.cssText="min-width:200px;max-width:240px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:8px;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column";
+  div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;font-size:10px;border-bottom:1px solid #111"><span style="color:#00C9B1;font-weight:700">'+(strategy.asset||"")+'</span><span style="color:#555;font-size:9px">'+(strategy.name||"Strategy")+'</span><span id="mini-pnl-'+id+'" style="color:#00C9B1;font-weight:700">$0</span></div><div id="mini-chart-'+id+'" style="height:110px;background:#060a0e"></div><div style="display:flex;justify-content:space-between;padding:3px 8px;font-size:9px"><span style="color:#444">WR: '+(strategy.win_rate||0)+'%</span><span style="color:#00C9B1;animation:pulse 1.5s infinite">&#9679; LIVE</span></div>';
+  strip.appendChild(div);
+  if(window.LightweightCharts){
+    var mc=LightweightCharts.createChart(document.getElementById("mini-chart-"+id),{width:200,height:110,layout:{background:{color:"#060a0e"},textColor:"#333"},grid:{vertLines:{color:"#0d0d0d"},horzLines:{color:"#0d0d0d"}},rightPriceScale:{visible:false},timeScale:{visible:false},handleScroll:false,handleScale:false});
+    var ms=mc.addCandlestickSeries({upColor:"#00C9B1",downColor:"#FF6218",borderUpColor:"#00C9B1",borderDownColor:"#FF6218",wickUpColor:"#00C9B1",wickDownColor:"#FF6218"});
+    if(!window._miniCharts)window._miniCharts={};
+    window._miniCharts[id]={chart:mc,series:ms};
+  }
+  if(!window._miniWindows)window._miniWindows={};
+  window._miniWindows[id]={strategy:strategy,pnl:0};
+}
+function updateMiniPnl(sid,pnl){
+  var el=document.getElementById("mini-pnl-"+sid);
+  if(!el)return;
+  el.textContent=(pnl>=0?"+":"")+"$"+Math.abs(pnl).toFixed(0);
+  el.style.color=pnl>=0?"#00C9B1":"#7D1A2E";
+}
+</script>
+COACH AREA */
+  .coach-area {
+    background: var(--bg-raised);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex; flex-direction: column; gap: 4px;
+    overflow: hidden;
+  }
+  .coach-area .coach-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--orange); font-weight: 700;
+  }
+  .typing-cursor {
+    display: inline-block; width: 2px; height: 14px;
+    background: var(--orange); margin-left: 2px;
+    animation: blink 0.7s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .coach-text {
+    font-size: 14px; line-height: 1.6;
+    color: var(--text); max-height: 64px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+  }
+
+  /* SCORE TICKER */
+  .score-ticker {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px; background: var(--border);
+    height: 56px; min-height: 56px;
+  }
+  .score-cell {
+    background: var(--bg-raised);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 8px 4px; gap: 2px;
+  }
+  .score-cell .label {
+    font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-dim);
+    font-weight: 600;
+  }
+  .score-cell .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px; font-weight: 700;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .score-cell .value.up { color: var(--teal); }
+  .score-cell .value.down { color: var(--red); }
+  .score-cell .value.neutral { color: var(--text); }
+  .delta { font-size: 11px; opacity: 0.7; }
+  .delta.up::before { content: '\25B2 '; }
+  .delta.down::before { content: '\25BC '; }
+
+  /* EUREKA FEED */
+  .eureka-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--border);
+    overflow: hidden;
+    height: 140px; min-height: 140px;
+  }
+  .eureka-feed {
+    background: var(--bg);
+    padding: 10px 16px;
+    overflow-y: auto;
+  }
+  .eureka-feed::-webkit-scrollbar { width: 4px; }
+  .eureka-feed::-webkit-scrollbar-thumb { background: var(--teal-dim); border-radius: 2px; }
+  .eureka-feed-header {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--teal); font-weight: 700; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .eureka-feed-header .count {
+    background: var(--teal-dim); padding: 1px 6px;
+    border-radius: 3px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+  }
+  .eureka-item {
+    display: flex; gap: 8px; padding: 4px 0;
+    font-size: 12px; line-height: 1.4;
+    border-bottom: 1px solid var(--border);
+    animation: eureka-in 0.4s ease-out;
+  }
+  @keyframes eureka-in {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .eureka-item .ts {
+    color: var(--text-dim); font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; white-space: nowrap; min-width: 52px; padding-top: 2px;
+  }
+  .eureka-item .msg { color: var(--text); }
+  .eureka-item .msg strong { color: var(--teal); font-weight: 600; }
+
+  /* TRADE LOG */
+  .trade-log {
+    background: var(--bg);
+    padding: 10px 16px;
+    overflow-y: auto;
+  }
+  .trade-log::-webkit-scrollbar { width: 4px; }
+  .trade-log::-webkit-scrollbar-thumb { background: var(--orange-dim); border-radius: 2px; }
+  .trade-log-header {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--orange); font-weight: 700; margin-bottom: 8px;
+  }
+  .trade-item {
+    display: flex; align-items: center; gap: 8px; padding: 3px 0;
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
+    border-bottom: 1px solid var(--border);
+  }
+  .trade-item .side {
+    padding: 1px 5px; border-radius: 2px; font-weight: 700;
+    font-size: 9px; letter-spacing: 1px;
+  }
+  .trade-item .side.buy { background: rgba(0, 230, 118, 0.15); color: var(--green); }
+  .trade-item .side.sell { background: rgba(255, 59, 92, 0.15); color: var(--red); }
+  .trade-item .pair { color: var(--text); font-weight: 600; }
+  .trade-item .price { color: var(--text-dim); }
+  .trade-item .pnl { margin-left: auto; font-weight: 600; }
+  .trade-item .pnl.pos { color: var(--teal); }
+  .trade-item .pnl.neg { color: var(--red); }
+
+
+  /* SSE STATUS */
+  .sse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    display: inline-block;
+  }
+  .sse-dot.connected { background: var(--green); }
+  .sse-dot.disconnected { background: var(--red); animation: pulse-dot 1s infinite; }
+  .sse-dot.connecting { background: #FFD600; animation: pulse-dot 0.6s infinite; }
+
+  /* SESSION LOG SIDEBAR */
+  #session-log {
+    width: 260px; min-width: 260px;
+    background: var(--bg-raised);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .sl-header {
+    padding: 12px 14px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sl-header h2 {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--teal); font-weight: 700; margin-bottom: 4px;
+  }
+  .sl-header .sl-meta {
+    font-size: 10px; color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .sl-header .sl-meta span { color: var(--teal); }
+  .sl-section-title {
+    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--orange); font-weight: 700;
+    padding: 8px 14px 4px;
+  }
+  .sl-current {
+    padding: 4px 14px 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .sl-current .sl-asset { color: var(--teal); font-weight: 700; }
+  .sl-current .sl-strat { color: var(--text); margin-top: 2px; }
+  .sl-current .sl-stats { color: var(--text-dim); margin-top: 2px; }
+  .sl-completed-list {
+    flex: 1; overflow-y: auto; padding: 4px 14px;
+  }
+  .sl-completed-list::-webkit-scrollbar { width: 4px; }
+  .sl-completed-list::-webkit-scrollbar-thumb { background: var(--teal-dim); border-radius: 2px; }
+  .sl-log-item {
+    display: flex; align-items: flex-start; gap: 6px;
+    padding: 4px 0; font-size: 11px; line-height: 1.3;
+    border-bottom: 1px solid var(--border);
+    animation: slideIn 0.3s ease-out;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+  }
+  .sl-log-item .sl-icon { font-size: 12px; flex-shrink: 0; padding-top: 1px; }
+  .sl-log-item .sl-detail { color: var(--text); }
+  .sl-log-item .sl-detail .sl-ts {
+    font-size: 9px; color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .sl-alltime {
+    padding: 8px 14px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .sl-alltime .sl-at-label {
+    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--teal); font-weight: 700; margin-bottom: 4px;
+  }
+  .sl-alltime .sl-at-count { color: var(--text); }
+  .sl-alltime .sl-at-best { color: var(--text-dim); margin-top: 2px; font-size: 10px; }
+  .sl-alltime .sl-at-best strong { color: var(--teal); font-weight: 600; }
+
+  /* === SURGICAL FIX APRIL 18 === */
+  #mini-charts-strip { display:flex !important; flex-direction:row !important; align-items:flex-start !important; gap:10px !important; overflow-x:auto !important; overflow-y:hidden !important; min-height:160px !important; max-height:160px !important; padding-bottom:6px !important; box-sizing:border-box !important; }
+  #mini-charts-strip > div { flex-shrink:0 !important; align-self:flex-start !important; height:150px !important; min-width:240px !important; max-width:280px !important; box-sizing:border-box !important; overflow:hidden !important; margin-top:0 !important; position:relative !important; }
+  .score-ticker { margin-top:6px !important; flex-shrink:0 !important; width:100% !important; }
+  .coach-area { overflow:visible !important; height:auto !important; min-height:200px !important; }
+  #coach-text, .coach-text { min-height:36px !important; height:auto !important; overflow:visible !important; display:block !important; }
+  /* === END SURGICAL FIX === */
+  #mini-charts-strip { display:flex !important; flex-direction:row !important; align-items:flex-start !important; gap:12px !important; overflow-x:auto !important; overflow-y:visible !important; min-height:220px !important; padding:8px 8px 12px !important; box-sizing:border-box !important; }
+  #mini-charts-strip > div { margin-top:0 !important; align-self:flex-start !important; flex-shrink:0 !important; }
+  .score-ticker { margin-top:8px !important; }
+  .coach-area { overflow:visible !important; height:auto !important; min-height:260px !important; }
+
+  /* FIX 1: Hide secondary chart, primary takes full width */
+  #chart-secondary-wrap { display: none !important; }
+  #chart-main-wrap { width: 100% !important; }
+  .charts-row { grid-template-columns: 1fr !important; }
+
+  /* FIX 3: Remove blank gap between chart and mini-charts */
+  #coach-annotation-layer:empty, #coach-annotation-layer { height: 0 !important; overflow: hidden !important; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+<div style="display:flex;gap:6px;padding:6px 12px;background:rgba(0,0,0,0.3);border-bottom:1px solid #1a2030;flex-wrap:wrap">
+  <a href="/mirror.html" style="font-family:monospace;font-size:10px;padding:4px 10px;border-radius:4px;border:1px solid #1a2030;color:#888;text-decoration:none;transition:all 0.15s">Strategist</a>
+  <a href="/futures.html" style="font-family:monospace;font-size:10px;padding:4px 10px;border-radius:4px;border:1px solid #1a2030;color:#888;text-decoration:none">Futures</a>
+  <a href="/mirror-micro.html" style="font-family:monospace;font-size:10px;padding:4px 10px;border-radius:4px;border:1px solid #FF6B35;color:#FF6B35;text-decoration:none">Micro</a>
+  <a href="/mirror-crypto.html" style="font-family:monospace;font-size:10px;padding:4px 10px;border-radius:4px;border:1px solid #9B59B6;color:#9B59B6;text-decoration:none">Crypto</a>
+  <a href="/mirror-stocks.html" style="font-family:monospace;font-size:10px;padding:4px 10px;border-radius:4px;border:1px solid #FFD700;color:#FFD700;text-decoration:none">Stocks</a>
+  <a href="/lab.html" style="font-family:monospace;font-size:10px;padding:4px 10px;border-radius:4px;border:1px solid #00C9B1;color:#00C9B1;text-decoration:none">Lab</a>
+  <a href="/bot.html" style="font-family:monospace;font-size:10px;padding:4px 10px;border-radius:4px;border:1px solid #00C9B1;color:#00C9B1;text-decoration:none">Bot</a>
+</div>
+
+<!-- ACCESS DENIED (hidden by default, shown on auth failure) -->
+<div id="denied" style="display:none;">
+  <h1>ACCESS DENIED</h1>
+  <p>This mirror requires authorization.</p>
+</div>
+
+<!-- PIN GATE -->
+<div id="pin-gate">
+  <h1>CEMTRADING888</h1>
+  <input type="password" id="pin-input" maxlength="6" placeholder="PIN" autofocus>
+  <div class="error" id="pin-error"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="brand">
+      <h1>CEMTRADING888</h1>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+    <div class="status">
+      <span class="ai-status">AI is optimizing...</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:10px;color:#555">Account:</span>
+        <select id="account-size-select" onchange="_cemSetAccountSize(this.value)" style="background:#111;border:1px solid #333;color:#00C9B1;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer">
+          <option value="5000">$5,000</option>
+          <option value="10000" selected>$10,000</option>
+          <option value="25000">$25,000</option>
+          <option value="50000">$50,000</option>
+          <option value="100000">$100,000</option>
+        </select>
+      </div>
+      <div class="meta-pill">ITER <span id="iter-count">0</span></div>
+      <div class="meta-pill">SESSION <span id="session-timer">00:00:00</span></div>
+      <button class="voice-toggle" id="voice-toggle" title="Toggle voice narration">&#x1F50A;</button>
+      <div class="meta-pill"><span class="sse-dot connecting" id="sse-indicator"></span></div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT BALANCES TRACKER -->
+  <div id="account-balances" style="display:flex;gap:12px;padding:6px 16px;background:rgba(0,0,0,0.3);border-bottom:1px solid #111;font-family:'JetBrains Mono',monospace">
+    <div><span style="color:#555;font-size:9px">$10K</span> <span id="bal-10000" style="color:#00C9B1;font-size:13px;font-weight:700">$10,000</span></div>
+    <div><span style="color:#555;font-size:9px">$25K</span> <span id="bal-25000" style="color:#00C9B1;font-size:13px;font-weight:700">$25,000</span></div>
+    <div><span style="color:#555;font-size:9px">$50K</span> <span id="bal-50000" style="color:#00C9B1;font-size:13px;font-weight:700">$50,000</span></div>
+    <div><span style="color:#555;font-size:9px">$100K</span> <span id="bal-100000" style="color:#00C9B1;font-size:13px;font-weight:700">$100,000</span></div>
+  </div>
+
+  <!-- FLEX ROW: main content + sidebar -->
+  <div style="display:flex;flex:1;min-height:0">
+
+    <!-- MAIN CONTENT -->
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+
+      <!-- CHARTS -->
+      <div class="charts-row">
+        <div class="chart-panel" id="chart-main-wrap">
+          <div class="chart-label"><span id="chart-main-mode">TESTING</span> &mdash; <span id="chart-main-symbol">BTC/USDT</span></div>
+          <div id="chart-main" style="width:100%;height:100%;"></div>
+          <svg class="trade-annotation-layer" id="trade-svg"></svg>
+        </div>
+        <div id="mirror-replay-ctrl" style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(0,0,0,0.5);border-top:1px solid rgba(0,201,177,0.15);">
+          <button id="mirror-play-btn" onclick="if(_mReplay.active){_mReplay.paused=!_mReplay.paused;this.textContent=_mReplay.paused?'▶':'⏸';}" style="width:28px;height:28px;border-radius:50%;background:rgba(0,201,177,0.12);border:1px solid rgba(0,201,177,0.4);color:#00C9B1;font-size:12px;cursor:pointer;">▶</button>
+          <div id="mirror-scrub-track" style="flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;cursor:pointer;position:relative;" onclick="if(_mReplay.bars.length){_mReplay.idx=Math.round(event.offsetX/this.clientWidth*(_mReplay.bars.length-1));}">
+            <div id="mirror-scrub-fill" style="height:100%;background:rgba(0,201,177,0.3);border-radius:4px;width:0%;pointer-events:none"></div>
+            <div id="mirror-scrub-thumb" style="position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#00C9B1;transform:translate(-50%,-50%);left:0%;pointer-events:none;box-shadow:0 0 8px rgba(0,201,177,0.6);"></div>
+          </div>
+          <select onchange="_mReplay.speed=parseInt(this.value);" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);font-size:9px;padding:2px 6px;border-radius:4px;">
+            <option value="500">0.5x</option>
+            <option value="200" selected>1x</option>
+            <option value="100">2x</option>
+            <option value="40">5x</option>
+          </select>
+          <span style="font-size:9px;color:rgba(0,201,177,0.5);">REPLAY</span>
+        </div>
+        <div class="chart-panel" id="chart-secondary-wrap">
+          <div class="chart-label">EQUITY CURVE &mdash; <span>STRATEGY P&amp;L</span></div>
+          <div id="chart-secondary" style="width:100%;height:100%;"></div>
+        </div>
+        <div id="coach-annotation-layer" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50">
+          <svg id="coach-svg" width="100%" height="100%" style="position:absolute;top:0;left:0"></svg>
+          <div id="coach-text-labels" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+        </div>
+      </div>
+
+      <!-- MINI PORTFOLIO STRIP -->
+      <div id="mini-portfolio-strip" style="
+        height:180px; min-height:180px; display:flex; gap:4px;
+        padding:4px 8px; background:#060810;
+        border-top:1px solid rgba(0,201,177,0.15);
+        overflow-x:auto; flex-shrink:0;">
+        <div id="mini-empty-state" style="
+          display:flex; align-items:center; justify-content:center;
+          flex:1; color:#333; font-size:12px; font-family:'Inter',sans-serif;
+          letter-spacing:0.5px;">
+          Confirmed strategies will appear here as live paper trades...
+        </div>
+      </div>
+
+      <!-- <div id="mini-charts-strip" style="display:flex;gap:6px;padding:6px 8px;background:#050709;border-top:1px solid #111;min-height:160px;max-height:180px;overflow-x:auto;align-items:center;flex-shrink:0">
+  <div id="mini-placeholder" style="color:#2a2a2a;font-size:11px;margin:auto;font-family:monospace">Confirmed strategies will appear here as live paper trades...</div>
+</div>
+<script>
+function addMiniWindow(strategy){
+  var strip=document.getElementById("mini-portfolio-strip") || document.getElementById("mini-charts-strip");
+  if(!strip)return;
+  var ph=document.getElementById("mini-placeholder");
+  if(ph)ph.remove();
+  var id=strategy.id||("mini_"+Date.now());
+  var div=document.createElement("div");
+  div.id="mini-slot-"+id;
+  div.style.cssText="min-width:200px;max-width:240px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:8px;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column";
+  div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;font-size:10px;border-bottom:1px solid #111"><span style="color:#00C9B1;font-weight:700">'+(strategy.asset||"")+'</span><span style="color:#555;font-size:9px">'+(strategy.name||"Strategy")+'</span><span id="mini-pnl-'+id+'" style="color:#00C9B1;font-weight:700">$0</span></div><div id="mini-chart-'+id+'" style="height:110px;background:#060a0e"></div><div style="display:flex;justify-content:space-between;padding:3px 8px;font-size:9px"><span style="color:#444">WR: '+(strategy.win_rate||0)+'%</span><span style="color:#00C9B1;animation:pulse 1.5s infinite">&#9679; LIVE</span></div>';
+  strip.appendChild(div);
+  if(window.LightweightCharts){
+    var mc=LightweightCharts.createChart(document.getElementById("mini-chart-"+id),{width:200,height:110,layout:{background:{color:"#060a0e"},textColor:"#333"},grid:{vertLines:{color:"#0d0d0d"},horzLines:{color:"#0d0d0d"}},rightPriceScale:{visible:false},timeScale:{visible:false},handleScroll:false,handleScale:false});
+    var ms=mc.addCandlestickSeries({upColor:"#00C9B1",downColor:"#FF6218",borderUpColor:"#00C9B1",borderDownColor:"#FF6218",wickUpColor:"#00C9B1",wickDownColor:"#FF6218"});
+    if(!window._miniCharts)window._miniCharts={};
+    window._miniCharts[id]={chart:mc,series:ms};
+  }
+  if(!window._miniWindows)window._miniWindows={};
+  window._miniWindows[id]={strategy:strategy,pnl:0};
+}
+function updateMiniPnl(sid,pnl){
+  var el=document.getElementById("mini-pnl-"+sid);
+  if(!el)return;
+  el.textContent=(pnl>=0?"+":"")+"$"+Math.abs(pnl).toFixed(0);
+  el.style.color=pnl>=0?"#00C9B1":"#7D1A2E";
+}
+</script>
+      <div class="coach-area">
+        <div class="coach-header">
+          <div class="typing-cursor" id="typing-cursor"></div>
+        </div>
+        <div class="coach-text mono" id="coach-text">Waiting for AI stream...</div>
+      </div>
+
+      <!-- SCORE TICKER -->
+      <div class="score-ticker">
+        <div class="score-cell">
+          <div class="label">WIN RATE</div>
+          <div class="value neutral" id="score-winrate">—<span class="delta" id="delta-winrate"></span></div>
+        </div>
+        <div class="score-cell">
+          <div class="label">RETURN</div>
+          <div class="value neutral" id="score-return">—<span class="delta" id="delta-return"></span></div>
+        </div>
+        <div class="score-cell">
+          <div class="label">LIVE P&amp;L</div>
+          <div class="value neutral" id="score-pnl">—<span class="delta" id="delta-pnl"></span></div>
+        </div>
+        <div class="score-cell">
+          <div class="label">SHARPE</div>
+          <div class="value neutral" id="score-sharpe">—</div>
+        </div>
+        <div class="score-cell">
+          <div class="label">MAX DD</div>
+          <div class="value neutral" id="score-dd">—</div>
+        </div>
+        <div class="score-cell">
+          <div class="label">TRADES</div>
+          <div class="value neutral" id="score-trades">—</div>
+        </div>
+        <div class="score-cell">
+          <div class="label">ACCOUNT</div>
+          <div class="value neutral" id="stat-account" style="font-size:18px;font-weight:700;color:#fff;font-family:'JetBrains Mono',monospace">$10,000</div>
+          <div id="stat-account-pct" style="font-size:11px;color:#00C9B1">+0.0%</div>
+        </div>
+      </div>
+
+      <!-- EUREKA + TRADE LOG -->
+      <div class="eureka-section">
+        <div class="eureka-feed" id="eureka-feed">
+          <div class="eureka-feed-header">
+            EUREKA DISCOVERIES <span class="count" id="eureka-count">0</span>
+          </div>
+          <div id="eureka-list"></div>
+        </div>
+        <div class="trade-log" id="trade-log">
+          <div class="trade-log-header">TRADE LOG</div>
+          <div id="trade-list"></div>
+        </div>
+      </div>
+
+      <!-- COACH NARRATION PANEL -->
+      <div id="mirror-coach-panel" style="
+        background:rgba(0,0,0,0.7);border:1px solid #00C9B1;
+        border-radius:8px;padding:16px;margin:8px 12px;
+        font-family:'JetBrains Mono',monospace;color:#fff;font-size:13px;
+        position:relative;overflow:hidden;
+      ">
+        <div style="position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,201,177,0.4),transparent)"></div>
+        <div style="color:#00C9B1;font-size:10px;letter-spacing:3px;margin-bottom:8px;text-transform:uppercase">
+          CEMBOT — LIVE NARRATION
+        </div>
+        <div id="mirror-coach-text" style="line-height:1.6;color:#e0e8f0">Loading mirror intelligence...</div>
+        <div id="mirror-intel-stats" style="margin-top:10px;color:#555;font-size:10px;letter-spacing:1px"></div>
+      </div>
+
+      <div style="text-align:center;padding:4px;font-size:9px;color:#222;background:#060a0a">cemtrading888.com</div>
+
+    </div><!-- end main content -->
+
+    <!-- SESSION LOG SIDEBAR -->
+    <div id="session-log">
+      <div class="sl-header">
+        <h2>SESSION LOG</h2>
+        <div class="sl-meta">Cycle <span id="sl-cycle">#1</span> &mdash; <span id="sl-duration">00:00:00</span></div>
+      </div>
+      <div class="sl-section-title">CURRENT</div>
+      <div class="sl-current">
+        <div class="sl-asset" id="sl-current-asset">BTC/USDT</div>
+        <div class="sl-strat" id="sl-current-strat">--</div>
+        <div class="sl-stats" id="sl-current-stats">WR -- | PF --</div>
+      </div>
+      <div class="sl-section-title">COMPLETED THIS SESSION</div>
+      <div class="sl-completed-list" id="sl-completed-list"></div>
+      <div class="sl-section-title">RESEARCH</div>
+      <div id="research-cards" style="flex:1;overflow-y:auto;padding:4px 14px;max-height:180px"></div>
+      <div class="sl-alltime">
+        <div class="sl-at-label">ALL-TIME EUREKAS</div>
+        <div class="sl-at-count" id="sl-alltime-count">0</div>
+        <div class="sl-at-best" id="sl-alltime-best">Best: <strong>--</strong></div>
+      </div>
+    </div>
+
+  </div><!-- end flex row -->
+
+</div>
+
+<!-- TRADE CARD POPUP (fixed position) -->
+<div id="trade-card" style="display:none;position:fixed;top:80px;right:20px;z-index:500;
+  background:#111;border-radius:10px;padding:14px 18px;min-width:200px;
+  transition:opacity 0.5s;font-family:'JetBrains Mono',monospace">
+  <div id="tc-direction" style="font-size:12px;font-weight:700"></div>
+  <div style="margin:8px 0;font-size:11px;color:#888">
+    <div>Entry: <span id="tc-entry" style="color:#fff"></span></div>
+    <div>Exit: <span id="tc-exit" style="color:#fff"></span></div>
+  </div>
+  <div id="tc-pnl" style="font-size:16px;font-weight:700"></div>
+  <div id="tc-duration" style="font-size:10px;color:#555;margin-top:4px"></div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── FEATURE 1: WEB SPEECH API VOICE ─────────────────────────────────
+  const _cemVoiceEnabled = { on: true };
+  function _cemSpeak_OFF(text) {
+    if (!_cemVoiceEnabled.on || !window.speechSynthesis) return;
+    speechSynthesis.cancel();
+    if (typeof _cemMusicDuck === 'function') _cemMusicDuck();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.name.includes('Samantha') || v.name.includes('Google US English') || v.name.includes('Microsoft Aria') || v.name.includes('Alex')) || voices.find(v => v.lang === 'en-US') || voices[0];
+    if (preferred) utterance.voice = preferred;
+    utterance.rate = 0.88; utterance.pitch = 1.0; utterance.volume = 1.0;
+    utterance.onend = function() { if (typeof _cemMusicUnduck === 'function') _cemMusicUnduck(); };
+    utterance.onerror = function() { if (typeof _cemMusicUnduck === 'function') _cemMusicUnduck(); };
+    false&&speechSynthesis.speak(utterance);
+  }
+  speechSynthesis.onvoiceschanged = () => { speechSynthesis.getVoices(); };
+
+  // Voice toggle button
+  const voiceToggleBtn = document.getElementById('voice-toggle');
+  voiceToggleBtn.addEventListener('click', function() {
+    _cemVoiceEnabled.on = !_cemVoiceEnabled.on;
+    voiceToggleBtn.innerHTML = _cemVoiceEnabled.on ? '&#x1F50A;' : '&#x1F507;';
+    if (!_cemVoiceEnabled.on && window.speechSynthesis) speechSynthesis.cancel();
+  });
+
+  // ── PIN GATE ──────────────────────────────────────────────────────────
+  const MIRROR_PIN = '888';
+  const AUTH_KEY = 'cem_mirror_auth';
+
+  const pinGate = document.getElementById('pin-gate');
+  const pinInput = document.getElementById('pin-input');
+  const pinError = document.getElementById('pin-error');
+  const denied = document.getElementById('denied');
+  const app = document.getElementById('app');
+
+  function denyAccess() {
+    pinGate.style.display = 'none';
+    app.style.display = 'none';
+    denied.style.display = 'flex';
+    throw new Error('Access denied: invalid or missing PIN');
+  }
+
+  function grantAccess() {
+    sessionStorage.setItem(AUTH_KEY, 'true');
+    pinGate.style.display = 'none';
+    denied.style.display = 'none';
+    app.style.display = 'flex';
+    initMirror();
+  }
+
+  // Auto-grant access for live streaming (PIN gate bypassed)
+  grantAccess();
+
+  pinInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const val = pinInput.value.trim();
+      if (val === MIRROR_PIN) {
+        grantAccess();
+      } else {
+        pinError.textContent = 'Wrong PIN';
+        pinInput.value = '';
+        pinInput.style.borderColor = '#FF3B5C';
+        setTimeout(() => {
+          pinInput.style.borderColor = '';
+          pinError.textContent = '';
+        }, 2000);
+        if (val.length > 0) {
+          // After 3 bad attempts, deny
+          pinInput.dataset.attempts = (parseInt(pinInput.dataset.attempts || '0') + 1).toString();
+          if (parseInt(pinInput.dataset.attempts) >= 3) {
+            denyAccess();
+          }
+        }
+      }
+    }
+  });
+
+  // ── MAIN INIT ─────────────────────────────────────────────────────────
+  function initMirror() {
+    const state = {
+      iterations: 0,
+      eurekaCount: 0,
+      sessionStart: Date.now(),
+      sseRetries: 0,
+      maxRetries: 50,
+      retryDelay: 1000,
+      // Session log state
+      slCycle: 1,
+      slCurrentAsset: 'BTC/USDT',
+      slCurrentStrat: '--',
+      slCurrentWR: '--',
+      slCurrentPF: '--',
+      slAllTimeEurekas: 0,
+      slBestStrat: '--',
+      slBestWR: 0,
+      slCompletedItems: [],
+    };
+
+    // ── SESSION TIMER ─────────────────────────────────────────────────
+    const timerEl = document.getElementById('session-timer');
+    const slDurationEl = document.getElementById('sl-duration');
+    setInterval(() => {
+      const elapsed = Math.floor((Date.now() - state.sessionStart) / 1000);
+      const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+      const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+      const s = String(elapsed % 60).padStart(2, '0');
+      const timeStr = h + ':' + m + ':' + s;
+      timerEl.textContent = timeStr;
+      slDurationEl.textContent = timeStr;
+    }, 1000);
+
+    // ── CHARTS ────────────────────────────────────────────────────────
+    const chartMainEl = document.getElementById('chart-main');
+    const chartSecEl = document.getElementById('chart-secondary');
+
+    const chartTheme = {
+      layout: {
+        background: { type: 'solid', color: '#000C14' },
+        textColor: '#6B8299',
+        fontSize: 11,
+        fontFamily: 'JetBrains Mono',
+      },
+      grid: {
+        vertLines: { color: 'rgba(0, 201, 177, 0.04)' },
+        horzLines: { color: 'rgba(0, 201, 177, 0.04)' },
+      },
+      crosshair: {
+        mode: 0,
+        vertLine: { color: 'rgba(0, 201, 177, 0.3)', style: 2 },
+        horzLine: { color: 'rgba(0, 201, 177, 0.3)', style: 2 },
+      },
+      timeScale: {
+        borderColor: 'rgba(0, 201, 177, 0.08)',
+        timeVisible: true,
+        secondsVisible: false,
+        rightOffset: 5,
+        barSpacing: 14,
+        minBarSpacing: 8,
+        borderVisible: false,
+        lockVisibleTimeRangeOnResize: true,
+      },
+      rightPriceScale: {
+        borderColor: 'rgba(0, 201, 177, 0.08)',
+        autoScale: true,
+        scaleMargins: { top: 0.05, bottom: 0.05 },
+      },
+    };
+
+    const mainChart = LightweightCharts.createChart(chartMainEl, {
+      ...chartTheme,
+      width: chartMainEl.clientWidth,
+      height: chartMainEl.clientHeight,
+    });
+    const candleSeries = mainChart.addCandlestickSeries({
+      upColor: '#00C9B1',
+      downColor: '#FF3B5C',
+      borderUpColor: '#00C9B1',
+      borderDownColor: '#FF3B5C',
+      wickUpColor: '#00C9B1',
+      wickDownColor: '#FF3B5C',
+    });
+
+    // Store primary chart references (both naming conventions used elsewhere)
+    window._primaryChart = mainChart;
+    window._mainChart = mainChart;
+    window._primaryChartSeries = candleSeries;
+    window._mainCandleSeries = candleSeries;
+    window._CHART_LOCKED = false;
+
+    // Load real BTC candles from Twelve Data (12 bars = 3 hours, tight Y-axis)
+    fetch('/api/ohlc?symbol=BTC/USD&interval=15min&limit=3')
+      .then(function(r){return r.json()})
+      .then(function(data) {
+        if (data.candles && data.candles.length) {
+          candleSeries.setData([]);
+          candleSeries.setData(data.candles);
+          mainChart.timeScale().fitContent();
+          console.log('[PRIMARY] Real candles loaded:', data.candles.length);
+          // Resize + force tight price scale after render
+          setTimeout(function() {
+            mainChart.applyOptions({
+              width: chartMainEl.clientWidth,
+              height: chartMainEl.clientHeight || 300
+            });
+            mainChart.priceScale('right').applyOptions({autoScale: true});
+            mainChart.timeScale().fitContent();
+          }, 500);
+        }
+      }).catch(function(){});
+
+    // Refresh live candles every 3 minutes — ONLY if chart not locked by replay
+    setInterval(function() {
+      if(window._CHART_LOCKED) return;
+      var sym = (window._MIRROR_ASSET || 'BTC/USD').replace('/USDT','/USD');
+      fetch('/api/ohlc?symbol='+sym+'&interval=15min&limit=3')
+        .then(function(r){return r.json();})
+        .then(function(d){
+          if(d.candles && d.candles.length && window._mainCandleSeries && !window._CHART_LOCKED) {
+            window._mainCandleSeries.setData([]);
+            window._mainCandleSeries.setData(d.candles);
+            window._mainChart.timeScale().fitContent();
+          }
+        }).catch(function(){});
+    }, 180000);
+
+    const secChart = LightweightCharts.createChart(chartSecEl, {
+      ...chartTheme,
+      width: chartSecEl.clientWidth,
+      height: chartSecEl.clientHeight,
+    });
+    const equitySeries = secChart.addAreaSeries({
+      topColor: 'rgba(0, 201, 177, 0.3)',
+      bottomColor: 'rgba(0, 201, 177, 0.02)',
+      lineColor: '#00C9B1',
+      lineWidth: 2,
+    });
+
+    // Markers for trades on main chart
+    let tradeMarkers = [];
+
+    // Responsive resize
+    const ro = new ResizeObserver(() => {
+      mainChart.applyOptions({ width: chartMainEl.clientWidth, height: chartMainEl.clientHeight });
+      secChart.applyOptions({ width: chartSecEl.clientWidth, height: chartSecEl.clientHeight });
+    });
+    ro.observe(chartMainEl);
+    ro.observe(chartSecEl);
+
+    // Seed equity chart only (primary uses real candles from /api/ohlc)
+    function seedEquityChart() {
+      const now = Math.floor(Date.now() / 1000);
+      const equity = [];
+      let eq = 10000;
+      for (let i = 300; i >= 0; i--) {
+        const t = now - i * 300;
+        eq += (Math.random() - 0.45) * 80;
+        equity.push({ time: t, value: +eq.toFixed(2) });
+      }
+      equitySeries.setData(equity);
+      secChart.timeScale().fitContent();
+    }
+    seedEquityChart();
+
+    // 5-min refresh removed — 3-min refresh above is sufficient
+    // Only one refresh loop prevents flickering race conditions
+
+    window._updatePrimaryChart = function(asset) {
+      if(window._CHART_LOCKED) return;
+      window._MIRROR_ASSET = asset;
+      var sym = asset.replace('/USDT','/USD');
+      fetch('/api/ohlc?symbol=' + sym + '&interval=15min&limit=3')
+        .then(function(r){return r.json()})
+        .then(function(data) {
+          if (data.candles && data.candles.length && !window._CHART_LOCKED) {
+            candleSeries.setData([]);
+            candleSeries.setData(data.candles);
+            mainChart.timeScale().fitContent();
+            document.getElementById('chart-main-symbol').textContent = asset;
+          }
+        }).catch(function(){});
+    };
+
+    // ── ELEMENT REFS ──────────────────────────────────────────────────
+    const iterEl = document.getElementById('iter-count');
+    const coachEl = document.getElementById('coach-text');
+    const cursorEl = document.getElementById('typing-cursor');
+    const eurekaCountEl = document.getElementById('eureka-count');
+    const eurekaList = document.getElementById('eureka-list');
+    const tradeList = document.getElementById('trade-list');
+    const sseIndicator = document.getElementById('sse-indicator');
+    const tradeSvg = document.getElementById('trade-svg');
+    const chartMainWrap = document.getElementById('chart-main-wrap');
+
+    // Session log refs
+    const slCycleEl = document.getElementById('sl-cycle');
+    const slCurrentAssetEl = document.getElementById('sl-current-asset');
+    const slCurrentStratEl = document.getElementById('sl-current-strat');
+    const slCurrentStatsEl = document.getElementById('sl-current-stats');
+    const slCompletedListEl = document.getElementById('sl-completed-list');
+    const slAllTimeCountEl = document.getElementById('sl-alltime-count');
+    const slAllTimeBestEl = document.getElementById('sl-alltime-best');
+
+    const scoreEls = {
+      winrate: document.getElementById('score-winrate'),
+      return: document.getElementById('score-return'),
+      pnl: document.getElementById('score-pnl'),
+      sharpe: document.getElementById('score-sharpe'),
+      dd: document.getElementById('score-dd'),
+      trades: document.getElementById('score-trades'),
+    };
+    const deltaEls = {
+      winrate: document.getElementById('delta-winrate'),
+      return: document.getElementById('delta-return'),
+      pnl: document.getElementById('delta-pnl'),
+    };
+
+    function ts() {
+      const d = new Date();
+      return d.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    // ── SCORE UPDATER ─────────────────────────────────────────────────
+    function updateScore(id, value, delta) {
+      const el = scoreEls[id];
+      if (!el) return;
+      const isNum = typeof value === 'number';
+      const formatted = isNum ? (value >= 0 ? '+' + value.toFixed(2) : value.toFixed(2)) : value;
+      const dir = isNum ? (value > 0 ? 'up' : value < 0 ? 'down' : 'neutral') : 'neutral';
+
+      el.className = 'value ' + dir;
+      // Preserve delta span
+      const deltaEl = deltaEls[id];
+      el.textContent = formatted;
+      if (deltaEl) {
+        el.appendChild(deltaEl);
+        if (delta !== undefined && delta !== null) {
+          deltaEl.className = 'delta ' + (delta >= 0 ? 'up' : 'down');
+          deltaEl.textContent = Math.abs(delta).toFixed(2);
+        }
+      }
+    }
+
+    // ── NARRATION STREAMER ────────────────────────────────────────────
+    let narrationQueue = [];
+    let isTyping = false;
+
+    function streamNarration(text) {
+      narrationQueue.push(text);
+      if (!isTyping) drainNarration();
+    }
+
+    function drainNarration() {
+      if (narrationQueue.length === 0) { isTyping = false; cursorEl.style.display = 'none'; return; }
+      isTyping = true;
+      cursorEl.style.display = 'inline-block';
+      const text = narrationQueue.shift();
+      coachEl.textContent = '';
+      // FEATURE 1: Speak the full text
+      _cemSpeak(text);
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          coachEl.textContent += text[i];
+          i++;
+        } else {
+          clearInterval(interval);
+          setTimeout(drainNarration, 800);
+        }
+      }, 18);
+    }
+
+    // ── EUREKA ────────────────────────────────────────────────────────
+    function addEureka(msg) {
+      state.eurekaCount++;
+      eurekaCountEl.textContent = state.eurekaCount;
+      const item = document.createElement('div');
+      item.className = 'eureka-item';
+      item.innerHTML = '<span class="ts">' + ts() + '</span><span class="msg">' + msg + '</span>';
+      eurekaList.prepend(item);
+      // Keep max 50
+      while (eurekaList.children.length > 50) eurekaList.lastChild.remove();
+    }
+
+    // ── FEATURE 2: SESSION LOG ────────────────────────────────────────
+    function _cemUpdateSessionLog(data) {
+      if (data.asset || data.symbol) {
+        state.slCurrentAsset = data.asset || data.symbol;
+        slCurrentAssetEl.textContent = state.slCurrentAsset;
+      }
+      if (data.strategyName || data.strategy) {
+        state.slCurrentStrat = data.strategyName || data.strategy;
+        slCurrentStratEl.textContent = state.slCurrentStrat;
+      }
+      const wr = data.winRate !== undefined ? data.winRate.toFixed(1) + '%' : state.slCurrentWR;
+      const pf = data.profitFactor !== undefined ? data.profitFactor.toFixed(2) : (data.sharpe !== undefined ? data.sharpe.toFixed(2) : state.slCurrentPF);
+      state.slCurrentWR = wr;
+      state.slCurrentPF = pf;
+      slCurrentStatsEl.textContent = 'WR ' + wr + ' | PF ' + pf;
+      state.slCycle++;
+      slCycleEl.textContent = '#' + state.slCycle;
+
+      // Track best strategy
+      const wrNum = data.winRate || 0;
+      if (wrNum > state.slBestWR) {
+        state.slBestWR = wrNum;
+        state.slBestStrat = state.slCurrentStrat;
+        slAllTimeBestEl.innerHTML = 'Best: <strong>' + state.slBestStrat + '</strong> (' + wrNum.toFixed(1) + '%)';
+      }
+    }
+
+    function _cemAddLogItem(icon, text) {
+      const item = document.createElement('div');
+      item.className = 'sl-log-item';
+      item.innerHTML = '<span class="sl-icon">' + icon + '</span><div class="sl-detail">' + text + '<div class="sl-ts">' + ts() + '</div></div>';
+      slCompletedListEl.prepend(item);
+      while (slCompletedListEl.children.length > 100) slCompletedListEl.lastChild.remove();
+
+      if (icon === '\u{1F4A1}') {
+        state.slAllTimeEurekas++;
+        slAllTimeCountEl.textContent = state.slAllTimeEurekas;
+      }
+    }
+
+    // ── FEATURE 3: TRADE MARKERS ON SVG ───────────────────────────────
+    let _tradeAnnotationId = 0;
+
+    function _cemDrawTradeMarker(data) {
+      const svg = tradeSvg;
+      const wrap = chartMainWrap;
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+
+      // Position marker at a random-ish x near the right side, y based on price relative to chart
+      const x = w - 60 - Math.random() * 80;
+      const yBase = h * 0.3 + Math.random() * (h * 0.4);
+      const id = _tradeAnnotationId++;
+
+      const isEntry = data.type === 'entry' || (!data.type && !data.exitPrice);
+      const isLong = (data.side || 'buy') === 'buy' || (data.side || 'long') === 'long';
+      const pnl = data.pnl || 0;
+      const isWin = pnl >= 0;
+      const price = data.price || data.entryPrice || 0;
+      const exitPrice = data.exitPrice || 0;
+
+      const ns = 'http://www.w3.org/2000/svg';
+
+      if (isEntry) {
+        // Entry triangle
+        const g = document.createElementNS(ns, 'g');
+        const triSize = 10;
+        let points, color;
+        if (isLong) {
+          // Up triangle (teal)
+          points = (x) + ',' + (yBase) + ' ' + (x - triSize) + ',' + (yBase + triSize * 1.5) + ' ' + (x + triSize) + ',' + (yBase + triSize * 1.5);
+          color = '#00C9B1';
+        } else {
+          // Down triangle (orange)
+          points = (x) + ',' + (yBase + triSize * 1.5) + ' ' + (x - triSize) + ',' + (yBase) + ' ' + (x + triSize) + ',' + (yBase);
+          color = '#FF6218';
+        }
+        const poly = document.createElementNS(ns, 'polygon');
+        poly.setAttribute('points', points);
+        poly.setAttribute('fill', color);
+        poly.setAttribute('opacity', '0.9');
+        g.appendChild(poly);
+
+        // Price label
+        const txt = document.createElementNS(ns, 'text');
+        txt.setAttribute('x', x + 14);
+        txt.setAttribute('y', yBase + 10);
+        txt.setAttribute('fill', color);
+        txt.setAttribute('font-family', 'JetBrains Mono, monospace');
+        txt.setAttribute('font-size', '10');
+        txt.textContent = '$' + price.toLocaleString();
+        g.appendChild(txt);
+
+        svg.appendChild(g);
+
+        // Show trade card popup
+        _cemShowTradeCard(data, x, yBase, isEntry, isLong, isWin);
+
+        // Auto-remove SVG annotation after 10s
+        setTimeout(() => { try { svg.removeChild(g); } catch(_){} }, 10000);
+      } else {
+        // Exit circle
+        const g = document.createElementNS(ns, 'g');
+        const circleColor = isWin ? '#00C9B1' : '#7D1A2E';
+        const circ = document.createElementNS(ns, 'circle');
+        circ.setAttribute('cx', x);
+        circ.setAttribute('cy', yBase);
+        circ.setAttribute('r', '7');
+        circ.setAttribute('fill', circleColor);
+        circ.setAttribute('opacity', '0.9');
+        g.appendChild(circ);
+
+        // P&L label
+        const txt = document.createElementNS(ns, 'text');
+        txt.setAttribute('x', x + 12);
+        txt.setAttribute('y', yBase + 4);
+        txt.setAttribute('fill', circleColor);
+        txt.setAttribute('font-family', 'JetBrains Mono, monospace');
+        txt.setAttribute('font-size', '10');
+        const pnlStr = pnl >= 0 ? '+$' + pnl.toFixed(2) + ' \u2713' : '-$' + Math.abs(pnl).toFixed(2) + ' \u2717';
+        txt.textContent = pnlStr;
+        g.appendChild(txt);
+
+        // Dashed connector line (from entry area to exit)
+        const entryY = yBase - 30 - Math.random() * 20;
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', x);
+        line.setAttribute('y1', entryY);
+        line.setAttribute('x2', x);
+        line.setAttribute('y2', yBase - 8);
+        line.setAttribute('stroke', circleColor);
+        line.setAttribute('stroke-width', '1');
+        line.setAttribute('stroke-dasharray', '4,3');
+        line.setAttribute('opacity', '0.6');
+        g.appendChild(line);
+
+        svg.appendChild(g);
+
+        _cemShowTradeCard(data, x, yBase, isEntry, isLong, isWin);
+
+        setTimeout(() => { try { svg.removeChild(g); } catch(_){} }, 10000);
+      }
+    }
+
+    function _cemShowTradeCard(data, x, y, isEntry, isLong, isWin) {
+      const card = document.createElement('div');
+      card.className = 'trade-card-popup';
+      card.style.left = (x + 20) + 'px';
+      card.style.top = (y - 10) + 'px';
+
+      const side = isLong ? 'LONG' : 'SHORT';
+      const sideClass = isLong ? 'long' : 'short';
+      const price = data.price || data.entryPrice || data.exitPrice || 0;
+      const pnl = data.pnl || 0;
+      const symbol = data.symbol || 'BTC/USDT';
+
+      let html = '<div class="tc-side ' + sideClass + '">' + (isEntry ? 'ENTRY' : 'EXIT') + ' ' + side + '</div>';
+      html += '<div class="tc-price">' + symbol + ' @ $' + price.toLocaleString() + '</div>';
+      if (!isEntry) {
+        const pnlClass = isWin ? 'win' : 'loss';
+        const pnlStr = pnl >= 0 ? '+$' + pnl.toFixed(2) + ' \u2713' : '-$' + Math.abs(pnl).toFixed(2) + ' \u2717';
+        html += '<div class="tc-pnl ' + pnlClass + '">' + pnlStr + '</div>';
+      }
+      card.innerHTML = html;
+
+      chartMainWrap.appendChild(card);
+
+      // Auto-fade after 4s
+      setTimeout(() => { card.classList.add('fade-out'); }, 4000);
+      setTimeout(() => { try { chartMainWrap.removeChild(card); } catch(_){} }, 4700);
+    }
+
+    // ── TRADE ─────────────────────────────────────────────────────────
+    function addTrade(data) {
+      const item = document.createElement('div');
+      item.className = 'trade-item';
+      const side = data.side || 'buy';
+      var pnl = data.pnl || 0;
+      if (Math.abs(pnl) > 999) pnl = 0; // cap insane P&L from stale entry prices
+      const pnlClass = pnl >= 0 ? 'pos' : 'neg';
+      const pnlStr = pnl >= 0 ? '+' + pnl.toFixed(2) : pnl.toFixed(2);
+      item.innerHTML =
+        '<span class="side ' + side + '">' + side.toUpperCase() + '</span>' +
+        '<span class="pair">' + (data.symbol || 'BTC/USDT') + '</span>' +
+        '<span class="price">@ ' + (data.price || 0).toLocaleString() + '</span>' +
+        '<span class="pnl ' + pnlClass + '">' + pnlStr + '%</span>';
+      tradeList.prepend(item);
+      while (tradeList.children.length > 50) tradeList.lastChild.remove();
+
+      // Add marker on main chart
+      const time = Math.floor(Date.now() / 1000);
+      var isEntry = data.type === 'entry' || (!data.type && !data.exitPrice && pnl === 0);
+      var markerText = '';
+      if (isEntry) {
+        var dir = (side === 'buy' || data.direction === 'long') ? 'LONG' : 'SHORT';
+        var arrow = dir === 'LONG' ? '\u25B2' : '\u25BC';
+        markerText = arrow + ' ' + dir + ' $' + (data.price || 0).toLocaleString();
+      } else {
+        var pnlPct = data.pnl_pct || data.pnlPct || 0;
+        var isWinMarker = pnl >= 0;
+        markerText = (isWinMarker ? '+' : '') + '$' + Math.abs(pnl).toLocaleString(undefined,{maximumFractionDigits:0}) + ' (' + (isWinMarker?'+':'') + pnlPct.toFixed(1) + '%) ' + (isWinMarker ? '\u2713' : '\u2717');
+      }
+      tradeMarkers.push({
+        time: time,
+        position: side === 'buy' ? 'belowBar' : 'aboveBar',
+        color: side === 'buy' ? '#00E676' : '#FF3B5C',
+        shape: side === 'buy' ? 'arrowUp' : 'arrowDown',
+        text: markerText,
+      });
+      tradeMarkers.sort((a, b) => a.time - b.time);
+      try { candleSeries.setMarkers(tradeMarkers); } catch(_) {}
+
+      // FEATURE 3: Draw SVG trade annotation
+      _cemDrawTradeMarker(data);
+
+      // FEATURE 2: Add to session log
+      const icon = pnl > 0 ? '\u2705' : pnl < 0 ? '\u274C' : '\u23F3';
+      const logText = (data.symbol || 'BTC/USDT') + ' ' + side.toUpperCase() + ' @ $' + (data.price || 0).toLocaleString() + ' (' + pnlStr + '%)';
+      _cemAddLogItem(icon, logText);
+
+      // Trade sound effects
+      if (pnl === 0 || data.action === 'open') {
+        if (typeof cemPlayEntryChime === 'function') cemPlayEntryChime();
+      } else if (pnl > 0) {
+        if (typeof cemPlayWinSound === 'function') cemPlayWinSound();
+      } else if (pnl < 0) {
+        if (typeof cemPlayLossSound === 'function') cemPlayLossSound();
+      }
+    }
+
+    // ── CHART UPDATE ──────────────────────────────────────────────────
+    function handleChartUpdate(data) {
+      if (data.candle) {
+        candleSeries.update(data.candle);
+      }
+      if (data.equity) {
+        equitySeries.update(data.equity);
+      }
+      if (data.symbol) {
+        document.getElementById('chart-main-symbol').textContent = data.symbol;
+      }
+      // Removed: SSE candle overwrite was stretching Y-axis to full $22K range
+      // Primary chart candles are loaded on startup (12 bars) and stay untouched
+      if (data.equityCurve && Array.isArray(data.equityCurve)) {
+        equitySeries.setData(data.equityCurve);
+        secChart.timeScale().fitContent();
+      }
+    }
+
+    // ── BACKTEST RESULT ───────────────────────────────────────────────
+    function _cemUpdateScoreTicker(data) {
+      function _set(id, val, isPos) {
+        var el = document.getElementById(id);
+        if (!el || val === undefined || val === null) return;
+        el.textContent = val;
+        if (isPos !== undefined) el.style.color = isPos ? '#00C9B1' : '#FF6218';
+      }
+      if (data.win_rate != null) { var wr = parseFloat(data.win_rate); _set('score-winrate', (wr>=0?'+':'')+wr.toFixed(1), wr > 50); _set('delta-winrate', ''); }
+      if (data.total_return != null) { var r = parseFloat(data.total_return); _set('score-return', (r>=0?'+':'')+r.toFixed(1), r >= 0); _set('delta-return', ''); }
+      if (data.sharpe_ratio != null) _set('score-sharpe', parseFloat(data.sharpe_ratio).toFixed(2));
+      if (data.total_trades != null) _set('score-trades', data.total_trades);
+      if (data.paper_pnl != null) { var p = parseFloat(data.paper_pnl); _set('score-pnl', (p>=0?'+$':'-$')+Math.abs(p).toFixed(0), p >= 0); _set('delta-pnl', ''); }
+      if (data.pnl_10k != null) { var p = parseFloat(data.pnl_10k); _set('score-pnl', (p>=0?'+$':'-$')+Math.abs(p).toFixed(0), p >= 0); _set('delta-pnl', ''); }
+      if (data.max_drawdown != null) { var el = document.getElementById('score-dd'); if(el) { el.textContent = '-'+Math.abs(parseFloat(data.max_drawdown)).toFixed(1)+'%'; el.style.color = '#FF6218'; } }
+    }
+
+    // Poll /api/mirror/state every 5s to keep stats + narration live
+    setInterval(function() {
+      fetch('/api/mirror/state')
+        .then(function(r){return r.json();})
+        .then(function(s) {
+          // Calculate live P&L from open trade if server value is 0
+          var livePnl = s.live_pnl || s.session_pnl || 0;
+          if(!livePnl && s.open_trade && s.open_trade.entry_price > 0) {
+            var ot = s.open_trade;
+            var cp = s.current_price || (window._LIVE_PRICES ? (window._LIVE_PRICES[ot.asset] || window._LIVE_PRICES[(ot.asset||'').split('/')[0]] || 0) : 0);
+            if(cp > 0) livePnl = (cp - ot.entry_price) / ot.entry_price * 10000 * 0.02; // 2% of $10K account
+          }
+          _cemUpdateScoreTicker({
+            win_rate: s.current_win_rate || s.best_win_rate || 0,
+            total_return: s.current_return || s.session_pnl_pct || 0,
+            total_trades: s.current_trades || 0,
+            sharpe_ratio: s.sharpe_ratio || 0,
+            max_drawdown: s.max_drawdown || 0,
+            paper_pnl: livePnl
+          });
+          var iterEl = document.getElementById('iter-count');
+          if(iterEl && s.iterations_run) iterEl.textContent = s.iterations_run;
+          var coachEl = document.getElementById('coach-text');
+          if(coachEl && s.mirror_message) {
+            coachEl.textContent = s.mirror_message.replace(/#+\s*/g,'').replace(/\*\*/g,'').replace(/\*/g,'').replace(/`/g,'');
+          }
+          var sEl = document.getElementById('sl-current-stats');
+          if(sEl && s.current_win_rate) sEl.textContent = 'WR ' + parseFloat(s.current_win_rate).toFixed(1) + '% | PF ' + parseFloat(s.profit_factor||0).toFixed(2);
+          var stEl = document.getElementById('sl-current-strat');
+          if(stEl && s.strategy_name) stEl.textContent = s.strategy_name;
+        }).catch(function(){});
+    }, 5000);
+
+    function handleBacktest(data) {
+      if (data.winRate !== undefined) updateScore('winrate', data.winRate, data.winRateDelta);
+      if (data.totalReturn !== undefined) updateScore('return', data.totalReturn, data.returnDelta);
+      if (data.livePnl !== undefined) updateScore('pnl', data.livePnl, data.pnlDelta);
+      if (data.sharpe !== undefined) {
+        scoreEls.sharpe.textContent = data.sharpe.toFixed(2);
+        scoreEls.sharpe.className = 'value ' + (data.sharpe >= 1 ? 'up' : data.sharpe >= 0 ? 'neutral' : 'down');
+      }
+      if (data.maxDrawdown !== undefined) {
+        scoreEls.dd.textContent = data.maxDrawdown.toFixed(2) + '%';
+        scoreEls.dd.className = 'value down';
+      }
+      if (data.tradeCount !== undefined) {
+        scoreEls.trades.textContent = data.tradeCount;
+        scoreEls.trades.className = 'value neutral';
+      }
+      // Also update score ticker via direct DOM IDs
+      _cemUpdateScoreTicker(data);
+
+      // Full strategy params (private view)
+      if (data.params) {
+        const paramStr = Object.entries(data.params).map(([k, v]) => k + '=' + v).join('  ');
+        addEureka('<strong>Params:</strong> ' + paramStr);
+      }
+
+      // FEATURE 2: Update session log on backtest_result
+      _cemUpdateSessionLog(data);
+      _recalcAccountDisplay();
+
+      // CRITICAL: Feed backtest results back to server so autonomous loop can read them
+      fetch('/api/mirror/backtest_result', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          win_rate: data.winRate || data.win_rate || 0,
+          profit_factor: data.profitFactor || data.profit_factor || data.pf || 0,
+          total_return: data.totalReturn || data.total_return || 0,
+          total_trades: data.totalTrades || data.total_trades || 0,
+          sharpe: data.sharpe || 0,
+          max_dd: data.maxDrawdown || data.max_dd || 0,
+          asset: data.asset || state.slCurrentAsset || 'MGC',
+          strategy_name: data.strategyName || data.strategy || state.slCurrentStrat || 'Strategy'
+        })
+      }).catch(function(){});
+
+      // Add completed item to session log
+      const stratName = data.strategyName || data.strategy || state.slCurrentStrat;
+      const wr = data.winRate !== undefined ? data.winRate.toFixed(1) + '%' : '--';
+      const icon = (data.winRate && data.winRate > 55) ? '\u2705' : '\u23F3';
+      _cemAddLogItem(icon, stratName + ' - WR ' + wr);
+    }
+
+    // ── ITERATION ─────────────────────────────────────────────────────
+    function handleIteration(data) {
+      state.iterations = data.count || (state.iterations + 1);
+      iterEl.textContent = state.iterations;
+      if (data.summary) {
+        streamNarration(data.summary);
+      }
+    }
+
+    // ── COACH DRAW HELPERS ──────────────────────────────────────────────
+    function _cemDrawLabel(text, x, y, color, size) {
+      var labels = document.getElementById('coach-text-labels');
+      if (!labels) return;
+      var div = document.createElement('div');
+      div.style.cssText = 'position:absolute;left:'+x+'px;top:'+y+'px;color:'+(color||'#00C9B1')+';font-size:'+(size||'11px')+';font-weight:bold;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.8);white-space:nowrap';
+      div.textContent = text;
+      labels.appendChild(div);
+    }
+
+    function _cemDrawHLine(svg, price, priceToY, W, color, width, dash, label) {
+      var y = priceToY(price);
+      var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', 0); line.setAttribute('y1', y);
+      line.setAttribute('x2', W); line.setAttribute('y2', y);
+      line.setAttribute('stroke', color); line.setAttribute('stroke-width', width || '1');
+      if (dash !== 'none') line.setAttribute('stroke-dasharray', dash || '4,4');
+      svg.appendChild(line);
+      _cemDrawLabel((label||'')+': $'+price.toLocaleString(), W-160, y-4, color, '11px');
+    }
+
+    function _cemClearDrawings() {
+      var svg = document.getElementById('coach-svg');
+      var labels = document.getElementById('coach-text-labels');
+      if (svg) svg.innerHTML = '';
+      if (labels) labels.innerHTML = '';
+    }
+
+    function _renderBacktestVisual(evt) {
+      // Update label
+      var modeEl = document.getElementById('chart-main-mode');
+      var symEl = document.getElementById('chart-main-symbol');
+      if (modeEl) modeEl.textContent = (evt.optimization_attempt > 0 ?
+        'OPT ' + evt.optimization_attempt + '/5' : 'BACKTEST') +
+        ' \u2014 ' + (evt.asset || '') + ' \u2014 ' + (evt.strategy_name || '');
+      // Log
+      if (typeof _cemAddLogItem === 'function') _cemAddLogItem('\uD83D\uDCCA', (evt.strategy_name||'') + ' on ' + (evt.asset||'') + ': ' + (evt.win_rate||0).toFixed(1) + '% WR');
+      // Auto-start bar-by-bar replay with candles from backtest
+      if (evt.candles && evt.candles.length > 10 && typeof window._startMirrorReplay === 'function') {
+        window._startMirrorReplay(evt.candles, evt.trades || [], 120, evt);
+      } else if (evt.note) {
+        var ct = document.getElementById('coach-text') || document.getElementById('mirror-message');
+        if (ct) ct.textContent = evt.note.replace(/[#*`]/g, '');
+      }
+    }
+    window._renderBacktestVisual = _renderBacktestVisual;
+
+    // ── BAR-BY-BAR REPLAY SYSTEM ──────────────────────────────────────
+    var _mReplay = {active:false,paused:false,idx:0,bars:[],trades:[],speed:120,timer:null,evt:null};
+    window._mReplay = _mReplay;
+
+    // EMA calculator (reusable)
+    function _calcEMA(prices, p) {
+      var k=2/(p+1), e=[];
+      for(var i=0;i<prices.length;i++){
+        if(i===0){e.push(prices[0]);continue;}
+        e.push(prices[i]*k+e[i-1]*(1-k));
+      }
+      return e;
+    }
+
+    // RSI calculator
+    function _calcRSI(closes, period) {
+      if(closes.length<period+1) return [];
+      var rsi=[]; var gains=[]; var losses=[];
+      for(var i=1;i<closes.length;i++){
+        var d=closes[i]-closes[i-1];
+        gains.push(d>0?d:0); losses.push(d<0?-d:0);
+      }
+      var ag=0,al=0;
+      for(var i=0;i<period;i++){ag+=gains[i];al+=losses[i];}
+      ag/=period; al/=period;
+      for(var i=0;i<period;i++) rsi.push(null);
+      rsi.push(al===0?100:Math.round(100-100/(1+ag/al)));
+      for(var i=period;i<gains.length;i++){
+        ag=(ag*(period-1)+gains[i])/period;
+        al=(al*(period-1)+losses[i])/period;
+        rsi.push(al===0?100:Math.round(100-100/(1+ag/al)));
+      }
+      return rsi;
+    }
+
+    window._startMirrorReplay = function(bars, trades, speed, evt) {
+      if(_mReplay.timer) clearInterval(_mReplay.timer);
+      window._CHART_LOCKED = true;
+      // GC: clean ALL old overlay series from previous replays
+      (window._replayEMAs || []).forEach(function(s){try{window._mainChart.removeSeries(s);}catch(e){}});
+      (window._mirrorIndicators || []).forEach(function(s){try{window._mainChart.removeSeries(s);}catch(e){}});
+      window._replayEMAs = [];
+      window._mirrorIndicators = [];
+      // Clean bars: dedup timestamps, filter invalid, sort chronologically
+      var _seen={};
+      var cleanBars=(bars||[]).filter(function(b){
+        if(!b||!b.time) return false;
+        var o=parseFloat(b.open),h=parseFloat(b.high),l=parseFloat(b.low),c=parseFloat(b.close);
+        if(!o||!h||!l||!c) return false;
+        b.open=o;b.high=h;b.low=l;b.close=c; // ensure numeric
+        if(h<l) return false;
+        if(_seen[b.time]) return false;
+        _seen[b.time]=1;
+        return true;
+      }).sort(function(a,b){return a.time-b.time;});
+      if(cleanBars.length<5){window._CHART_LOCKED=false;return;}
+      _mReplay.bars=cleanBars; _mReplay.trades=trades||[];
+      _mReplay.speed=speed||120; _mReplay.idx=0;
+      _mReplay.active=true; _mReplay.paused=false;
+      _mReplay.evt=evt||{};
+      _mReplay.wins=0; _mReplay.losses=0;
+      if(!window._mainChart || !window._mainCandleSeries){window._CHART_LOCKED=false;return;}
+      // Create EMA overlay series (will be updated incrementally)
+      window._replayEMAs = [];
+      var emaFast = window._mainChart.addLineSeries({color:'#00C9B1',lineWidth:2,priceLineVisible:false,lastValueVisible:true,title:'EMA 9'});
+      var emaSlow = window._mainChart.addLineSeries({color:'#FF6218',lineWidth:2,priceLineVisible:false,lastValueVisible:true,title:'EMA 21'});
+      window._replayEMAs.push(emaFast, emaSlow);
+      // Set first bar
+      window._mainCandleSeries.setData([cleanBars[0]]);
+      window._mainCandleSeries.setMarkers([]);
+      window._mainChart.timeScale().applyOptions({barSpacing:10,rightOffset:8});
+      // Update label
+      var modeEl = document.getElementById('chart-main-mode');
+      if(modeEl) modeEl.textContent = 'REPLAY';
+      var ct = document.getElementById('coach-text');
+      if(ct) ct.textContent = 'Replaying ' + (evt&&evt.strategy_name||'strategy') + ' on ' + (evt&&evt.asset||'') + '...';
+      var pb=document.getElementById('mirror-play-btn'); if(pb) pb.textContent='\u23F8';
+      // Main replay loop
+      _mReplay.timer = setInterval(function(){
+        if(_mReplay.paused||!_mReplay.active) return;
+        var idx=_mReplay.idx, allBars=_mReplay.bars;
+        if(idx>=allBars.length){
+          // Replay finished — show summary
+          clearInterval(_mReplay.timer); _mReplay.active=false;
+          var pb2=document.getElementById('mirror-play-btn'); if(pb2) pb2.textContent='\u25B6';
+          var mEl=document.getElementById('chart-main-mode'); if(mEl) mEl.textContent='COMPLETE';
+          var wr=_mReplay.evt.win_rate||0; var pf=_mReplay.evt.profit_factor||0;
+          var cEl=document.getElementById('coach-text');
+          if(cEl) cEl.textContent='Backtest complete: '+(_mReplay.evt.strategy_name||'')+' on '+(_mReplay.evt.asset||'')+' \u2014 WR '+wr.toFixed(1)+'% | PF '+pf.toFixed(2)+' | '+_mReplay.wins+'W/'+_mReplay.losses+'L';
+          // Restore live candles after 5 seconds
+          setTimeout(function(){
+            if(window._mainChart && window._mainCandleSeries){
+              (window._replayEMAs||[]).forEach(function(s){try{window._mainChart.removeSeries(s);}catch(e){}});
+              window._replayEMAs=[];
+              var sym=(window._MIRROR_ASSET||'BTC/USD').replace('/USDT','/USD');
+              fetch('/api/ohlc?symbol='+sym+'&interval=15min&limit=3')
+                .then(function(r){return r.json();})
+                .then(function(d){if(d.candles&&d.candles.length){window._mainCandleSeries.setData([]);window._mainCandleSeries.setData(d.candles);window._mainCandleSeries.setMarkers([]);window._mainChart.timeScale().fitContent();}window._CHART_LOCKED=false;}).catch(function(){window._CHART_LOCKED=false;});
+              var m2=document.getElementById('chart-main-mode'); if(m2) m2.textContent='TESTING';
+            }
+          },5000);
+          return;
+        }
+        // Add current bar
+        var visible=allBars.slice(0,idx+1).filter(function(b){return b.open>0&&b.high>=b.low;});
+        if(!visible.length){_mReplay.idx++;return;}
+        window._mainCandleSeries.setData(visible);
+        // Calculate and draw EMA ribbons incrementally
+        var closes=visible.map(function(b){return b.close;});
+        if(closes.length>=9){
+          var e9=_calcEMA(closes,9);
+          var d9=[];for(var j=0;j<visible.length;j++) d9.push({time:visible[j].time,value:Math.round(e9[j]*100)/100});
+          emaFast.setData(d9);
+        }
+        if(closes.length>=21){
+          var e21=_calcEMA(closes,21);
+          var d21=[];for(var j=0;j<visible.length;j++) d21.push({time:visible[j].time,value:Math.round(e21[j]*100)/100});
+          emaSlow.setData(d21);
+        }
+        // Trade markers — reveal as bars pass entry/exit times
+        var markers=[];
+        var curTime=allBars[idx].time;
+        (_mReplay.trades||[]).forEach(function(t){
+          if(t.entry_time && t.entry_time<=curTime){
+            markers.push({time:t.entry_time,position:'belowBar',color:'#00C9B1',shape:'arrowUp',text:'BUY $'+((t.entry_price||0).toFixed?t.entry_price.toFixed(0):t.entry_price)});
+          }
+          if(t.exit_time && t.exit_time<=curTime){
+            var isW=t.result==='win';
+            if(t.exit_time===curTime){if(isW)_mReplay.wins++;else _mReplay.losses++;}
+            markers.push({time:t.exit_time,position:'aboveBar',color:isW?'#00C9B1':'#FF6218',shape:'arrowDown',
+              text:isW?('\u2713 +'+(t.pnl_pct||0).toFixed(1)+'%'):('\u2717 '+(t.pnl_pct||0).toFixed(1)+'%')});
+          }
+        });
+        markers.sort(function(a,b){return a.time-b.time;});
+        window._mainCandleSeries.setMarkers(markers);
+        // Narrate at key moments (entry/exit bars)
+        var justTriggered=null;
+        (_mReplay.trades||[]).forEach(function(t){
+          if(t.entry_time===curTime) justTriggered={type:'entry',trade:t};
+          if(t.exit_time===curTime) justTriggered={type:'exit',trade:t};
+        });
+        if(justTriggered){
+          var cEl=document.getElementById('coach-text');
+          if(cEl){
+            if(justTriggered.type==='entry'){
+              cEl.textContent='Signal fired! Entering LONG at $'+(justTriggered.trade.entry_price||0).toLocaleString()+' \u2014 '+(_mReplay.evt.strategy_name||'');
+              cEl.style.color='#00C9B1';
+            } else {
+              var isWin=justTriggered.trade.result==='win';
+              cEl.textContent=(isWin?'Take profit':'Stop loss')+' hit at $'+(justTriggered.trade.exit_price||0).toLocaleString()+' \u2014 '+(justTriggered.trade.pnl_pct||0).toFixed(2)+'% '+(isWin?'WIN':'LOSS');
+              cEl.style.color=isWin?'#00C9B1':'#FF6218';
+            }
+            setTimeout(function(){if(cEl)cEl.style.color='';},2000);
+          }
+        }
+        // Scroll chart to keep current bar visible
+        if(idx>30) window._mainChart.timeScale().scrollToPosition(3,false);
+        // Update scrubber
+        var pct=idx/Math.max(allBars.length-1,1)*100;
+        var th=document.getElementById('mirror-scrub-thumb'); if(th) th.style.left=pct+'%';
+        var fl=document.getElementById('mirror-scrub-fill'); if(fl) fl.style.width=pct+'%';
+        // Update bar counter on replay ctrl
+        var sp=document.querySelector('#mirror-replay-ctrl span:last-child');
+        if(sp) sp.textContent='BAR '+(idx+1)+'/'+allBars.length;
+        _mReplay.idx++;
+      }, _mReplay.speed);
+    };
+
+    // ── SSE CONNECTION ────────────────────────────────────────────────
+    let evtSource = null;
+    window.evtSource = null;
+
+    function setSSEStatus(status) {
+      sseIndicator.className = 'sse-dot ' + status;
+    }
+
+    function connectSSE() {
+      if (evtSource) {
+        try { evtSource.close(); } catch(_) {}
+      }
+
+      setSSEStatus('connecting');
+
+      try {
+        evtSource = new EventSource('/api/mirror/stream');
+        window.evtSource = evtSource;
+      } catch (e) {
+        setSSEStatus('disconnected');
+        scheduleReconnect();
+        return;
+      }
+
+      evtSource.onopen = function() {
+        setSSEStatus('connected');
+        state.sseRetries = 0;
+        state.retryDelay = 1000;
+        streamNarration('SSE connected. Listening for AI coach stream...');
+      };
+
+      evtSource.addEventListener('narration', function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          streamNarration(d.text || d.message || e.data);
+        } catch (_) {
+          streamNarration(e.data);
+        }
+      });
+
+      evtSource.addEventListener('chart_update', function(e) {
+        try { handleChartUpdate(JSON.parse(e.data)); } catch(_) {}
+      });
+
+      evtSource.addEventListener('backtest_result', function(e) {
+        try { handleBacktest(JSON.parse(e.data)); } catch(_) {}
+      });
+
+      evtSource.addEventListener('trade', function(e) {
+        try {
+          var d = JSON.parse(e.data);
+          addTrade(d);
+          if (d.status === 'closed') showTradeCard(d);
+          _recalcAccountDisplay();
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('eureka', function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          addEureka(d.html || ('<strong>' + (d.title || 'Discovery') + ':</strong> ' + (d.detail || d.text || e.data)));
+          // FEATURE 2: Add eureka to session log
+          const title = d.title || 'Eureka';
+          _cemAddLogItem('\u{1F4A1}', title + ': ' + (d.detail || d.text || ''));
+          if (typeof cemPlayEurekaSound === 'function') cemPlayEurekaSound();
+        } catch (_) {
+          addEureka(e.data);
+          _cemAddLogItem('\u{1F4A1}', e.data);
+          if (typeof cemPlayEurekaSound === 'function') cemPlayEurekaSound();
+        }
+      });
+
+      evtSource.addEventListener('iteration', function(e) {
+        try { handleIteration(JSON.parse(e.data)); } catch(_) {}
+      });
+
+      evtSource.addEventListener('asset_rotation', function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          _cemClearDrawings();
+          // Add completed item for old asset
+          _cemAddLogItem('\u2705', 'Rotated from ' + (state.slCurrentAsset) + ' to ' + (d.asset || d.symbol || '?'));
+          // Update current
+          state.slCurrentAsset = d.asset || d.symbol || state.slCurrentAsset;
+          slCurrentAssetEl.textContent = state.slCurrentAsset;
+          state.slCurrentStrat = '--';
+          slCurrentStratEl.textContent = '--';
+          slCurrentStatsEl.textContent = 'WR -- | PF --';
+          // Update asset label elements
+          var labels = document.querySelectorAll('[id*="asset-label"], [id*="primary"]');
+          labels.forEach(function(l) { if (d.next_asset || d.asset) l.textContent = (d.next_asset || d.asset); });
+          _cemAddLogItem('\uD83D\uDD04', 'Switched to ' + (d.next_asset || d.asset) + (d.next_strategy ? ' \u2014 ' + d.next_strategy : ''));
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('strategy_confirmed', function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          _cemAddMiniWindow(d);
+          if (typeof _cemSpeak === 'function') _cemSpeak('Strategy confirmed on ' + d.asset + '. Now trading live.');
+          setTimeout(function(){_cemBuildLiveWindows();}, 1500);
+          // Replay only on manual trigger - not auto on strategy_confirmed
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('trade_opened', function(e) {
+        try { _cemAddMiniWindow(JSON.parse(e.data)); } catch(_) {}
+      });
+
+      evtSource.addEventListener('trade_update', function(e) {
+        try { _cemUpdateMiniTrade(JSON.parse(e.data)); } catch(_) {}
+      });
+
+      evtSource.addEventListener('trade_closed', function(e) {
+        try {
+          var d = JSON.parse(e.data);
+          _cemCloseMiniTrade(d);
+          _updateAccountBalances(d);
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('mini_pnl_update', function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          _cemUpdateMiniPnl(d.paper_feed_id, d.live_pnl);
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('strategy_degrading', function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          _cemMiniWindowDegrade(d.paper_feed_id);
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('strategy_struggling', function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          _cemMiniStruggling(d.paper_feed_id);
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('weekend_mode', function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          var existing = document.getElementById('weekend-banner');
+          if (!existing) {
+            var banner = document.createElement('div');
+            banner.id = 'weekend-banner';
+            banner.style.cssText = 'position:fixed;top:8px;right:100px;z-index:9999;background:#1a0a00;color:#FF6218;font-size:9px;padding:2px 8px;border-radius:3px;border:1px solid rgba(255,98,24,0.2);font-family:"JetBrains Mono",monospace;letter-spacing:0.5px';
+            banner.textContent = 'CRYPTO MODE';
+            document.body.prepend(banner);
+          }
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('coach_screenshot', function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          captureAndSaveScreenshot(d.annotation_text || '');
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('coach_draw', function(e) {
+        try {
+          var data = JSON.parse(e.data);
+          var svg = document.getElementById('coach-svg');
+          if (!svg) return;
+          var W = svg.clientWidth || 1200;
+          var H = svg.clientHeight || 500;
+          var priceToY = function(price) {
+            var range = window._cemPriceRange || {low: price*0.99, high: price*1.01};
+            return H - ((price - range.low) / (range.high - range.low)) * H;
+          };
+          var barToX = function(bar) { return (bar / 80) * W; };
+
+          if (data.shape === 'zone') {
+            var rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+            var y1 = priceToY(data.price_high), y2 = priceToY(data.price_low);
+            rect.setAttribute('x', 0); rect.setAttribute('y', Math.min(y1,y2));
+            rect.setAttribute('width', W); rect.setAttribute('height', Math.abs(y2-y1));
+            rect.setAttribute('fill', data.color || 'rgba(0,201,177,0.1)');
+            svg.appendChild(rect);
+            if (data.label) _cemDrawLabel(data.label, 10, Math.min(y1,y2)+14, '#00C9B1');
+          }
+          if (data.shape === 'entry_marker') {
+            var x = W * 0.65, y = priceToY(data.price);
+            var tri = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+            var pts = data.direction === 'LONG' ? (x+','+( y-10)+' '+(x-8)+','+(y+6)+' '+(x+8)+','+(y+6)) : (x+','+(y+10)+' '+(x-8)+','+(y-6)+' '+(x+8)+','+(y-6));
+            tri.setAttribute('points', pts);
+            tri.setAttribute('fill', data.direction === 'LONG' ? '#00C9B1' : '#FF6218');
+            svg.appendChild(tri);
+            if (data.label) _cemDrawLabel(data.label, x+12, y, data.direction==='LONG' ? '#00C9B1' : '#FF6218');
+          }
+          if (data.shape === 'sl_tp_lines') {
+            _cemDrawHLine(svg, data.entry, priceToY, W, '#ffffff', '1', '4,4', 'Entry');
+            _cemDrawHLine(svg, data.stop, priceToY, W, '#FF6218', '1.5', 'none', 'Stop');
+            _cemDrawHLine(svg, data.target, priceToY, W, '#00C9B1', '1.5', 'none', 'Target');
+          }
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('coach_snapshot', function(e) {
+        try {
+          var d = JSON.parse(e.data);
+          _cemTakeEurekaSnapshot(d.asset, d.strategy, d.annotation_text, d.win_rate || 0, d.total_trades || 0);
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('insight_note', function(e) {
+        try {
+          var data = JSON.parse(e.data);
+          if (data.type === 'insight_note') {
+            _cemAddInsightCard(data);
+            if (typeof _cemAddLogItem === 'function') _cemAddLogItem('\uD83D\uDCA1', data.headline || 'New insight');
+          }
+        } catch(_) {}
+      });
+
+      evtSource.addEventListener('backtest_visual', function(e) {
+        try {
+          var d = JSON.parse(e.data);
+          if(typeof window._renderBacktestVisual==='function') window._renderBacktestVisual(d);
+          // Replay only fires on strategy_confirmed, not every backtest
+        } catch(_) {}
+      });
+
+      // Generic message fallback
+      evtSource.onmessage = function(e) {
+        try {
+          const d = JSON.parse(e.data);
+          // Handle initial connected state — create mini windows from confirmed_strategies
+          if (d.type === 'connected' && d.state && d.state.confirmed_strategies) {
+            d.state.confirmed_strategies.forEach(function(s) {
+              if (typeof _cemAddMiniWindow === 'function') {
+                _cemAddMiniWindow({
+                  asset: s.asset, strategy: s.strategy_name || s.strategy,
+                  direction: 'LONG', entry_price: s.entry_price || 0, entryPrice: s.entry_price || 0,
+                  stop_loss: s.stop_loss || 0, take_profit: s.take_profit || 0,
+                  win_rate: s.win_rate || 0, strategy_name: s.strategy_name
+                });
+              }
+            });
+            // Update open trade P&L if exists
+            if (d.state.open_trade && d.state.open_trade.entry_price > 0) {
+              var ot = d.state.open_trade;
+              if (typeof _cemAddMiniWindow === 'function' && !document.querySelector('[data-asset="'+ot.asset+'"]')) {
+                _cemAddMiniWindow({asset: ot.asset, strategy: ot.strategy_name || ot.strategy, direction: ot.direction || 'LONG', entry_price: ot.entry_price, entryPrice: ot.entry_price, stop_loss: ot.stop_loss || 0, take_profit: ot.take_profit || 0, win_rate: 0});
+              }
+            }
+            // Update stats
+            if (typeof _cemUpdateScoreTicker === 'function') _cemUpdateScoreTicker({win_rate: d.state.current_win_rate, paper_pnl: d.state.session_pnl});
+            // Update narration
+            if (d.state.mirror_message) streamNarration(d.state.mirror_message);
+          }
+          if (d.type === 'narration') streamNarration(d.text || '');
+          else if (d.type === 'chart_update') handleChartUpdate(d);
+          else if (d.type === 'backtest_result') handleBacktest(d);
+          else if (d.type === 'backtest_visual' && typeof window._renderBacktestVisual==='function') window._renderBacktestVisual(d);
+          else if (d.type === 'trade') { addTrade(d); if (d.status === 'closed') showTradeCard(d); _recalcAccountDisplay(); }
+          else if (d.type === 'eureka') { addEureka(d.html || d.text || e.data); _cemAddLogItem('\u{1F4A1}', d.text || e.data); if (typeof cemPlayEurekaSound === 'function') cemPlayEurekaSound(); }
+          else if (d.type === 'iteration') handleIteration(d);
+          else if (d.type === 'asset_rotation') {
+            _cemAddLogItem('\u2705', 'Rotated to ' + (d.asset || d.symbol || '?'));
+            state.slCurrentAsset = d.asset || d.symbol || state.slCurrentAsset;
+            slCurrentAssetEl.textContent = state.slCurrentAsset;
+            // Update asset label elements
+            var labels = document.querySelectorAll('[id*="asset-label"], [id*="primary"]');
+            labels.forEach(function(l) { if (d.next_asset || d.asset) l.textContent = (d.next_asset || d.asset); });
+            _cemAddLogItem('\uD83D\uDD04', 'Switched to ' + (d.next_asset || d.asset) + (d.next_strategy ? ' \u2014 ' + d.next_strategy : ''));
+            // Update primary chart to follow coach's new asset
+            window._MIRROR_ASSET = (d.next_asset || d.asset || '').replace('/USDT', '/USD');
+            if (typeof window._updatePrimaryChart === 'function') {
+              window._updatePrimaryChart(window._MIRROR_ASSET, '15min');
+            } else if (window._primaryChartSeries) {
+              fetch('/api/ohlc?symbol=' + window._MIRROR_ASSET + '&interval=15min&limit=3')
+                .then(function(r){return r.json()})
+                .then(function(data){ if(data.candles && data.candles.length) { window._primaryChartSeries.setData([]); window._primaryChartSeries.setData(data.candles); if(window._mainChart) window._mainChart.timeScale().fitContent(); } })
+                .catch(function(){});
+            }
+            // Clear coach drawings for previous asset
+            if (typeof _cemClearDrawings === 'function') _cemClearDrawings();
+            // Update chart label
+            var modeEl = document.getElementById('chart-main-mode');
+            if (modeEl) modeEl.textContent = 'TESTING';
+            var symEl = document.getElementById('chart-main-symbol');
+            if (symEl) symEl.textContent = (d.next_asset || d.asset || 'BTC/USDT');
+          }
+          else if (d.type === 'optimization_note' || d.type === 'strategy_rejected') {
+            var ct = document.getElementById('coach-text');
+            if (ct && d.note) ct.textContent = d.note;
+            if (d.type === 'strategy_rejected') _cemAddLogItem('\u274C', d.note || '');
+            else _cemAddLogItem('\u2699\uFE0F', d.note || '');
+          }
+          else if (d.type === 'strategy_confirmed') {
+            _cemAddMiniWindow(d);
+            if (typeof _cemSpeak === 'function') _cemSpeak('Strategy confirmed on ' + d.asset + '. Now trading live.');
+            setTimeout(function(){_cemBuildLiveWindows();}, 1500);
+          }
+          else if (d.type === 'mini_pnl_update') {
+            _cemUpdateMiniPnl(d.paper_feed_id, d.live_pnl);
+          }
+          else if (d.type === 'strategy_degrading') {
+            _cemMiniWindowDegrade(d.paper_feed_id);
+          }
+          else if (d.type === 'strategy_struggling') {
+            _cemMiniStruggling(d.paper_feed_id);
+          }
+          else if (d.type === 'weekend_mode') {
+            var existing = document.getElementById('weekend-banner');
+            if (!existing) {
+              var banner = document.createElement('div');
+              banner.id = 'weekend-banner';
+              banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#FF6218;color:#fff;text-align:center;padding:8px;font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;letter-spacing:1px';
+              banner.textContent = 'CRYPTO MODE';
+              document.body.prepend(banner);
+            }
+          }
+          else if (d.type === 'coach_screenshot') {
+            captureAndSaveScreenshot(d.annotation_text || '');
+          }
+          else if (d.type === 'coach_snapshot') {
+            _cemTakeEurekaSnapshot(d.asset, d.strategy, d.annotation_text, d.win_rate || 0, d.total_trades || 0);
+          }
+          if (d.type === 'insight_note') {
+            _cemAddInsightCard(d);
+            if (typeof _cemAddLogItem === 'function') _cemAddLogItem('\uD83D\uDCA1', d.headline || 'New insight');
+          }
+          if (d.type === 'trade_opened') _cemAddMiniWindow(d);
+          if (d.type === 'trade_update') { _cemUpdateMiniTrade(d); _cemUpdateScoreTicker(d); }
+          if (d.type === 'stats_update') _cemUpdateScoreTicker(d);
+          if (d.type === 'trade_closed') { _cemCloseMiniTrade(d); _updateAccountBalances(d); }
+        } catch(_) {}
+      };
+
+      evtSource.onerror = function() {
+        setSSEStatus('disconnected');
+        try { evtSource.close(); } catch(_) {}
+        scheduleReconnect();
+      };
+    }
+
+    function scheduleReconnect() {
+      if (state.sseRetries >= state.maxRetries) {
+        streamNarration('SSE reconnect limit reached. Refresh page to retry.');
+        return;
+      }
+      state.sseRetries++;
+      const delay = Math.min(state.retryDelay * Math.pow(1.5, state.sseRetries - 1), 30000);
+      streamNarration('SSE disconnected. Reconnecting in ' + Math.round(delay / 1000) + 's... (attempt ' + state.sseRetries + ')');
+      setTimeout(connectSSE, delay);
+    }
+
+    // Start SSE
+    connectSSE();
+
+    // Polling fallback — fetch state every 10s, create mini windows from confirmed_strategies
+    var _lastPolledAsset = '';
+    setInterval(function() {
+      fetch('/api/mirror/state').then(function(r){return r.json()}).then(function(s) {
+        if (!s) return;
+        // FIX 1: Primary chart follows current asset
+        if (s.asset && s.asset !== _lastPolledAsset) {
+          _lastPolledAsset = s.asset;
+          var sym = s.asset.replace('/USDT','/USD');
+          // Update label
+          var lbl = document.getElementById('chart-main-symbol');
+          if (lbl) lbl.textContent = s.asset;
+          // Reload candles
+          if (window._mainCandleSeries || window._primaryChartSeries) {
+            var series = window._mainCandleSeries || window._primaryChartSeries;
+            fetch('/api/ohlc?symbol='+sym+'&interval=15min&limit=3')
+              .then(function(r){return r.json()})
+              .then(function(d){ if(d.candles && d.candles.length) { series.setData([]); series.setData(d.candles); if(window._mainChart) window._mainChart.timeScale().fitContent(); } })
+              .catch(function(){});
+          }
+        }
+        // Create mini windows for confirmed strategies not yet shown
+        if (s.confirmed_strategies && s.confirmed_strategies.length) {
+          s.confirmed_strategies.forEach(function(cs) {
+            var assetKey = (cs.asset || '').replace(/\//g, '');
+            if (!document.querySelector('[data-asset="' + cs.asset + '"]') && typeof _cemAddMiniWindow === 'function') {
+              _cemAddMiniWindow({asset: cs.asset, strategy: cs.strategy_name, direction: 'LONG', entry_price: 0, win_rate: cs.win_rate || 0});
+            }
+          });
+        }
+        // Update open trade P&L
+        if (s.open_trade && s.open_trade.current_price > 0 && typeof updateMiniPnl === 'function') {
+          var ot = s.open_trade;
+          var entry = ot.entry_price || 0;
+          var cur = ot.current_price || entry;
+          if (entry > 0) {
+            var pnl_pct = ((cur - entry) / entry) * 100;
+            if (typeof _cemUpdateMiniTrade === 'function') _cemUpdateMiniTrade({
+              asset: ot.asset, current_price: cur, unrealized_pnl_pct: pnl_pct,
+              pnl_10k: 10000*pnl_pct/100, pnl_25k: 25000*pnl_pct/100,
+              pnl_50k: 50000*pnl_pct/100, pnl_100k: 100000*pnl_pct/100
+            });
+          }
+        }
+        // Update narration
+        if (s.mirror_message && s.mirror_message !== window._lastPollMsg) {
+          window._lastPollMsg = s.mirror_message;
+          streamNarration(s.mirror_message);
+        }
+        // Update stats
+        if (typeof _cemUpdateScoreTicker === 'function') _cemUpdateScoreTicker({win_rate: s.current_win_rate, paper_pnl: s.session_pnl});
+        // FIX 3: Live P&L from poll for confirmed strategies
+        if (s.confirmed_strategies && s.confirmed_strategies.length) {
+          s.confirmed_strategies.forEach(function(cs, i) {
+            var cardId = 'lc-' + i;
+            // Update P&L from account_pnl_scenarios if available
+            if (cs.account_pnl_scenarios) {
+              cs.account_pnl_scenarios.forEach(function(scenario) {
+                var el = document.getElementById(cardId + '-' + scenario.account_size);
+                if (el) {
+                  el.textContent = '+$' + scenario.expected_gain_per_trade.toFixed(0);
+                  el.style.color = '#00C9B1';
+                }
+              });
+            }
+          });
+        }
+        // FIX 4: Open trade in feed
+        if (s.open_trade) {
+          var ot = s.open_trade;
+          var feedEl = document.getElementById('trade-log-items') || document.querySelector('.trade-feed, .trade-log');
+          if (feedEl) {
+            var openRow = document.getElementById('open-trade-row');
+            if (!openRow) {
+              openRow = document.createElement('div');
+              openRow.id = 'open-trade-row';
+              openRow.style.cssText = 'padding:6px 8px;border-bottom:1px solid #111;font-size:10px;display:flex;justify-content:space-between;background:rgba(0,201,177,0.03);border-left:2px solid #00C9B1';
+              feedEl.insertBefore(openRow, feedEl.firstChild);
+            }
+            openRow.innerHTML = '<span style="color:#00C9B1;font-weight:700">' + (ot.asset||'') + ' ' + (ot.direction||'LONG') + '</span>'
+              + '<span style="color:#888">$' + (ot.entry_price||0).toLocaleString() + '</span>'
+              + '<span style="color:#FFB800;animation:pulse 1.5s infinite">● OPEN</span>';
+          }
+        }
+      }).catch(function(){});
+    }, 10000);
+    setTimeout(function() { location.reload(); }, 3600000); // OBS hourly refresh
+
+    // ── DEMO SIMULATION (remove when real SSE is live) ────────────────
+    // Simulates data so the mirror looks alive during development
+    let demoPrice = 64500;
+    let demoEquity = 10300;
+    let demoTime = Math.floor(Date.now() / 1000);
+
+    setInterval(() => {
+      demoTime = Math.floor(Date.now() / 1000);
+      const delta = (Math.random() - 0.48) * 150;
+      const o = demoPrice;
+      demoPrice += delta;
+      const h = Math.max(o, demoPrice) + Math.random() * 80;
+      const l = Math.min(o, demoPrice) - Math.random() * 80;
+      candleSeries.update({
+        time: demoTime,
+        open: +o.toFixed(2),
+        high: +h.toFixed(2),
+        low: +l.toFixed(2),
+        close: +demoPrice.toFixed(2),
+      });
+      demoEquity += (Math.random() - 0.45) * 30;
+      equitySeries.update({ time: demoTime, value: +demoEquity.toFixed(2) });
+    }, 5000);
+
+    const demoNarrations = [
+      'Testing RSI divergence on 15m BTC/USDT with lookback=21, threshold=32...',
+      'Bollinger squeeze detected. Evaluating mean-reversion entry at 2.1 std dev...',
+      'Backtest complete: 847 trades, Sharpe 1.82, max DD -6.3%. Refining stop-loss logic...',
+      'VWAP cross confirmed on ETH. Adjusting position sizing from 2.5% to 3.1% risk per trade...',
+      'Scanning for momentum breakout patterns across top-20 pairs by volume...',
+      'EMA 9/21 crossover strategy yielding 61.4% win rate on 4H timeframe. Testing with trailing stops...',
+    ];
+    let demoNIdx = 0;
+    setInterval(() => {
+      state.iterations++;
+      iterEl.textContent = state.iterations;
+      streamNarration(demoNarrations[demoNIdx % demoNarrations.length]);
+      demoNIdx++;
+    }, 12000);
+
+    /* Demo score seeding removed — stats start as em-dash until real data arrives */
+
+    setTimeout(() => {
+      addEureka('<strong>RSI Divergence:</strong> Hidden bullish divergence on 15m BTC confirmed at RSI=28.4');
+      addTrade({ side: 'buy', symbol: 'BTC/USDT', price: 64320, pnl: 0, type: 'entry' });
+      _cemAddLogItem('\u{1F4A1}', 'RSI Divergence: Hidden bullish divergence confirmed');
+    }, 4000);
+
+    setTimeout(() => {
+      addEureka('<strong>Param Sweep:</strong> Optimal EMA pair found: fast=9, slow=21, filter=VWAP');
+      addTrade({ side: 'sell', symbol: 'ETH/USDT', price: 3412, pnl: 2.34, type: 'exit' });
+      _cemAddLogItem('\u{1F4A1}', 'Param Sweep: Optimal EMA pair fast=9, slow=21');
+    }, 8000);
+
+    setTimeout(() => {
+      addEureka('<strong>Regime Shift:</strong> Volatility regime changed from LOW to MEDIUM. Adjusting position sizes.');
+      _cemAddLogItem('\u{1F4A1}', 'Regime Shift: LOW to MEDIUM volatility');
+    }, 11000);
+
+    // ── MULTI-WINDOW LIVE PORTFOLIO ──
+    var _openWindows = {};
+
+    function _cemAddMiniWindow(data) {
+      var strip = document.getElementById('mini-portfolio-strip') || document.getElementById('mini-charts-strip');
+      if (!strip) {
+        // Fallback to mini-portfolio-strip
+        strip = document.getElementById('mini-portfolio-strip');
+      }
+      if (!strip) return;
+      var ph = document.getElementById('mini-placeholder');
+      if (ph) ph.remove();
+      var empty = document.getElementById('mini-empty-state');
+      if (empty) empty.style.display = 'none';
+
+      var asset = data.asset || 'BTC';
+      var strategy = data.strategy || data.name || data.strategy_name || 'Strategy';
+      var direction = data.direction || 'LONG';
+      var entryPrice = data.entryPrice || data.entry_price || data.current_price || 0;
+      var stopLoss = data.stop_loss || data.stopLoss || entryPrice * 0.995;
+      var takeProfit = data.take_profit || data.takeProfit || entryPrice * 1.01;
+      var id = 'mini-' + asset.replace(/\//g,'') + '-' + Date.now();
+      var color = direction === 'LONG' ? '#00C9B1' : '#FF6218';
+      var dirIcon = direction === 'LONG' ? '\uD83D\uDFE2' : '\uD83D\uDD34';
+
+      // Don't add duplicates for same asset
+      if (_openWindows[asset]) {
+        var old = document.getElementById(_openWindows[asset]);
+        if (old) old.remove();
+      }
+
+      var win = document.createElement('div');
+      win.id = id;
+      win.dataset.asset = asset;
+      win.setAttribute('data-trade-asset', asset);
+      win.setAttribute('data-entry-price', entryPrice);
+      win.setAttribute('data-position-size', 200);
+      win.style.cssText = 'background:#0d1117;border:1px solid ' + color + ';border-top:3px solid ' + color + ';border-radius:6px;padding:10px;min-width:280px;max-width:320px;flex-shrink:0;font-family:"JetBrains Mono",monospace';
+      win.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:8px">'
+        + '<span style="color:' + color + ';font-weight:bold;font-size:12px">' + asset + ' \u2014 ' + strategy + '</span>'
+        + '<span style="color:' + color + ';font-size:12px">' + dirIcon + ' ' + direction + '</span>'
+        + '</div>'
+        + '<div style="color:#888;font-size:11px;margin-bottom:8px">'
+        + 'Entry: <span style="color:#fff">$' + (entryPrice||0).toLocaleString() + '</span>'
+        + ' | Now: <span class="now-price" style="color:#fff">$' + (entryPrice||0).toLocaleString() + '</span>'
+        + '</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px">'
+        + [10000,25000,50000,100000].map(function(size) {
+            var label = size >= 1000 ? '$' + (size/1000) + 'K' : '$' + size;
+            return '<div style="background:#111;border-radius:4px;padding:5px;text-align:center">'
+              + '<div style="color:#555;font-size:9px">' + label + '</div>'
+              + '<div data-acct="' + size + '" class="pnl-' + size + '" style="color:#888;font-size:12px;font-weight:bold">$0</div>'
+              + '<div class="pct-' + size + '" style="color:#555;font-size:9px">0.00%</div>'
+              + '</div>';
+          }).join('')
+        + '</div>'
+        + '<div style="color:#555;font-size:10px;margin-bottom:6px">'
+        + 'SL: <span style="color:#FF6218">$' + (stopLoss||0).toLocaleString() + '</span>'
+        + '  TP: <span style="color:#00C9B1">$' + (takeProfit||0).toLocaleString() + '</span>'
+        + '</div>'
+        + '<div style="background:#1a1a2e;border-radius:3px;height:4px">'
+        + '<div class="progress-bar" style="background:' + color + ';height:100%;width:0%;border-radius:3px;transition:width 0.5s"></div>'
+        + '</div>';
+
+      strip.appendChild(win);
+      _openWindows[asset] = id;
+    }
+
+    // Live price + P&L update for paper trade cards every 10 seconds
+    setInterval(function() {
+      fetch('/api/debug/prices').then(function(r){return r.json()}).then(function(d) {
+        var prices = d.prices || {};
+        window._LIVE_PRICES = prices;
+        document.querySelectorAll('[data-trade-asset]').forEach(function(card) {
+          var asset = card.getAttribute('data-trade-asset');
+          var entryPrice = parseFloat(card.getAttribute('data-entry-price') || 0);
+          var posSize = parseFloat(card.getAttribute('data-position-size') || 200);
+          var livePrice = prices[asset] || prices[asset.split('/')[0]] || 0;
+          // Update "Now" price
+          var nowEl = card.querySelector('.now-price');
+          if (nowEl && livePrice > 0) {
+            nowEl.textContent = '$' + parseFloat(livePrice).toLocaleString();
+          }
+          // Calculate and display P&L per account size
+          if (livePrice > 0 && entryPrice > 0) {
+            var pnlPct = (livePrice - entryPrice) / entryPrice * 100;
+            var isPos = pnlPct >= 0;
+            var color = isPos ? '#00C9B1' : '#FF6218';
+            if (nowEl) nowEl.style.color = color;
+            // Update 4-account P&L grid
+            [10000,25000,50000,100000].forEach(function(acct) {
+              var el = card.querySelector('[data-acct="'+acct+'"]');
+              if (el) {
+                var pnl = acct * 0.02 * pnlPct / 100;
+                el.textContent = (pnl >= 0 ? '+$' : '-$') + Math.abs(pnl).toFixed(2);
+                el.style.color = color;
+              }
+            });
+          }
+        });
+      }).catch(function(){});
+    }, 10000);
+
+    function _cemUpdateMiniTrade(data) {
+      var winId = _openWindows[data.asset];
+      if (!winId) return;
+      var win = document.getElementById(winId);
+      if (!win) return;
+
+      var cp = win.querySelector('.now-price') || win.querySelector('.current-price');
+      if (cp) cp.textContent = '$' + (data.current_price||0).toLocaleString();
+
+      var pnls = {10000: data.pnl_10k, 25000: data.pnl_25k, 50000: data.pnl_50k, 100000: data.pnl_100k};
+      var pct = data.unrealized_pnl_pct || 0;
+      for (var size in pnls) {
+        var pnl = pnls[size] || 0;
+        var pnlEl = win.querySelector('.pnl-' + size);
+        var pctEl = win.querySelector('.pct-' + size);
+        if (pnlEl) {
+          pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + Math.abs(pnl).toFixed(2);
+          pnlEl.style.color = pnl >= 0 ? '#00C9B1' : '#FF6218';
+        }
+        if (pctEl) {
+          pctEl.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+          pctEl.style.color = pct >= 0 ? '#00C9B1' : '#FF6218';
+        }
+      }
+
+      var progress = win.querySelector('.progress-bar');
+      if (progress) {
+        var pctAbs = Math.min(100, Math.max(0, Math.abs(pct) / 1.0 * 100));
+        progress.style.width = pctAbs + '%';
+        progress.style.background = pct >= 0 ? '#00C9B1' : '#FF6218';
+      }
+    }
+
+    function _cemCloseMiniTrade(data) {
+      var winId = _openWindows[data.asset];
+      if (!winId) return;
+      var win = document.getElementById(winId);
+      if (!win) return;
+      win.style.border = '2px solid ' + (data.won ? '#00C9B1' : '#FF6218');
+      win.style.opacity = '0.7';
+      setTimeout(function() {
+        win.style.transition = 'opacity 1s';
+        win.style.opacity = '0';
+        setTimeout(function() { win.remove(); delete _openWindows[data.asset]; }, 1000);
+      }, 5000);
+      if (typeof _cemAddLogItem === 'function') {
+        _cemAddLogItem(data.won ? '\u2705' : '\u274C', data.asset + ' ' + data.direction + ' ' + (data.pnl_pct >= 0 ? '+' : '') + (data.pnl_pct||0).toFixed(2) + '% | $10K: ' + (data.pnl_10k >= 0 ? '+' : '') + '$' + Math.abs(data.pnl_10k||0).toFixed(0));
+      }
+      // Update account balances on trade close
+      _updateAccountBalances(data);
+    }
+
+    // ── ACCOUNT BALANCE TRACKER ──
+    var _accountPnls = {10000:0, 25000:0, 50000:0, 100000:0};
+    function _updateAccountBalances(tradePnls) {
+      [10000,25000,50000,100000].forEach(function(size) {
+        var key = 'pnl_' + (size >= 1000 ? size/1000 + 'k' : size);
+        if (tradePnls[key] !== undefined) _accountPnls[size] += tradePnls[key];
+        var el = document.getElementById('bal-' + size);
+        if (el) {
+          var bal = size + _accountPnls[size];
+          el.textContent = '$' + bal.toLocaleString(undefined,{maximumFractionDigits:0});
+          el.style.color = bal >= size ? '#00C9B1' : '#FF6218';
+        }
+      });
+    }
+
+    function _cemUpdateMiniPnl(feedId, pnl) {
+      var el = document.getElementById('pnl-' + feedId);
+      if (!el) return;
+      el.textContent = (pnl >= 0 ? '+$' : '-$') + Math.abs(pnl).toLocaleString(undefined,{maximumFractionDigits:0});
+      el.style.color = pnl >= 0 ? '#00C9B1' : '#FF4757';
+    }
+
+    function _cemMiniWindowDegrade(feedId) {
+      var win = document.getElementById('mini-' + feedId);
+      if (win) {
+        win.style.borderColor = 'rgba(255,71,87,0.4)';
+        var badge = win.querySelector('[style*="LIVE"]');
+        if (badge) { badge.textContent = '\u26A0 DEGRADING'; badge.style.color = '#FF4757'; badge.style.background = 'rgba(255,71,87,0.12)'; }
+      }
+    }
+
+    // ── FEATURE 1: TRADE CARD POPUP (fixed position) ──────────────────
+    function showTradeCard(trade) {
+      var card = document.getElementById('trade-card');
+      if (!card) return;
+      var isWin = (trade.pnl || 0) >= 0;
+      card.style.borderColor = isWin ? '#00C9B1' : '#7D1A2E';
+      card.style.border = '1px solid ' + (isWin ? '#00C9B1' : '#7D1A2E');
+      document.getElementById('tc-direction').textContent = (trade.direction === 'long' ? '\u25B2 LONG ' : '\u25BC SHORT ') + (trade.asset || '');
+      document.getElementById('tc-direction').style.color = trade.direction === 'long' ? '#00C9B1' : '#FF6218';
+      document.getElementById('tc-entry').textContent = '$' + (trade.entry_price || 0).toLocaleString();
+      document.getElementById('tc-exit').textContent = '$' + (trade.exit_price || 0).toLocaleString();
+      var pnlEl = document.getElementById('tc-pnl');
+      pnlEl.textContent = (isWin ? '+' : '') + '$' + Math.abs(trade.pnl || 0).toLocaleString(undefined,{maximumFractionDigits:0}) + ' (' + (isWin?'+':'') + (trade.pnl_pct || 0).toFixed(1) + '%)';
+      pnlEl.style.color = isWin ? '#00C9B1' : '#FF4757';
+      document.getElementById('tc-duration').textContent = trade.duration || '';
+      card.style.display = 'block';
+      card.style.opacity = '1';
+      setTimeout(function() { card.style.opacity = '0'; setTimeout(function(){ card.style.display = 'none'; }, 500); }, 5000);
+    }
+
+    // ── FEATURE 3: STRATEGY STRUGGLING HANDLER ────────────────────────
+    function _cemMiniStruggling(feedId) {
+      var win = document.getElementById('mini-' + feedId);
+      if (!win) return;
+      win.style.borderColor = '#FF6218';
+      win.style.opacity = '0.6';
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-size:11px;color:#FF6218;font-family:Inter,sans-serif;z-index:10';
+      overlay.textContent = 'Re-optimizing...';
+      win.style.position = 'relative';
+      win.appendChild(overlay);
+      setTimeout(function(){ win.remove(); }, 10000);
+    }
+
+    // ── INSIGHT NOTES LIVE FEED ──────────────────────────────────────────
+    var _insightTypeColors = {
+      confirmation:'#00C9B1', pattern:'#FF6218', filter:'#4a9eff',
+      correlation:'#9b59b6', regime:'#f39c12', methodology:'#2ecc71',
+      anomaly:'#e74c3c', risk:'#e67e22'
+    };
+
+    function _cemAddInsightCard(note) {
+      var container = document.getElementById('research-cards') || document.getElementById('log-history');
+      if (!container) return;
+      var color = _insightTypeColors[note.note_type] || '#888';
+      var confBadge = note.confidence === 'high' ? '\u2B24 HIGH' : note.confidence === 'medium' ? '\u25D0 MED' : '\u25CB LOW';
+      var card = document.createElement('div');
+      card.style.cssText = 'background:rgba(255,255,255,0.03);border-left:3px solid '+color+';padding:8px 10px;margin-bottom:6px;border-radius:0 4px 4px 0;animation:slideIn 0.3s ease';
+      var metricsHTML = '';
+      if (note.metrics && typeof note.metrics === 'object') {
+        var keys = Object.keys(note.metrics);
+        if (keys.length) {
+          metricsHTML = '<div style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap">' + keys.map(function(k) {
+            var v = note.metrics[k];
+            return '<span style="background:rgba(255,255,255,0.05);color:#aaa;font-size:9px;padding:2px 5px;border-radius:3px">' + k + ': ' + (typeof v === 'number' ? v.toFixed(1) : v) + '</span>';
+          }).join('') + '</div>';
+        }
+      }
+      card.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+        + '<span style="color:'+color+';font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:1px">'+( note.note_type||'note')+'</span>'
+        + '<span style="color:#555;font-size:9px">'+confBadge+' \u00B7 '+(note.asset||'')+'</span>'
+        + '</div>'
+        + '<div style="color:#e0e0e0;font-size:11px;font-weight:bold;margin-bottom:3px;line-height:1.3">'+(note.headline||'')+'</div>'
+        + '<div style="color:#888;font-size:10px;line-height:1.5">'+(note.body||'').substring(0,300)+'</div>'
+        + metricsHTML;
+      container.insertBefore(card, container.firstChild);
+      while (container.children.length > 20) container.removeChild(container.lastChild);
+    }
+
+    function _loadRecentInsights() {
+      fetch('/api/insights/recent', {cache:'no-store'}).then(function(r){return r.json()}).then(function(notes) {
+        if (!notes || !notes.length) return;
+        notes.slice(0,5).forEach(function(note) {
+          var exists = document.querySelector('[data-insight-id="'+note.id+'"]');
+          if (exists) return;
+          var card = document.createElement('div');
+          card.setAttribute('data-insight-id', note.id);
+          _cemAddInsightCard(note);
+        });
+      }).catch(function(){});
+    }
+    setTimeout(_loadRecentInsights, 5000);
+    setInterval(_loadRecentInsights, 30000);
+
+    // ── COACH ANNOTATION LAYER + SCREENSHOT ─────────────────────────────
+    function coachAnnotate(type, data) {
+      if (type === 'label') {
+        var lbl = document.createElement('div');
+        lbl.style.cssText = 'position:absolute;left:'+(data.x||10)+'px;top:'+(data.y||10)+'px;background:#111;border-left:3px solid #FF6218;padding:6px 10px;color:#00C9B1;font-size:11px;font-family:"JetBrains Mono",monospace;border-radius:0 4px 4px 0;z-index:51;pointer-events:none';
+        lbl.textContent = data.text || '';
+        var layer = document.getElementById('coach-annotation-layer');
+        if (layer) layer.appendChild(lbl);
+      }
+      if (type === 'screenshot') captureAndSaveScreenshot(data.annotation_text || '');
+    }
+    window.coachAnnotate = coachAnnotate;
+
+    function captureAndSaveScreenshot(annotationText) {
+      if (typeof html2canvas === 'undefined') {
+        var s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        s.onload = function() { _doCapture(annotationText); };
+        document.head.appendChild(s);
+      } else { _doCapture(annotationText); }
+    }
+    window.captureAndSaveScreenshot = captureAndSaveScreenshot;
+
+    function _doCapture(annotationText) {
+      var target = document.querySelector('.charts-row') || document.querySelector('[id*="chart"]');
+      if (!target) return;
+      html2canvas(target, {backgroundColor:'#0d0d0d', scale:1, useCORS:true}).then(function(canvas) {
+        var b64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+        fetch('/api/coach/screenshot', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            image_data_base64: b64,
+            annotation_text: annotationText,
+            asset: window._mirrorAsset || 'BTC',
+            strategy: window._mirrorStrategyName || 'Strategy'
+          })
+        }).then(function(r){return r.json()}).then(function(d) {
+          if (d.status === 'saved') _cemAddLogItem('\uD83D\uDCF8', 'Screenshot saved (ID: ' + d.id + ')');
+        }).catch(function(){});
+      });
+    }
+
+    async function _cemTakeEurekaSnapshot(asset, strategy, annotationText, winRate, totalTrades) {
+      try {
+        if (typeof html2canvas === 'undefined') {
+          await new Promise(function(res, rej) {
+            var s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            s.onload = res; s.onerror = rej;
+            document.head.appendChild(s);
+          });
+        }
+        var chartEl = document.getElementById('chart-main') || document.querySelector('.chart-container') || document.querySelector('.tv-lightweight-charts');
+        if (!chartEl) return;
+        var canvas = await html2canvas(chartEl, {backgroundColor:'#0a0f0f', scale:1, useCORS:true});
+        var b64 = canvas.toDataURL('image/png').split(',')[1];
+        var resp = await fetch('/api/coach/screenshot', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({image_data_base64:b64, asset:asset, annotation_text:annotationText, win_rate:winRate, total_trades:totalTrades, strategy_name:strategy})
+        });
+        var result = await resp.json();
+        console.log('[Eureka] Snapshot saved:', result);
+        // Flash confirmation
+        var flash = document.createElement('div');
+        flash.style.cssText = 'position:fixed;top:60px;right:20px;background:#00C9B1;color:#000;padding:8px 14px;border-radius:4px;font-size:11px;font-weight:700;z-index:9999';
+        flash.textContent = '\uD83D\uDCF8 EUREKA SAVED \u2014 ' + strategy + ' on ' + asset;
+        document.body.appendChild(flash);
+        setTimeout(function(){flash.remove()}, 4000);
+      } catch(err) { console.error('[Eureka] Snapshot failed:', err); }
+    }
+    window._cemTakeEurekaSnapshot = _cemTakeEurekaSnapshot;
+
+    // ── RESEARCH CARDS ────────────────────────────────────────────────────
+    function loadResearchCards() {
+      fetch('/api/mirror/research', {cache:'no-store'}).then(function(r){return r.json()}).then(function(items) {
+        var container = document.getElementById('research-cards') || document.getElementById('log-history');
+        if (!container || !items || !items.length) return;
+        // Clear container before re-rendering to avoid stale data
+        container.innerHTML = '';
+        items.slice(0, 5).forEach(function(entry) {
+          var card = document.createElement('div');
+          card.setAttribute('data-research-id', entry.id);
+          card.style.cssText = 'border-left:3px solid #00C9B1;background:rgba(0,201,177,0.03);padding:8px 10px;margin:4px 0;border-radius:0 6px 6px 0;animation:slideIn 0.3s ease';
+          card.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center">'
+            + '<span style="color:#00C9B1;font-size:11px;font-weight:600">' + (entry.asset||'') + ' \u00B7 ' + (entry.title||entry.discovery_type||'Discovery') + '</span>'
+            + '</div>'
+            + (entry.reasoning ? '<div style="color:#e0e0e0;font-size:10px;margin-top:4px;line-height:1.4">' + entry.reasoning.substring(0,200) + '</div>' : '')
+            + '<div style="color:#444;font-size:9px;margin-top:3px">' + (entry.created_at ? new Date(entry.created_at).toLocaleTimeString() : '') + '</div>';
+          container.prepend(card);
+        });
+      }).catch(function(){});
+    }
+    // Load on start + every 15s
+    setTimeout(loadResearchCards, 3000);
+    setInterval(loadResearchCards, 15000);
+
+    // ── TRADE LOG POLLING ────────────────────────────────────────────────
+    function loadTradeLog() {
+      fetch('/api/mirror/trades', {cache:'no-store'}).then(function(r){return r.json()}).then(function(trades) {
+        var container = document.getElementById('log-history') || document.getElementById('trade-log');
+        if (!container || !trades || !trades.length) return;
+        // Find or create trade section
+        var tradeSection = document.getElementById('trade-log-items');
+        if (!tradeSection) {
+          tradeSection = document.createElement('div');
+          tradeSection.id = 'trade-log-items';
+          container.prepend(tradeSection);
+        }
+        tradeSection.innerHTML = '';
+        trades.filter(function(t) {
+          // Skip trades with obviously wrong entry prices (stale data)
+          var ep = parseFloat(t.entry_price || 0);
+          return ep > 100 || ep === 0;
+        }).slice(0, 20).forEach(function(t) {
+          var isWin = parseFloat(t.pnl_pct || 0) > 0;
+          var isOpen = t.status === 'open' || t.status === 'OPEN';
+          var item = document.createElement('div');
+          item.style.cssText = 'padding:6px 8px;border-bottom:1px solid #111;font-size:10px;display:flex;justify-content:space-between;align-items:center;animation:slideIn 0.3s ease';
+          item.innerHTML = '<div style="display:flex;gap:6px;align-items:center">'
+            + '<span style="color:' + (isOpen ? '#FFB800' : (isWin ? '#00C9B1' : '#FF6218')) + '">' + (isOpen ? '\u23F3' : (isWin ? '\u2705' : '\u274C')) + '</span>'
+            + '<span style="color:#fff;font-weight:600">' + (t.asset||'') + '</span>'
+            + '<span style="color:#888">' + (t.direction||'') + '</span>'
+            + '<span style="color:#555">$' + (parseFloat(t.entry_price||0).toLocaleString()) + '</span>'
+            + '</div>'
+            + '<div style="text-align:right">'
+            + (isOpen
+              ? '<span style="color:#FFB800;animation:pulse 1.5s infinite">OPEN</span>'
+              : '<span style="color:' + (isWin ? '#00C9B1' : '#FF6218') + ';font-weight:700">' + (parseFloat(t.pnl_pct||0) >= 0 ? '+' : '') + parseFloat(t.pnl_pct||0).toFixed(2) + '%</span>')
+            + '</div>';
+          tradeSection.appendChild(item);
+        });
+      }).catch(function(){});
+    }
+    setInterval(loadTradeLog, 15000);
+    setTimeout(loadTradeLog, 5000);
+
+  } // end initMirror
+
+})();
+
+// ── FEATURE 2: ACCOUNT SIZE SELECTOR ──
+var _accountSize = 10000;
+function _cemSetAccountSize(val) {
+  _accountSize = parseInt(val) || 10000;
+  _recalcAccountDisplay();
+}
+function _recalcAccountDisplay() {
+  var pnlText = '';
+  var statPnlEl = document.getElementById('score-pnl');
+  if (statPnlEl) pnlText = statPnlEl.textContent || '';
+  var pnl = parseFloat(pnlText.replace(/[^-\d.]/g,'') || '0');
+  var pct = (_accountSize > 0) ? (pnl / _accountSize * 100) : 0;
+  var current = _accountSize + pnl;
+  var el = document.getElementById('stat-account');
+  if (el) el.textContent = '$' + current.toLocaleString(undefined,{maximumFractionDigits:0});
+  var pctEl = document.getElementById('stat-account-pct');
+  if (pctEl) { pctEl.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%'; pctEl.style.color = pct >= 0 ? '#00C9B1' : '#FF4757'; }
+}
+
+// ── TRADE SOUND EFFECTS ──
+var _cemAudioCtx = null;
+function _cemGetAudioCtx() {
+  if (!_cemAudioCtx) _cemAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _cemAudioCtx;
+}
+function _cemPlayTone(freq, dur, type, vol) {
+  try {
+    var ctx = _cemGetAudioCtx();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    gain.gain.value = vol || 0.1;
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + dur);
+  } catch(e){}
+}
+function cemPlayEntryChime() { _cemPlayTone(523,0.15,'sine',0.08); setTimeout(function(){_cemPlayTone(659,0.15,'sine',0.08)},100); setTimeout(function(){_cemPlayTone(784,0.2,'sine',0.08)},200); }
+function cemPlayWinSound() { _cemPlayTone(784,0.1,'sine',0.1); setTimeout(function(){_cemPlayTone(988,0.1,'sine',0.1)},80); setTimeout(function(){_cemPlayTone(1175,0.3,'sine',0.1)},160); }
+function cemPlayLossSound() { _cemPlayTone(440,0.15,'triangle',0.06); setTimeout(function(){_cemPlayTone(349,0.2,'triangle',0.06)},120); }
+function cemPlayEurekaSound() { _cemPlayTone(659,0.1,'sine',0.12); setTimeout(function(){_cemPlayTone(784,0.1,'sine',0.12)},80); setTimeout(function(){_cemPlayTone(988,0.1,'sine',0.12)},160); setTimeout(function(){_cemPlayTone(1319,0.4,'sine',0.12)},240); }
+
+// ============================================================
+// CEM LIVE TRADING CHARTS — BAKED IN APRIL 18 2026
+// ============================================================
+// _cemSetGenre2 removed — using single _cemSetGenre from music block below
+
+// ---- LIVE TRADING CHART WINDOWS ----
+window._liveCharts = {};
+window._livePriceHistory = {};
+
+async function _cemBuildLiveWindows() {
+  var stateResp = await fetch('/api/mirror/state').catch(function(){return null});
+  var state = stateResp ? await stateResp.json() : null;
+  if(!state) return;
+
+  var strip = document.getElementById('mini-portfolio-strip') || document.getElementById('mini-charts-strip');
+  if(!strip) return;
+  strip.innerHTML = '';
+  strip.style.cssText = 'display:flex;flex-direction:row;align-items:flex-start;gap:12px;overflow-x:auto;overflow-y:visible;padding:8px 8px 12px;min-height:220px;box-sizing:border-box;';
+
+  var strategies = state.confirmed_strategies || [];
+  var DEFAULT_ASSETS = ['BTC/USDT','ETH/USDT','SOL/USDT','XRP/USDT','BNB/USDT','DOGE/USDT'];
+  if(!strategies.length) {
+    strategies = DEFAULT_ASSETS.map(function(a){return {asset:a,strategy_name:'Auto',win_rate:0};});
+  }
+
+  for(var i=0; i<strategies.length; i++) {
+    var strat = strategies[i];
+    var asset = strat.asset || DEFAULT_ASSETS[i % DEFAULT_ASSETS.length];
+    var sym = asset.replace('/USDT','/USD').replace('/usdt','/USD');
+    var wr = strat.win_rate || 0;
+    var cardId = 'lc-'+i;
+    var chartId = 'lc-chart-'+i;
+
+    // Build card HTML
+    var card = document.createElement('div');
+    card.id = cardId;
+    card.dataset.asset = asset;
+    card.style.cssText = 'flex-shrink:0;width:270px;background:#0a0e1a;border:1px solid #00C9B1;border-top:3px solid #00C9B1;border-radius:6px;padding:8px;box-sizing:border-box;';
+    card.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+      +'<div><span style="color:#00C9B1;font-size:11px;font-weight:bold">'+asset.replace('/USDT','')+'</span>'
+      +'<span style="color:#555;font-size:9px;margin-left:4px">'+(strat.strategy_name||'')+'</span></div>'
+      +'<span style="color:#00C9B1;font-size:11px;font-weight:bold">WR '+wr.toFixed(1)+'%</span></div>'
+      +'<div id="'+chartId+'" style="width:100%;height:120px;margin-bottom:6px"></div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:3px">'
+      +[10000,25000,50000,100000].map(function(sz,j){
+        var scenarios = strat.account_pnl_scenarios;
+        var gain = scenarios && scenarios[j] ? '+$'+scenarios[j].expected_gain_per_trade : '$0';
+        return '<div style="background:#111;border-radius:3px;padding:4px 2px;text-align:center">'
+          +'<div style="color:#444;font-size:8px">$'+['10K','25K','50K','100K'][j]+'</div>'
+          +'<div style="color:#00C9B1;font-size:10px;font-weight:bold">'+gain+'</div></div>';
+      }).join('')+'</div>';
+    strip.appendChild(card);
+
+    // Fetch real candles AFTER appending card (element exists in DOM now)
+    try {
+      var resp = await fetch('/api/ohlc?symbol='+sym+'&interval=15min&limit=80');
+      var data = await resp.json();
+      var chartEl = document.getElementById(chartId);
+      if(chartEl && data.candles && data.candles.length > 0) {
+        var chart = LightweightCharts.createChart(chartEl, {
+          width: 254,
+          height: 120,
+          layout:{background:{color:'transparent'},textColor:'#555'},
+          grid:{vertLines:{visible:false},horzLines:{visible:false}},
+          timeScale:{visible:false,borderVisible:false,barSpacing:3},
+          rightPriceScale:{visible:false,borderVisible:false,autoScale:true,scaleMargins:{top:0.05,bottom:0.05}},
+          crosshair:{mode:0},handleScroll:false,handleScale:false
+        });
+        var cs = chart.addCandlestickSeries({
+          upColor:'#00C9B1',downColor:'#FF6218',
+          borderUpColor:'#00C9B1',borderDownColor:'#FF6218',
+          wickUpColor:'#00C9B1',wickDownColor:'#FF6218'
+        });
+        // Deduplicate candles by time
+        var seen={};var deduped=[];data.candles.forEach(function(c){if(!seen[c.time]){seen[c.time]=1;deduped.push(c);}});
+        cs.setData(deduped);
+        cs.setMarkers([{
+          time: deduped[deduped.length-1].time,
+          position:'belowBar',color:'#00C9B1',shape:'arrowUp',text:'ENTRY'
+        }]);
+        chart.timeScale().fitContent();
+        // Resize after layout settles
+        setTimeout(function(){
+          var w=chartEl.clientWidth||254;
+          chart.applyOptions({width:w});chart.timeScale().fitContent();
+        },300);
+        window._liveCharts[cardId] = {chart:chart, series:cs, asset:asset};
+        console.log('[MINI] Real candles for', sym, ':', data.candles.length);
+      }
+    } catch(e) {
+      console.error('[MiniChart] Failed for '+asset+':', e);
+    }
+  }
+}
+
+function _cemUpdateLiveCharts() {
+  Promise.all([
+    fetch('/api/mirror/state').then(function(r){return r.json()}).catch(function(){return null}),
+    fetch('/api/debug/prices').then(function(r){return r.json()}).catch(function(){return null})
+  ]).then(function(results) {
+    var state = results[0], priceResp = results[1];
+    if (!state || !priceResp) return;
+    var prices = priceResp.prices || {};
+    var now = Math.floor(Date.now()/1000);
+    document.querySelectorAll('[id^="lc-"]').forEach(function(card) {
+      if (!card.dataset || !card.dataset.asset) return;
+      if (card.id.indexOf('-') > 2) return; // skip sub-elements
+      var asset = card.dataset.asset;
+      var entry = parseFloat(card.dataset.entry);
+      var current = prices[asset] || prices[(asset||'').replace('/USDT','')] || 0;
+      if (!current || !entry) return;
+      var pnlPct = (current - entry) / entry * 100;
+      var isPos = pnlPct >= 0;
+      var color = isPos ? '#00C9B1' : '#FF6218';
+      var fmt = function(v) { return (v>=0?'+$':'-$')+Math.abs(v).toFixed(2); };
+      var fmtP = function(v) { return (v>=0?'+':'')+v.toFixed(3)+'%'; };
+      var id = card.id;
+      var priceEl = document.getElementById(id+'-price');
+      var pctEl = document.getElementById(id+'-pct');
+      if (priceEl) { priceEl.textContent='$'+current.toLocaleString(); priceEl.style.color=color; }
+      if (pctEl) { pctEl.textContent=fmtP(pnlPct); pctEl.style.color=color; }
+      [[10000],[25000],[50000],[100000]].forEach(function(arr) {
+        var sz=arr[0]; var el=document.getElementById(id+'-'+sz);
+        if (el) { el.textContent=fmt(sz*pnlPct/100); el.style.color=color; }
+      });
+      card.style.borderColor=color; card.style.borderTopColor=color;
+      var mc = window._liveCharts[id];
+      if (mc && mc.series) {
+        var candleData = (window._liveCandleData && window._liveCandleData[id]) || [];
+        var lastTime = candleData.length ? candleData[candleData.length-1].time : 0;
+        if (now > lastTime) {
+          var prevClose = candleData.length ? candleData[candleData.length-1].close : current;
+          var cOpen = prevClose;
+          var cHigh = Math.max(cOpen, current) + Math.random()*Math.abs(current-cOpen)*0.2;
+          var cLow = Math.min(cOpen, current) - Math.random()*Math.abs(current-cOpen)*0.2;
+          candleData.push({time:now, open:parseFloat(cOpen.toFixed(2)), high:parseFloat(cHigh.toFixed(2)), low:parseFloat(cLow.toFixed(2)), close:parseFloat(current.toFixed(2))});
+          if(candleData.length>120)candleData.shift();
+          if (window._liveCandleData) window._liveCandleData[id] = candleData;
+        } else if (candleData.length) {
+          var last = candleData[candleData.length-1];
+          last.close = parseFloat(current.toFixed(2));
+          last.high = parseFloat(Math.max(last.high, current).toFixed(2));
+          last.low = parseFloat(Math.min(last.low, current).toFixed(2));
+        }
+        try { mc.series.setData(candleData); } catch(e) {}
+      }
+    });
+    // Stats bar
+    var setEl = function(id,val,col) { var e=document.getElementById(id); if(e){e.textContent=val;if(col)e.style.color=col;} };
+    var wr=parseFloat(state.current_win_rate||0);
+    setEl('score-winrate',(wr>=0?'+':'')+wr.toFixed(1),wr>50?'#00C9B1':'#FF6218');
+    setEl('score-trades',state.current_trades||0);
+    setEl('delta-winrate',''); setEl('delta-return',''); setEl('delta-pnl','');
+    if (state.mirror_message) { var ct=document.getElementById('coach-text'); if(ct) ct.textContent=state.mirror_message; }
+  });
+}
+
+// Boot
+_cemBuildLiveWindows().then(function() {
+  window._cemLivePoll = setInterval(_cemUpdateLiveCharts, 5000);
+});
+// Rebuild when new strategies confirmed
+setInterval(function() {
+  fetch('/api/mirror/state').then(function(r){return r.json()}).then(function(state) {
+    if (!state) return;
+    var currentCount = (state.confirmed_strategies||[]).length;
+    var rendered = document.querySelectorAll('[id^="lc-"]:not([id*="-"])').length;
+    if (currentCount !== rendered) _cemBuildLiveWindows();
+  }).catch(function(){});
+}, 30000);
+// ============================================================
+// END CEM LIVE TRADING CHARTS
+// ============================================================
+
+</script>
+
+<div id="cem-music-player" style="position:fixed;bottom:12px;left:12px;z-index:9990;background:rgba(10,14,20,0.95);border:1px solid rgba(0,201,177,0.2);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;backdrop-filter:blur(8px)"><span style="color:#555;font-size:13px">&#127925;</span>
+<button id="genre-lofi" onclick="_cemSetGenre('lofi')" style="background:#00C9B1;color:#000;border:none;border-radius:4px;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:600">Lofi</button>
+<button id="genre-jazz" onclick="_cemSetGenre('jazz')" style="background:transparent;color:#777;border:1px solid #333;border-radius:4px;padding:3px 10px;font-size:11px;cursor:pointer">Jazz</button>
+<button id="genre-focus" onclick="_cemSetGenre('focus')" style="background:transparent;color:#777;border:1px solid #333;border-radius:4px;padding:3px 10px;font-size:11px;cursor:pointer">Focus</button>
+<button id="genre-ambient" onclick="_cemSetGenre('ambient')" style="background:transparent;color:#777;border:1px solid #333;border-radius:4px;padding:3px 10px;font-size:11px;cursor:pointer">Ambient</button>
+<button id="genre-off" onclick="_cemSetGenre('off')" style="background:transparent;color:#555;border:1px solid #222;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer">&#128263;</button>
+<input type="range" id="music-vol" min="0" max="40" value="18" oninput="_cemSetMusicVol(this.value)" style="width:70px;accent-color:#00C9B1;margin:0 4px">
+<span id="music-vol-label" style="color:#444;font-size:11px;min-width:30px">18%</span></div>
+  <input type="range" id="music-vol" min="0" max="40" value="20" style="width:60px;accent-color:#00C9B1;height:3px" oninput="_cemSetMusicVol(this.value)">
+  <span id="music-vol-label" style="font-size:9px;color:rgba(255,255,255,0.3);min-width:24px">20%</span>
+</div>
+
+<script>
+var _YT_PICKS={lofi:'eeuPvxNnfUU',jazz:'gxr9wbEU8Go',focus:'aju_UB5VIf8',ambient:'K1k35lDpzdw'};
+var _cemMusicGenre=null,_cemMusicFrame=null;
+function _cemSetGenre(g){
+  if(window._cemMusicFrame){window._cemMusicFrame.remove();window._cemMusicFrame=null;}
+  if(window._cemMusicGenre===g||g==='off'){window._cemMusicGenre=null;_updateMusicBtns(null);return;}
+  var id=_YT_PICKS[g];if(!id)return;
+  window._cemMusicGenre=g;
+  var wrap=document.createElement('div');
+  wrap.id='yt-music-wrap';
+  wrap.style.cssText='position:fixed;bottom:48px;left:0;width:180px;height:40px;z-index:9999;overflow:hidden;border-radius:4px;';
+  var frame=document.createElement('iframe');
+  frame.id='yt-music-iframe';
+  frame.width='180';frame.height='40';
+  frame.style.cssText='border:none;margin-top:-540px;';
+  frame.allow='autoplay;encrypted-media';
+  frame.src='https://www.youtube.com/embed/'+id+'?autoplay=1&loop=1&playlist='+id+'&controls=1&modestbranding=1&rel=0';
+  wrap.appendChild(frame);
+  document.body.appendChild(wrap);
+  window._cemMusicFrame=wrap;
+  _updateMusicBtns(g);
+}
+function _updateMusicBtns(active){
+  ['lofi','jazz','focus','ambient'].forEach(function(g){
+    var b=document.getElementById('genre-'+g);if(!b)return;
+    b.style.background=g===active?'#00C9B1':'transparent';
+    b.style.color=g===active?'#000':'#777';
+  });
+}
+function _cemSetMusicVol(val){var l=document.getElementById('music-vol-label');if(l)l.textContent=val+'%';}
+// Auto-start lofi on first click
+document.addEventListener("click",function startM(){
+  _cemSetGenre("lofi");
+},{once:true,capture:true});
+</script>
+
+<script>
+// ── LIBRARY CURRICULUM BROWSER ──────────────────────────────────────
+async function _cemLoadLibrary() {
+  try {
+    var resp = await fetch('/api/curriculum', {cache:'no-store'});
+    var data = await resp.json();
+    var container = document.getElementById('research-cards') || document.getElementById('log-history');
+    if (!container) return;
+
+    // Add library header if not present
+    var header = document.getElementById('library-header');
+    if (!header) {
+      header = document.createElement('div');
+      header.id = 'library-header';
+      header.style.cssText = 'padding:8px 12px;border-bottom:1px solid #1a1a1a;margin-bottom:6px';
+      header.innerHTML = '<div style="font-size:11px;color:#00C9B1;font-weight:700;letter-spacing:1px">\uD83D\uDCDA STRATEGY LIBRARY</div>'
+        + '<div id="lib-stats" style="font-size:10px;color:#555;margin-top:2px"></div>';
+      container.insertBefore(header, container.firstChild);
+    }
+
+    var nodes = data.nodes || [];
+    var instances = data.instances || [];
+    var connections = data.connections || [];
+
+    // Update stats
+    var statsEl = document.getElementById('lib-stats');
+    if (statsEl) statsEl.textContent = instances.length + ' confirmed setups \u00B7 ' + nodes.filter(function(n){return n.total_instances>0}).length + ' active folders';
+
+    // Remove old library cards
+    container.querySelectorAll('.lib-card').forEach(function(c){c.remove()});
+
+    // Group instances by asset_class > strategy
+    var groups = {};
+    instances.forEach(function(inst) {
+      var key = (inst.asset_class || 'other') + '/' + (inst.strategy_name || 'Unknown');
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(inst);
+    });
+
+    // Render instance cards (newest first)
+    instances.slice(0, 15).forEach(function(inst) {
+      var card = document.createElement('div');
+      card.className = 'lib-card';
+      card.style.cssText = 'background:rgba(255,255,255,0.02);border:1px solid #1a1a1a;border-radius:6px;padding:8px 10px;margin-bottom:5px;animation:slideIn 0.3s ease';
+
+      var alsoWorks = (inst.also_works_on || []).map(function(a) {
+        return '<span style="background:rgba(0,201,177,0.08);color:#00C9B1;font-size:8px;padding:1px 5px;border-radius:3px;margin-right:3px">'+a+'</span>';
+      }).join('');
+
+      card.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center">'
+        + '<span style="color:#00C9B1;font-size:11px;font-weight:700">' + (inst.asset||'') + ' \u00B7 ' + (inst.strategy_name||'') + '</span>'
+        + '<span style="color:' + (inst.win_rate > 55 ? '#00C9B1' : '#FF6218') + ';font-size:11px;font-weight:700">' + (inst.win_rate||0).toFixed(1) + '% WR</span>'
+        + '</div>'
+        + '<div style="color:#888;font-size:10px;margin-top:3px">'
+        + (inst.timeframe||'') + ' \u00B7 PF ' + (inst.profit_factor||0).toFixed(2) + ' \u00B7 ' + (inst.total_trades||0) + ' trades'
+        + '</div>'
+        + (inst.condition_name ? '<div style="color:#555;font-size:9px;margin-top:3px;font-style:italic">' + inst.condition_name + '</div>' : '')
+        + (alsoWorks ? '<div style="margin-top:4px">' + alsoWorks + '</div>' : '')
+        + (inst.notes ? '<div style="color:#666;font-size:9px;margin-top:3px;line-height:1.4">' + inst.notes.substring(0,150) + '</div>' : '');
+
+      container.appendChild(card);
+    });
+
+    // Show connections
+    if (connections.length) {
+      var connDiv = document.createElement('div');
+      connDiv.className = 'lib-card';
+      connDiv.style.cssText = 'background:rgba(155,89,182,0.05);border:1px solid rgba(155,89,182,0.2);border-radius:6px;padding:8px 10px;margin-top:8px';
+      connDiv.innerHTML = '<div style="color:#9b59b6;font-size:10px;font-weight:700;margin-bottom:4px">\uD83D\uDD17 CROSS-ASSET CONNECTIONS</div>'
+        + connections.slice(0,5).map(function(c) {
+          return '<div style="color:#888;font-size:10px;margin-top:2px">' + (c.notes||'Connection found') + '</div>';
+        }).join('');
+      container.appendChild(connDiv);
+    }
+  } catch(e) { console.warn('Library load error:', e); }
+}
+
+// Load library on start + every 60s
+setTimeout(_cemLoadLibrary, 8000);
+setInterval(_cemLoadLibrary, 60000);
+</script>
+
+<script>
+/* VOICE PERMANENTLY DISABLED */
+window._cemVoiceEnabled = false;
+window._cemSpeak = function(){};
+window._cemInitVoice = function(){};
+window._cemProc = function(){};
+window._cemProcessSpeakQueue = function(){};
+try { window.speechSynthesis.cancel(); } catch(e) {}
+Object.defineProperty(window, 'speechSynthesis', { get: function(){ return { speak:function(){}, cancel:function(){}, getVoices:function(){return[];}, speaking:false }; } });
+</script>
+<script>
+// === MIRROR COACH NARRATION ===
+(function() {
+  function updateMirrorCoach() {
+    fetch('/api/shared-intel')
+      .then(function(r) { return r.json(); })
+      .then(function(intel) {
+        var stats = document.getElementById('mirror-intel-stats');
+        if (stats) {
+          stats.textContent =
+            'Library: ' + (intel.platform && intel.platform.strategy_library || 574) + ' strategies | ' +
+            'Mirror WR: ' + (intel.mirror && intel.mirror.win_rate != null ? intel.mirror.win_rate + '%' : '—') + ' | ' +
+            'Open: ' + (intel.mirror && intel.mirror.open ? intel.mirror.open.length : 0) + ' positions | ' +
+            'Closed: ' + (intel.mirror && intel.mirror.total_closed || 0) + ' trades';
+        }
+        var openList = (intel.mirror && intel.mirror.open || [])
+          .map(function(t) { return t.direction + ' ' + t.asset + ' via ' + t.strategy_name + ' @ ' + t.entry_price; })
+          .join(', ');
+        var recentList = (intel.mirror && intel.mirror.recent || []).slice(0, 5)
+          .map(function(t) { return (t.is_winner ? 'WIN' : 'LOSS') + ' ' + t.asset + ' ' + (t.pnl_usd > 0 ? '+' : '') + '$' + (t.pnl_usd || 0); })
+          .join(', ');
+        var prompt = 'You are CEMbot narrating the CEM mirror bot live feed. Keep to 2-3 sentences. Be specific.\n' +
+          'Open positions (' + (intel.mirror && intel.mirror.open ? intel.mirror.open.length : 0) + '): ' + (openList || 'none') + '.\n' +
+          'Recent closes: ' + (recentList || 'none') + '.\n' +
+          'Overall win rate: ' + (intel.mirror && intel.mirror.win_rate != null ? intel.mirror.win_rate + '%' : 'unknown') +
+          ' from ' + (intel.mirror && intel.mirror.total_closed || 0) + ' closed trades.\n' +
+          'Active strategies: ' + (intel.mirror && intel.mirror.active_strategies ? intel.mirror.active_strategies.join(', ') : 'none') + '.';
+        return fetch('/api/coach', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode: 'chat',
+            message: prompt,
+            simulatorState: { context: 'mirror_page', openPositions: intel.mirror && intel.mirror.open || [] },
+            asset: (intel.mirror && intel.mirror.open && intel.mirror.open[0] && intel.mirror.open[0].asset) || 'BTC',
+            userId: 'mirror_narrator',
+            sessionId: 'mirror_narration'
+          })
+        });
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var el = document.getElementById('mirror-coach-text');
+        if (el) {
+          var text = data.response || data.message || data.advice || '';
+          // Strip CMD tags and CHIPS for display
+          text = text.replace(/\[CMD:[^\]]+\]/g, '').replace(/CHIPS:.*$/m, '').trim();
+          if (text) el.textContent = text;
+        }
+      })
+      .catch(function(e) { console.warn('mirror coach error', e); });
+  }
+  setTimeout(updateMirrorCoach, 5000);
+  setInterval(updateMirrorCoach, 300000);
+})();
+</script>
+</body>
+</html>

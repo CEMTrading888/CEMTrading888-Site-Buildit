@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('cem_theme')||'teal');})();</script>
+<!-- CEM-BUILD: APRIL4-MASTER -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEMTrading888 — Private AI Lab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600&display=swap');
+:root{--bg:#060810;--bg2:#0a0d14;--bg3:#0e1520;--bg4:#131c28;--teal:#00ffcc;--teal2:#00ccaa;--teal3:#007755;--orange:#ff6600;--amber:#ffaa00;--red:#ff2244;--text:#c8d8d0;--dim:#6a8a80;--muted:#3a5048;--border:#0f2020;--border2:#1a3030;--mono:'Share Tech Mono',monospace;--cond:'Barlow Condensed',sans-serif;--sans:'Barlow',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;overflow:hidden;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,204,0.012) 3px,rgba(0,255,204,0.012) 4px);pointer-events:none;z-index:9999;}
+body.locked{overflow:hidden;}
+body.locked .topbar,body.locked .ticker,body.locked .shell{filter:blur(14px);pointer-events:none;user-select:none;}
+.topbar{flex-shrink:0;height:46px;background:var(--bg2);border-bottom:1px solid var(--border2);display:flex;align-items:center;padding:0 20px;position:relative;z-index:50;}
+.tbl{font-family:var(--cond);font-size:17px;font-weight:900;letter-spacing:0.08em;color:var(--text);text-decoration:none;margin-right:32px;}.tbl span{color:var(--teal);}
+.tbn{display:flex;gap:0;margin-right:auto;}.tbn a{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim);text-decoration:none;padding:0 14px;height:46px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .15s;}.tbn a:hover,.tbn a.active{color:var(--teal);border-bottom-color:var(--teal);}
+.tbr{display:flex;align-items:center;gap:10px;}
+.pill{font-family:var(--mono);font-size:9px;letter-spacing:.1em;padding:3px 8px;border:1px solid var(--teal3);color:var(--teal2);background:rgba(0,255,204,0.05);text-transform:uppercase;}
+.pill.warn{border-color:var(--amber);color:var(--amber);background:rgba(255,170,0,0.05);}
+.ticker{flex-shrink:0;height:26px;background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;position:relative;}
+.ticker::before,.ticker::after{content:'';position:absolute;top:0;bottom:0;width:42px;z-index:2;}
+.ticker::before{left:0;background:linear-gradient(to right,var(--bg2),transparent);}
+.ticker::after{right:0;background:linear-gradient(to left,var(--bg2),transparent);}
+.ti{display:flex;gap:28px;white-space:nowrap;animation:scroll 28s linear infinite;padding:6px 0;}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.tk{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;color:var(--dim);}.tk .up{color:var(--teal);}.tk .dn{color:var(--red);}
+.shell{flex:1;display:grid;grid-template-columns:222px 1fr;overflow:hidden;}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border2);display:flex;flex-direction:column;overflow-y:auto;}
+.sbu{padding:18px 16px 14px;border-bottom:1px solid var(--border2);}
+.sbav{width:50px;height:50px;border-radius:50%;background:var(--bg3);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-size:18px;font-weight:900;color:var(--teal);box-shadow:0 0 22px rgba(0,255,204,0.2);margin-bottom:10px;}
+.sbnm{font-family:var(--cond);font-size:15px;font-weight:800;color:var(--text);letter-spacing:0.04em;}
+.sbrl{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:3px;line-height:1.6;}
+.sbtr{display:inline-block;margin-top:7px;font-family:var(--mono);font-size:9px;letter-spacing:0.12em;padding:2px 7px;background:rgba(0,255,204,0.08);border:1px solid var(--teal3);color:var(--teal2);}
+.sbs{font-family:var(--mono);font-size:8px;letter-spacing:0.18em;color:var(--muted);text-transform:uppercase;padding:12px 16px 4px;}
+.sbn{list-style:none;}.sbn li a{display:flex;align-items:center;gap:9px;padding:8px 16px;font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--dim);text-decoration:none;text-transform:uppercase;border-left:2px solid transparent;transition:all 0.12s;cursor:pointer;}.sbn li a:hover{color:var(--teal2);background:rgba(0,255,204,0.03);border-left-color:var(--teal3);}.sbn li a.active{color:var(--teal);background:rgba(0,255,204,0.06);border-left-color:var(--teal);}
+.sbico{font-size:11px;width:14px;text-align:center;flex-shrink:0;}
+.sbh{padding:14px 16px;margin-top:auto;border-top:1px solid var(--border2);}
+.sbht{font-family:var(--mono);font-size:8px;letter-spacing:0.15em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;}
+.hit{display:flex;align-items:center;gap:7px;margin-bottom:6px;}.hit span{font-family:var(--mono);font-size:9px;color:var(--dim);}
+.hd{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.hdon{background:var(--teal);box-shadow:0 0 5px var(--teal);}.hdwn{background:var(--amber);}.hdof{background:var(--red);}
+.logout-btn{margin-top:10px;width:100%;}
+.content{overflow-y:auto;overflow-x:hidden;background:var(--bg);position:relative;}
+.content::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,255,204,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.018) 1px,transparent 1px);background-size:48px 48px;}
+.page{padding:22px 24px 28px;position:relative;z-index:1;}
+.section{display:none;}.section.active{display:block;}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border2);}
+.ph h1{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;color:var(--teal);text-transform:uppercase;margin-bottom:3px;}.ph p{font-size:12px;color:var(--dim);max-width:720px;line-height:1.6;}
+.phr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.metrics,.g2,.g3,.grid-3{display:grid;gap:12px;}
+.metrics{grid-template-columns:repeat(4,1fr);margin-bottom:18px;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3,.grid-3{grid-template-columns:repeat(3,1fr);}
+.card{background:var(--bg3);border:1px solid var(--border2);margin-bottom:12px;}
+.ch{padding:10px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.ct{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:var(--teal);text-transform:uppercase;}
+.csb{font-family:var(--mono);font-size:9px;color:var(--dim);}
+.cb{padding:16px;}
+.met{background:var(--bg3);border:1px solid var(--border2);padding:12px 14px;position:relative;overflow:hidden;}
+.met::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--teal3),transparent);}
+.met.hot::after{background:linear-gradient(to right,transparent,var(--teal),transparent);}
+.ml{font-family:var(--mono);font-size:8px;letter-spacing:0.15em;color:var(--dim);margin-bottom:6px;text-transform:uppercase;}
+.mv{font-family:var(--cond);font-size:24px;font-weight:800;color:var(--text);line-height:1.05;}.mv.tc{color:var(--teal);}
+.ms{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:4px;line-height:1.5;}
+.btn{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:6px 14px;border:1px solid var(--teal3);background:transparent;color:var(--teal2);cursor:pointer;transition:all 0.12s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn:hover{background:var(--teal);color:var(--bg);border-color:var(--teal);}
+.btn-d{border-color:var(--border2);color:var(--dim);}.btn-d:hover{background:var(--bg4);color:var(--text);border-color:var(--border2);}
+.btn-w{border-color:var(--amber);color:var(--amber);}.btn-w:hover{background:var(--amber);color:var(--bg);}
+.btn-r{border-color:var(--red);color:var(--red);}.btn-r:hover{background:var(--red);color:var(--bg);}
+.input,.textarea,.select{width:100%;background:var(--bg2);border:1px solid var(--border2);padding:10px 12px;color:var(--text);font-family:var(--mono);font-size:10px;outline:none;}
+.input:focus,.textarea:focus,.select:focus{border-color:var(--teal3);box-shadow:0 0 0 1px rgba(0,255,204,0.14);}
+.textarea{min-height:110px;resize:vertical;}
+.field-stack{display:grid;gap:10px;}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.range-wrap{display:grid;gap:6px;}
+.range-copy{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:9px;color:var(--dim);}
+.range{width:100%;accent-color:var(--teal);}
+.queue{display:grid;gap:10px;}
+.queue-item{background:var(--bg4);border:1px solid var(--border);padding:10px 12px;}
+.queue-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
+.queue-title{font-family:var(--cond);font-size:13px;font-weight:800;color:var(--text);letter-spacing:0.04em;}
+.queue-copy{font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.6;}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;}
+.badge{font-family:var(--mono);font-size:8px;letter-spacing:0.08em;padding:2px 7px;border:1px solid var(--border2);color:var(--dim);text-transform:uppercase;}
+.badge.ok{border-color:var(--teal3);color:var(--teal2);background:rgba(0,255,204,0.06);}
+.badge.warn{border-color:var(--amber);color:var(--amber);background:rgba(255,170,0,0.07);}
+.badge.err{border-color:var(--red);color:var(--red);background:rgba(255,34,68,0.07);}
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.check-card{background:var(--bg4);border:1px solid var(--border);padding:12px;}
+.check-title{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;color:var(--teal);text-transform:uppercase;margin-bottom:10px;}
+.check-list{display:grid;gap:8px;}
+.check-item{display:flex;gap:10px;align-items:flex-start;}
+.check-item input{margin-top:3px;accent-color:var(--teal);}
+.check-item span{font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.55;}
+.progress-shell{background:var(--bg2);border:1px solid var(--border2);padding:12px;margin-bottom:12px;}
+.progress-track{height:10px;border-radius:999px;background:rgba(0,0,0,0.25);overflow:hidden;margin-top:10px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal3),var(--teal));}
+.roadmap{display:grid;gap:10px;}
+.roadmap-item{display:flex;gap:10px;align-items:flex-start;background:var(--bg4);border:1px solid var(--border);padding:10px 12px;}
+.timeline-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px rgba(0,255,204,0.45);margin-top:4px;flex-shrink:0;}
+.timeline-copy strong{display:block;font-family:var(--mono);font-size:8px;letter-spacing:0.12em;color:var(--teal);text-transform:uppercase;margin-bottom:4px;}
+.timeline-copy span{display:block;font-size:12px;color:var(--text);line-height:1.55;}
+.status-list{display:grid;gap:8px;}
+.status-row{display:flex;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid rgba(15,32,32,0.45);}
+.status-row:last-child{border-bottom:none;padding-bottom:0;}
+.status-row .sl{font-family:var(--mono);font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:0.08em;}
+.status-row .sv{font-size:12px;color:var(--text);text-align:right;}
+.gate{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(2,8,16,0.82);backdrop-filter:blur(12px);z-index:10000;transition:opacity .2s,visibility .2s;}
+body.unlocked .gate{opacity:0;visibility:hidden;pointer-events:none;}
+.gate-card{width:min(460px,100%);background:linear-gradient(180deg,rgba(10,13,20,0.98),rgba(6,8,16,0.98));border:1px solid rgba(0,255,204,0.18);box-shadow:0 24px 80px rgba(0,0,0,0.45),0 0 40px rgba(0,255,204,0.08);padding:22px;}
+.gate-title{font-family:var(--mono);font-size:12px;letter-spacing:0.18em;color:var(--teal);text-transform:uppercase;margin-bottom:8px;}
+.gate-copy{font-size:13px;color:var(--dim);line-height:1.7;margin-bottom:16px;}
+.gate-copy strong{color:var(--text);}
+.gate-error{min-height:18px;font-family:var(--mono);font-size:9px;color:var(--red);margin-top:8px;}
+@media (max-width:1200px){.metrics,.g2,.g3,.grid-3,.check-grid,.split{grid-template-columns:1fr 1fr;}}
+@media (max-width:860px){.shell{grid-template-columns:1fr;}.sidebar{border-right:none;border-bottom:1px solid var(--border2);}.metrics,.g2,.g3,.grid-3,.check-grid,.split{grid-template-columns:1fr;}}
+</style>
+
+<link rel="stylesheet" href="/cem-shared.css">
+</head>
+<body class="locked">
+
+<div class="gate" id="lab-gate">
+  <div class="gate-card">
+    <div class="gate-title">// Private AI Lab Access</div>
+    <div class="gate-copy">This dashboard is for <strong>Chandler + Kayla only</strong>. Temporary browser gate for now. Cloudflare Access and server-side auth come next.</div>
+    <div class="field-stack">
+      <input id="gate-user" class="input" type="text" placeholder="Username: chandler or kayla" autocomplete="username">
+      <input id="gate-pass" class="input" type="password" placeholder="Temporary lab password" autocomplete="current-password">
+      <button class="btn" onclick="submitGate()">Unlock Lab</button>
+      <div class="gate-error" id="gate-error"></div>
+    </div>
+  </div>
+</div>
+
+<header class="topbar">
+  <a href="/" class="tbl"><span>CEM</span>TRADING888</a>
+  <nav class="tbn">
+    <a href="/profile.html">Mission Control</a>
+    <a href="/education.html">Learning</a>
+    <a href="/lab-dashboard.html" class="active">Private Lab</a>
+  </nav>
+  <div class="tbr">
+    <span class="pill">FOUNDERS ONLY</span>
+    <span class="pill warn">LOCAL GATE</span>
+  </div>
+</header>
+
+<div class="ticker">
+  <div class="ti">
+    <span class="tk">LAB HOST <span class="up">lab.cemtrading888.com</span></span>
+    <span class="tk">MODEL <span class="up">v0 CLAUDE API ACTIVE</span></span>
+    <span class="tk">TARGET <span class="up">DEEPSEEK-R1-DISTILL-QWEN-14B</span></span>
+    <span class="tk">TRAINING <span class="up">QLoRA + DPO + RLAIF</span></span>
+    <span class="tk">KNOWLEDGE <span class="up">HAWKINS / NEW THOUGHT / TRADING PSYCH</span></span>
+    <span class="tk">STATUS <span class="dn">TEMP GATE UNTIL CLOUDFLARE ACCESS</span></span>
+    <span class="tk">LAB HOST <span class="up">lab.cemtrading888.com</span></span>
+    <span class="tk">MODEL <span class="up">v0 CLAUDE API ACTIVE</span></span>
+    <span class="tk">TARGET <span class="up">DEEPSEEK-R1-DISTILL-QWEN-14B</span></span>
+    <span class="tk">TRAINING <span class="up">QLoRA + DPO + RLAIF</span></span>
+    <span class="tk">KNOWLEDGE <span class="up">HAWKINS / NEW THOUGHT / TRADING PSYCH</span></span>
+    <span class="tk">STATUS <span class="dn">TEMP GATE UNTIL CLOUDFLARE ACCESS</span></span>
+  </div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sbu">
+      <div class="sbav" id="lab-operator-avatar">CM</div>
+      <div class="sbnm" id="lab-operator-name">Operator Locked</div>
+      <div class="sbrl">// Private dashboard for Chandler + Kayla to manage the full CEMbot intelligence system.</div>
+      <span class="sbtr" id="lab-operator-tag">// LOCAL ACCESS GATE</span>
+    </div>
+    <div class="sbs">// Private Sections</div>
+    <ul class="sbn">
+      <li><a href="#" class="active" onclick="showSection('kf',this)"><span class="sbico">◈</span>Knowledge Feed</a></li>
+      <li><a href="#" onclick="showSection('tt',this)"><span class="sbico">▣</span>Training Tracker</a></li>
+      <li><a href="#" onclick="showSection('ms',this)"><span class="sbico">◎</span>Model Status</a></li>
+      <li><a href="#" onclick="showSection('bm',this)"><span class="sbico">◬</span>Brain Monitor</a></li>
+      <li><a href="#" onclick="showSection('kp',this)"><span class="sbico">◧</span>Kayla Pipeline</a></li>
+      <li><a href="#" onclick="showSection('ss',this)"><span class="sbico">⚠</span>Security Status</a></li>
+    </ul>
+    <div class="sbs">// Quick Links</div>
+    <ul class="sbn">
+      <li><a href="/profile.html"><span class="sbico">▶</span>Mission Control</a></li>
+      <li><a href="https://supabase.com" target="_blank"><span class="sbico">◈</span>Supabase</a></li>
+      <li><a href="https://github.com/CEMTrading888/cem-bot-builder" target="_blank"><span class="sbico">◎</span>GitHub</a></li>
+      <li><a href="https://make.com" target="_blank"><span class="sbico">⇄</span>Make.com</a></li>
+    </ul>
+    <div class="sbh">
+      <div class="sbht">// Operator Health</div>
+      <div class="hit"><div class="hd hdon"></div><span>Mission Control Online</span></div>
+      <div class="hit"><div class="hd hdon"></div><span>Knowledge Queue Ready</span></div>
+      <div class="hit"><div class="hd hdwn"></div><span>Cloudflare Access Pending</span></div>
+      <div class="hit"><div class="hd hdwn"></div><span>Fine-tune Not Started</span></div>
+      <button class="btn btn-d logout-btn" onclick="logoutLab()">Lock Lab</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="page">
+
+      <section id="s-kf" class="section active">
+        <div class="ph">
+          <div><h1>// Knowledge Feeding Station</h1><p>Paste YouTube, paste text, set source priority, and stage future chunks for the `cem_knowledge_base` pipeline. Local queue now, Supabase ingestion next.</p></div>
+          <div class="phr"><span class="pill" id="kf-summary-pill">0 sources queued</span></div>
+        </div>
+        <div class="metrics">
+          <div class="met hot"><div class="ml">// Knowledge Chunks</div><div class="mv tc" id="kf-chunk-count">1240</div><div class="ms">Projected total if queued sources were indexed</div></div>
+          <div class="met"><div class="ml">// Embeddings Indexed</div><div class="mv" id="kf-embedding-count">1188</div><div class="ms">Simulated pgvector-ready count</div></div>
+          <div class="met"><div class="ml">// Queue Size</div><div class="mv" id="kf-queue-count">0</div><div class="ms">Ready for processing</div></div>
+          <div class="met"><div class="ml">// Avg Importance</div><div class="mv" id="kf-importance">0.00</div><div class="ms">Current priority balance</div></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><span class="ct">// Queue A Source</span><span class="csb">Hawkins first, Chandler principles highest</span></div>
+            <div class="cb">
+              <div class="field-stack">
+                <div class="split">
+                  <select id="kf-category" class="select">
+                    <option value="Hawkins">Hawkins</option>
+                    <option value="New Thought">New Thought</option>
+                    <option value="Trading Psychology">Trading Psychology</option>
+                    <option value="Market Knowledge">Market Knowledge</option>
+                    <option value="Chandler Principles">Chandler Personal Principles</option>
+                    <option value="Philosophy">Philosophy</option>
+                  </select>
+                  <select id="kf-type" class="select">
+                    <option value="YouTube">YouTube URL</option>
+                    <option value="PDF / Text">PDF / Text</option>
+                    <option value="Journal">Founder note</option>
+                  </select>
+                </div>
+                <input id="kf-source" class="input" type="text" placeholder="Paste source URL or title">
+                <div class="range-wrap">
+                  <div class="range-copy"><span>Importance score</span><span id="kf-priority-label">0.95</span></div>
+                  <input id="kf-priority" class="range" type="range" min="0.5" max="1.0" step="0.01" value="0.95" oninput="updatePriorityLabel('kf-priority','kf-priority-label')">
+                </div>
+                <textarea id="kf-notes" class="textarea" placeholder="Why this source matters, what it should teach CEMbot, or what chunks to prioritize."></textarea>
+                <button class="btn" onclick="queueKnowledgeSource()">Queue Knowledge Source</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><span class="ct">// Pipeline Rules</span><span class="csb">Aligned with the handoff</span></div>
+            <div class="cb">
+              <div class="status-list">
+                <div class="status-row"><span class="sl">Priority 1</span><span class="sv">Hawkins books at 0.95 importance</span></div>
+                <div class="status-row"><span class="sl">Priority 2</span><span class="sv">New Thought masters at 0.85</span></div>
+                <div class="status-row"><span class="sl">Priority 3</span><span class="sv">Trading psychology at 0.80</span></div>
+                <div class="status-row"><span class="sl">Priority 4</span><span class="sv">Chandler principles at 0.98 highest</span></div>
+                <div class="status-row"><span class="sl">Chunking</span><span class="sv">500-token chunks with 50 overlap</span></div>
+                <div class="status-row"><span class="sl">Output</span><span class="sv">Queued -> Processing -> Indexed -> Review</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><span class="ct">// Feed Queue</span><span class="csb">Temporary local queue until `/api/knowledge-feed` lands</span></div>
+          <div class="cb">
+            <div class="queue" id="kf-queue"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s-tt" class="section">
+        <div class="ph">
+          <div><h1>// CEMbot Training Tracker</h1><p>Visual checklist built from the handoff: Hawkins, New Thought, trading psychology, research watch list, and Chandler's personal principles.</p></div>
+          <div class="phr"><span class="pill" id="tt-level-pill">INTELLIGENCE LEVEL 0</span></div>
+        </div>
+        <div class="progress-shell">
+          <div class="range-copy"><span>Training checklist completion</span><span id="tt-progress-text">0 / 0 complete</span></div>
+          <div class="progress-track"><div class="progress-fill" id="tt-progress-fill" style="width:0%;"></div></div>
+        </div>
+        <div class="check-grid">
+          <div class="check-card">
+            <div class="check-title">// Hawkins Foundation</div>
+            <div class="check-list" id="tt-hawkins"></div>
+          </div>
+          <div class="check-card">
+            <div class="check-title">// New Thought Masters</div>
+            <div class="check-list" id="tt-new-thought"></div>
+          </div>
+          <div class="check-card">
+            <div class="check-title">// Trading Psychology</div>
+            <div class="check-list" id="tt-psychology"></div>
+          </div>
+          <div class="check-card">
+            <div class="check-title">// Research Watch List</div>
+            <div class="check-list" id="tt-watch-list"></div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><span class="ct">// Chandler Personal Principles</span><span class="csb">0.98 importance score</span></div>
+            <div class="cb">
+              <div class="field-stack">
+                <textarea id="tt-principles" class="textarea" placeholder="Write Chandler's rules, observations, or truths that CEMbot should absorb at the highest importance score."></textarea>
+                <button class="btn" onclick="savePrinciples()">Save Founder Principles</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><span class="ct">// Intelligence Readiness</span><span class="csb">Local simulation</span></div>
+            <div class="cb">
+              <div class="status-list">
+                <div class="status-row"><span class="sl">Checklist complete</span><span class="sv" id="tt-complete-rows">0 items</span></div>
+                <div class="status-row"><span class="sl">XP style level</span><span class="sv" id="tt-level-copy">Still waking up</span></div>
+                <div class="status-row"><span class="sl">Founder principles</span><span class="sv" id="tt-principles-status">No notes saved yet</span></div>
+                <div class="status-row"><span class="sl">Next focus</span><span class="sv" id="tt-next-focus">Start with Hawkins and the watch list</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s-ms" class="section">
+        <div class="ph">
+          <div><h1>// Model Status + Roadmap</h1><p>Track the current reality of CEMbot today, the path toward DeepSeek deployment, and the milestone logic written into the handoff.</p></div>
+          <div class="phr"><span class="pill warn">v0 = CLAUDE API</span><span class="pill" id="ms-readiness-pill">READINESS 0%</span></div>
+        </div>
+        <div class="metrics">
+          <div class="met hot"><div class="ml">// Current Model</div><div class="mv tc">v0</div><div class="ms">Claude API is still the live intelligence layer</div></div>
+          <div class="met"><div class="ml">// Fine-tune Readiness</div><div class="mv" id="ms-readiness">0%</div><div class="ms">Based on queue + tracker progress</div></div>
+          <div class="met"><div class="ml">// Training Conversations</div><div class="mv" id="ms-conversations">284</div><div class="ms">Local placeholder until live API stats</div></div>
+          <div class="met"><div class="ml">// Preference Pairs</div><div class="mv" id="ms-pairs">112</div><div class="ms">Need 500 minimum before first DPO cycle</div></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><span class="ct">// Milestone Math</span><span class="csb">Handoff-aligned cost view</span></div>
+            <div class="cb">
+              <div class="status-list">
+                <div class="status-row"><span class="sl">Estimated fine-tune cost</span><span class="sv" id="ms-cost">$200 one-time</span></div>
+                <div class="status-row"><span class="sl">Monthly run cost</span><span class="sv">$200-$400 flat after deployment</span></div>
+                <div class="status-row"><span class="sl">Break-even</span><span class="sv">~200-300 active users</span></div>
+                <div class="status-row"><span class="sl">Next milestone</span><span class="sv" id="ms-next">Finish founder knowledge feed</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><span class="ct">// Deployment State</span><span class="csb">Now vs target</span></div>
+            <div class="cb">
+              <div class="status-list">
+                <div class="status-row"><span class="sl">Now</span><span class="sv">Claude API + Supabase brain + static operator tools</span></div>
+                <div class="status-row"><span class="sl">Next</span><span class="sv">Knowledge ingest endpoints + training stats endpoint</span></div>
+                <div class="status-row"><span class="sl">Then</span><span class="sv">DeepSeek-R1-Distill-Qwen-14B fine-tuned via QLoRA</span></div>
+                <div class="status-row"><span class="sl">Long term</span><span class="sv">Per-user personal layer + DPO + RLAIF feedback loop</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><span class="ct">// Model Roadmap</span><span class="csb">North star to year one</span></div>
+          <div class="cb">
+            <div class="roadmap">
+              <div class="roadmap-item"><div class="timeline-dot"></div><div class="timeline-copy"><strong>Stage 1 · Feed the brain</strong><span>Load Hawkins, New Thought, trading psychology, founder principles, and market knowledge into the future ingest pipeline.</span></div></div>
+              <div class="roadmap-item"><div class="timeline-dot"></div><div class="timeline-copy"><strong>Stage 2 · Collect preference data</strong><span>Accumulate enough rated responses, preference pairs, and founder-reviewed corrections for the first DPO cycle.</span></div></div>
+              <div class="roadmap-item"><div class="timeline-dot"></div><div class="timeline-copy"><strong>Stage 3 · Fine-tune DeepSeek</strong><span>Spin up the A100, run QLoRA, deploy CEMbot-v1, and preserve the weights as a company asset.</span></div></div>
+              <div class="roadmap-item"><div class="timeline-dot"></div><div class="timeline-copy"><strong>Stage 4 · Personal AI layer</strong><span>Per-user memory, adapters, and transparent consciousness-aware coaching for every trader on the platform.</span></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s-bm" class="section">
+        <div class="ph">
+          <div><h1>// Live Brain Monitor</h1><p>Monitor the living field: knowledge base volume, recent training quality, flagged responses, and the shape of the current brain.</p></div>
+          <div class="phr"><span class="pill" id="bm-signal-pill">QUALITY 71%</span></div>
+        </div>
+        <div class="metrics">
+          <div class="met hot"><div class="ml">// cem_knowledge_base</div><div class="mv tc" id="bm-kb-count">1240</div><div class="ms">Rows projected from queue + base count</div></div>
+          <div class="met"><div class="ml">// cem_training_data</div><div class="mv" id="bm-training-count">284</div><div class="ms">Recent rated conversations</div></div>
+          <div class="met"><div class="ml">// Preference Pairs</div><div class="mv" id="bm-pair-count">112</div><div class="ms">Direct feedback for DPO</div></div>
+          <div class="met"><div class="ml">// Thumbs Ratio</div><div class="mv" id="bm-ratio">71%</div><div class="ms">Current quality signal</div></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><span class="ct">// Last 24 Hours</span><span class="csb">Recent conversations to inspect</span></div>
+            <div class="cb">
+              <div class="queue" id="bm-conversations"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><span class="ct">// Flagged Responses</span><span class="csb">Worst-rated review queue</span></div>
+            <div class="cb">
+              <div class="queue" id="bm-flagged"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s-kp" class="section">
+        <div class="ph">
+          <div><h1>// Kayla Content Pipeline</h1><p>Stage YouTube videos, social posts, and campaign ideas so the AI can extract principles and feed the collective brain on a weekly rhythm.</p></div>
+          <div class="phr"><span class="pill" id="kp-pending-pill">0 items queued</span></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><span class="ct">// Add Kayla Content</span><span class="csb">Queue weekly creator inputs</span></div>
+            <div class="cb">
+              <div class="field-stack">
+                <div class="split">
+                  <input id="kp-title" class="input" type="text" placeholder="Content title">
+                  <select id="kp-type" class="select">
+                    <option value="YouTube">YouTube</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="Podcast">Podcast</option>
+                  </select>
+                </div>
+                <input id="kp-link" class="input" type="text" placeholder="Paste URL or campaign reference">
+                <textarea id="kp-notes" class="textarea" placeholder="What principles, teachings, or market stories should this piece extract for CEMbot?"></textarea>
+                <button class="btn" onclick="addKaylaContent()">Add To Pipeline</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><span class="ct">// Content Calendar</span><span class="csb">Simple rhythm until full scheduler exists</span></div>
+            <div class="cb">
+              <div class="status-list">
+                <div class="status-row"><span class="sl">Monday</span><span class="sv">Review new video ideas + book extract priorities</span></div>
+                <div class="status-row"><span class="sl">Wednesday</span><span class="sv">Queue social teachings and transcript pulls</span></div>
+                <div class="status-row"><span class="sl">Friday</span><span class="sv">Promote strongest insights into the learning stack</span></div>
+                <div class="status-row"><span class="sl">Weekend</span><span class="sv">Assess what actually improved the field</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><span class="ct">// Pipeline Queue</span><span class="csb">Pending -> Transcribed -> Embedded</span></div>
+          <div class="cb">
+            <div class="queue" id="kp-queue"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s-ss" class="section">
+        <div class="ph">
+          <div><h1>// Security Status</h1><p>Operational trust checks for the accounts and systems that define ownership of the CEMbot stack.</p></div>
+          <div class="phr"><span class="pill warn">TEMP BROWSER GATE</span><span class="pill">NEXT: CLOUDFLARE ACCESS</span></div>
+        </div>
+        <div class="metrics">
+          <div class="met hot"><div class="ml">// DigitalOcean</div><div class="mv tc">LIVE</div><div class="ms">104.236.231.80 · server online</div></div>
+          <div class="met"><div class="ml">// Supabase</div><div class="mv">HEALTHY</div><div class="ms">Brain + vector store remain the memory layer</div></div>
+          <div class="met"><div class="ml">// GitHub Deploy</div><div class="mv">ACTIVE</div><div class="ms">Main branch auto-deploys to production</div></div>
+          <div class="met"><div class="ml">// Backup Status</div><div class="mv">PENDING</div><div class="ms">Model weight backup begins after first fine-tune</div></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><span class="ct">// Account Ownership</span><span class="csb">The four accounts that matter most</span></div>
+            <div class="cb">
+              <div class="status-list">
+                <div class="status-row"><span class="sl">DigitalOcean</span><span class="sv">Enable 2FA and verify backup access for Kayla</span></div>
+                <div class="status-row"><span class="sl">Supabase</span><span class="sv">Backups on, service role protected, brain remains canonical</span></div>
+                <div class="status-row"><span class="sl">GitHub</span><span class="sv">Protect main, 2FA on, recovery codes stored offline</span></div>
+                <div class="status-row"><span class="sl">Hugging Face</span><span class="sv">Preserve model access and final downloaded weights</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><span class="ct">// Private Lab Guardrails</span><span class="csb">What comes after this temporary gate</span></div>
+            <div class="cb">
+              <div class="status-list">
+                <div class="status-row"><span class="sl">Current</span><span class="sv">LocalStorage browser gate with hardcoded credentials</span></div>
+                <div class="status-row"><span class="sl">Next</span><span class="sv">Cloudflare Access self-hosted application + MFA</span></div>
+                <div class="status-row"><span class="sl">Then</span><span class="sv">Real user auth and founder-only role checks</span></div>
+                <div class="status-row"><span class="sl">Never</span><span class="sv">Expose lab controls directly on public Mission Control</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const LAB_ACCESS_KEY='cem_lab_access_v1';
+const LAB_FEED_KEY='cem_lab_feed_queue_v1';
+const LAB_TRACKER_KEY='cem_lab_training_tracker_v1';
+const LAB_PIPELINE_KEY='cem_lab_kayla_pipeline_v1';
+const LAB_PRINCIPLES_KEY='cem_lab_founder_principles_v1';
+const LAB_USERS=new Set(['chandler','kayla']);
+const LAB_PASSWORD='highvibrations888';
+const TRACKER_GROUPS={
+  hawkins:[
+    'Power vs Force',
+    'Letting Go',
+    'Eye of the I',
+    'Reality, Spirituality and Modern Man'
+  ],
+  newThought:[
+    'Think and Grow Rich',
+    'Science of Getting Rich',
+    'Neville Goddard complete works',
+    'Joseph Murphy / Florence Scovel Shinn'
+  ],
+  psychology:[
+    'Trading in the Zone',
+    'The Disciplined Trader',
+    'Market Wizards',
+    'Way of the Turtle'
+  ],
+  watch:[
+    'Karpathy — Intro to LLMs',
+    'AlphaGo Documentary',
+    'Karpathy — Deep Dive into LLMs',
+    'Fin-R1 Paper + Hugging Face course'
+  ]
+};
+function escapeHtml(value){
+  return String(value??'').replace(/[&<>"']/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+}
+function readJSON(key,fallback){
+  try{
+    const raw=localStorage.getItem(key);
+    return raw?JSON.parse(raw):fallback;
+  }catch(e){
+    return fallback;
+  }
+}
+function writeJSON(key,value){
+  try{
+    localStorage.setItem(key,JSON.stringify(value));
+  }catch(e){}
+}
+function getFeedQueue(){return readJSON(LAB_FEED_KEY,[]);}
+function getTrackerState(){return readJSON(LAB_TRACKER_KEY,{});}
+function getPipeline(){return readJSON(LAB_PIPELINE_KEY,[]);}
+function getPrinciples(){return localStorage.getItem(LAB_PRINCIPLES_KEY)||'';}
+function updatePriorityLabel(rangeId,labelId){
+  const range=document.getElementById(rangeId);
+  const label=document.getElementById(labelId);
+  if(range&&label)label.textContent=Number(range.value).toFixed(2);
+}
+function setUnlockedState(record){
+  document.body.classList.remove('locked');
+  document.body.classList.add('unlocked');
+  if(record){
+    document.getElementById('lab-operator-name').textContent=record.user==='kayla'?'Kayla Morone':'Chandler Morone';
+    document.getElementById('lab-operator-avatar').textContent=record.user==='kayla'?'KM':'CM';
+    document.getElementById('lab-operator-tag').textContent=`// ${record.user.toUpperCase()} · LOCAL SESSION`;
+  }
+}
+function applyGate(){
+  const gate=readJSON(LAB_ACCESS_KEY,null);
+  if(gate&&LAB_USERS.has(String(gate.user||'').toLowerCase())){
+    setUnlockedState(gate);
+  }
+}
+function submitGate(){
+  const user=(document.getElementById('gate-user').value||'').trim().toLowerCase();
+  const password=document.getElementById('gate-pass').value;
+  const error=document.getElementById('gate-error');
+  if(!LAB_USERS.has(user)||password!==LAB_PASSWORD){
+    error.textContent='Access denied. Use the founder username and temporary lab password.';
+    return;
+  }
+  const record={user,unlockedAt:new Date().toISOString()};
+  writeJSON(LAB_ACCESS_KEY,record);
+  error.textContent='';
+  setUnlockedState(record);
+}
+function logoutLab(){
+  localStorage.removeItem(LAB_ACCESS_KEY);
+  window.location.reload();
+}
+function showSection(id,el){
+  event.preventDefault();
+  document.querySelectorAll('.section').forEach((section)=>section.classList.remove('active'));
+  document.querySelectorAll('.sbn a').forEach((link)=>link.classList.remove('active'));
+  document.getElementById(`s-${id}`).classList.add('active');
+  el.classList.add('active');
+}
+function cycleStatus(status){
+  if(status==='queued')return'processing';
+  if(status==='processing')return'indexed';
+  if(status==='indexed')return'review';
+  return'queued';
+}
+function queueKnowledgeSource(){
+  const category=document.getElementById('kf-category').value;
+  const type=document.getElementById('kf-type').value;
+  const source=(document.getElementById('kf-source').value||'').trim();
+  const notes=(document.getElementById('kf-notes').value||'').trim();
+  const priority=Number(document.getElementById('kf-priority').value);
+  if(!source&&!notes)return;
+  const queue=getFeedQueue();
+  queue.unshift({
+    id:`src-${Date.now()}`,
+    category,
+    type,
+    source:source||`${category} manual note`,
+    notes,
+    priority:Number(priority.toFixed(2)),
+    status:type==='Journal'?'processing':'queued',
+    createdAt:new Date().toISOString()
+  });
+  writeJSON(LAB_FEED_KEY,queue.slice(0,12));
+  document.getElementById('kf-source').value='';
+  document.getElementById('kf-notes').value='';
+  document.getElementById('kf-priority').value='0.95';
+  updatePriorityLabel('kf-priority','kf-priority-label');
+  renderKnowledgeFeed();
+  renderModelStatus();
+  renderBrainMonitor();
+}
+function updateFeedStatus(id){
+  const queue=getFeedQueue().map((item)=>item.id===id?{...item,status:cycleStatus(item.status)}:item);
+  writeJSON(LAB_FEED_KEY,queue);
+  renderKnowledgeFeed();
+  renderModelStatus();
+  renderBrainMonitor();
+}
+function renderKnowledgeFeed(){
+  const queue=getFeedQueue();
+  const indexed=queue.filter((item)=>item.status==='indexed'||item.status==='review').length;
+  const chunkCount=1240+(indexed*24)+(queue.length*6);
+  const embeddings=1188+(indexed*24);
+  const avg=queue.length?(queue.reduce((sum,item)=>sum+Number(item.priority||0),0)/queue.length):0;
+  document.getElementById('kf-chunk-count').textContent=String(chunkCount);
+  document.getElementById('kf-embedding-count').textContent=String(embeddings);
+  document.getElementById('kf-queue-count').textContent=String(queue.length);
+  document.getElementById('kf-importance').textContent=avg?avg.toFixed(2):'0.00';
+  document.getElementById('kf-summary-pill').textContent=`${queue.length} sources queued`;
+  document.getElementById('kf-queue').innerHTML=queue.length?queue.map((item)=>`<div class="queue-item">
+      <div class="queue-head">
+        <div>
+          <div class="queue-title">${escapeHtml(item.source)}</div>
+          <div class="badge-row">
+            <span class="badge">${escapeHtml(item.category)}</span>
+            <span class="badge">${escapeHtml(item.type)}</span>
+            <span class="badge ${item.status==='indexed'||item.status==='review'?'ok':item.status==='processing'?'warn':''}">${escapeHtml(item.status)}</span>
+            <span class="badge">importance ${Number(item.priority).toFixed(2)}</span>
+          </div>
+        </div>
+        <button class="btn btn-d" onclick="updateFeedStatus('${item.id}')">Next Status</button>
+      </div>
+      <div class="queue-copy">${escapeHtml(item.notes||'No operator note added yet.')}</div>
+    </div>`).join(''):`<div class="queue-item"><div class="queue-head"><div class="queue-title">Queue is empty</div></div><div class="queue-copy">Start by dropping Hawkins, founder principles, or trading psychology sources into the feed station.</div></div>`;
+}
+function renderTrackerGroup(groupId,items){
+  const state=getTrackerState();
+  const host=document.getElementById(groupId);
+  host.innerHTML=items.map((item,index)=>{
+    const key=`${groupId}-${index}`;
+    const checked=!!state[key];
+    return `<label class="check-item"><input type="checkbox" ${checked?'checked':''} onchange="toggleTracker('${key}',this.checked)"><span>${escapeHtml(item)}</span></label>`;
+  }).join('');
+}
+function toggleTracker(key,checked){
+  const state=getTrackerState();
+  state[key]=!!checked;
+  writeJSON(LAB_TRACKER_KEY,state);
+  renderTrainingTracker();
+  renderModelStatus();
+}
+function savePrinciples(){
+  const textarea=document.getElementById('tt-principles');
+  localStorage.setItem(LAB_PRINCIPLES_KEY,textarea.value.trim());
+  textarea.classList.add('saved');
+  window.setTimeout(()=>textarea.classList.remove('saved'),700);
+  renderTrainingTracker();
+}
+function getTrackerStats(){
+  const items=[...TRACKER_GROUPS.hawkins,...TRACKER_GROUPS.newThought,...TRACKER_GROUPS.psychology,...TRACKER_GROUPS.watch];
+  const state=getTrackerState();
+  const keys=Object.keys(state).filter((key)=>state[key]);
+  const complete=keys.length;
+  const total=items.length;
+  const pct=total?Math.round((complete/total)*100):0;
+  let level='Still waking up';
+  if(complete>=12)level='Near fine-tune threshold';
+  else if(complete>=8)level='Reason forming';
+  else if(complete>=4)level='Courage online';
+  const nextFocus=complete<4?'Finish Hawkins core texts':complete<8?'Push through trading psychology':'Founder principles + live ingest';
+  return{complete,total,pct,level,nextFocus};
+}
+function renderTrainingTracker(){
+  renderTrackerGroup('tt-hawkins',TRACKER_GROUPS.hawkins);
+  renderTrackerGroup('tt-new-thought',TRACKER_GROUPS.newThought);
+  renderTrackerGroup('tt-psychology',TRACKER_GROUPS.psychology);
+  renderTrackerGroup('tt-watch-list',TRACKER_GROUPS.watch);
+  document.getElementById('tt-principles').value=getPrinciples();
+  const stats=getTrackerStats();
+  document.getElementById('tt-progress-text').textContent=`${stats.complete} / ${stats.total} complete`;
+  document.getElementById('tt-progress-fill').style.width=`${stats.pct}%`;
+  document.getElementById('tt-level-pill').textContent=`INTELLIGENCE LEVEL ${stats.complete}`;
+  document.getElementById('tt-complete-rows').textContent=`${stats.complete} items checked`;
+  document.getElementById('tt-level-copy').textContent=stats.level;
+  document.getElementById('tt-next-focus').textContent=stats.nextFocus;
+  document.getElementById('tt-principles-status').textContent=getPrinciples()?`${getPrinciples().split(/\s+/).filter(Boolean).length} founder words saved`:'No notes saved yet';
+}
+function getReadiness(){
+  const tracker=getTrackerStats();
+  const queue=getFeedQueue();
+  const indexed=queue.filter((item)=>item.status==='indexed'||item.status==='review').length;
+  return Math.min(100,Math.round((tracker.pct*0.6)+(indexed*6)+(queue.length*2)));
+}
+function renderModelStatus(){
+  const readiness=getReadiness();
+  const queue=getFeedQueue();
+  const tracker=getTrackerStats();
+  const conversations=284+(queue.length*3);
+  const pairs=112+(tracker.complete*4);
+  document.getElementById('ms-readiness').textContent=`${readiness}%`;
+  document.getElementById('ms-readiness-pill').textContent=`READINESS ${readiness}%`;
+  document.getElementById('ms-conversations').textContent=String(conversations);
+  document.getElementById('ms-pairs').textContent=String(pairs);
+  document.getElementById('ms-next').textContent=readiness<45?'Finish Hawkins + founder feed queue':readiness<75?'Build `/api/knowledge-feed` and `/api/training-stats`':'Prepare A100 and QLoRA walkthrough';
+  document.getElementById('ms-cost').textContent=readiness<75?'$200 one-time':'$200 one-time · nearly ready';
+}
+function renderBrainMonitor(){
+  const queue=getFeedQueue();
+  const tracker=getTrackerStats();
+  const indexed=queue.filter((item)=>item.status==='indexed'||item.status==='review').length;
+  const kbCount=1240+(indexed*24)+(queue.length*6);
+  const trainingCount=284+(queue.length*3);
+  const pairCount=112+(tracker.complete*4);
+  const ratio=Math.min(97,71+Math.floor(indexed/2));
+  document.getElementById('bm-kb-count').textContent=String(kbCount);
+  document.getElementById('bm-training-count').textContent=String(trainingCount);
+  document.getElementById('bm-pair-count').textContent=String(pairCount);
+  document.getElementById('bm-ratio').textContent=`${ratio}%`;
+  document.getElementById('bm-signal-pill').textContent=`QUALITY ${ratio}%`;
+  document.getElementById('bm-conversations').innerHTML=[
+    {title:'CEMbot coaching review',status:'upvoted',copy:'Trader recognized fear before entry and stood down. High-vibration alignment improved.',tag:'today'},
+    {title:'Backtest debrief',status:'mixed',copy:'User wanted certainty, CEMbot redirected to evidence and regime context.',tag:'today'},
+    {title:'Market psychology prompt',status:'upvoted',copy:'CEMbot used Hawkins + Douglas framing and the user saved the note.',tag:'24h'}
+  ].map((row)=>`<div class="queue-item"><div class="queue-head"><div class="queue-title">${row.title}</div><span class="badge ${row.status==='upvoted'?'ok':'warn'}">${row.status}</span></div><div class="queue-copy">${row.copy}</div></div>`).join('');
+  document.getElementById('bm-flagged').innerHTML=[
+    {title:'Over-specific strategy answer',copy:'Response jumped into mechanics before checking state. Needs stronger Socratic sequence.'},
+    {title:'Weak community framing',copy:'Missed the collective intelligence angle and focused too narrowly on one chart.'}
+  ].map((row)=>`<div class="queue-item"><div class="queue-head"><div class="queue-title">${row.title}</div><span class="badge err">review</span></div><div class="queue-copy">${row.copy}</div></div>`).join('');
+}
+function addKaylaContent(){
+  const title=(document.getElementById('kp-title').value||'').trim();
+  const type=document.getElementById('kp-type').value;
+  const link=(document.getElementById('kp-link').value||'').trim();
+  const notes=(document.getElementById('kp-notes').value||'').trim();
+  if(!title&&!link&&!notes)return;
+  const queue=getPipeline();
+  queue.unshift({id:`kp-${Date.now()}`,title:title||`${type} content`,type,link,notes,status:'pending',createdAt:new Date().toISOString()});
+  writeJSON(LAB_PIPELINE_KEY,queue.slice(0,12));
+  document.getElementById('kp-title').value='';
+  document.getElementById('kp-link').value='';
+  document.getElementById('kp-notes').value='';
+  renderKaylaPipeline();
+}
+function advancePipeline(id){
+  const next=getPipeline().map((item)=>{
+    if(item.id!==id)return item;
+    const status=item.status==='pending'?'transcribed':item.status==='transcribed'?'embedded':'review';
+    return {...item,status};
+  });
+  writeJSON(LAB_PIPELINE_KEY,next);
+  renderKaylaPipeline();
+}
+function renderKaylaPipeline(){
+  const queue=getPipeline();
+  document.getElementById('kp-pending-pill').textContent=`${queue.length} items queued`;
+  document.getElementById('kp-queue').innerHTML=queue.length?queue.map((item)=>`<div class="queue-item">
+      <div class="queue-head">
+        <div>
+          <div class="queue-title">${escapeHtml(item.title)}</div>
+          <div class="badge-row">
+            <span class="badge">${escapeHtml(item.type)}</span>
+            <span class="badge ${item.status==='embedded'?'ok':item.status==='transcribed'?'warn':''}">${escapeHtml(item.status)}</span>
+          </div>
+        </div>
+        <button class="btn btn-d" onclick="advancePipeline('${item.id}')">Advance</button>
+      </div>
+      <div class="queue-copy">${escapeHtml(item.notes||item.link||'No notes yet')}</div>
+    </div>`).join(''):`<div class="queue-item"><div class="queue-head"><div class="queue-title">No Kayla content queued</div></div><div class="queue-copy">Add weekly videos, social threads, or campaign ideas to begin the extraction loop.</div></div>`;
+}
+updatePriorityLabel('kf-priority','kf-priority-label');
+renderKnowledgeFeed();
+renderTrainingTracker();
+renderModelStatus();
+renderBrainMonitor();
+renderKaylaPipeline();
+applyGate();
+</script>
+</body>
+</html>

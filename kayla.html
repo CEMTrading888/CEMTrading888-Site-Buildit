@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('cem_theme')||'teal');})();</script>
+<!-- CEM-BUILD: APRIL4-MASTER -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEMTrading888 — Kayla's Studio</title>
+<script>
+window.SUPABASE_URL='https://gsnbqohzprencuzkirui.supabase.co';
+window.SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdzbmJxb2h6cHJlbmN1emtpcnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyOTYzMjMsImV4cCI6MjA4OTg3MjMyM30.YsMOVJyz4XYWOT0e_lQjNHDArNLiEdF38RXZuoR1iq8';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600&display=swap');
+:root{--bg:#060810;--bg2:#0a0d14;--bg3:#0e1520;--bg4:#131c28;--accent:#ff6600;--accent2:#ff944d;--accent3:#a04300;--secondary:#00ffcc;--amber:#ffaa00;--red:#ff2244;--text:#c8d8d0;--dim:#6a8a80;--muted:#3a5048;--border:#0f2020;--border2:#1a3030;--mono:'Share Tech Mono',monospace;--cond:'Barlow Condensed',sans-serif;--sans:'Barlow',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,102,0,0.012) 3px,rgba(255,102,0,0.012) 4px);pointer-events:none;z-index:9999;}
+.topbar{flex-shrink:0;height:44px;background:var(--bg2);border-bottom:1px solid var(--border2);display:flex;align-items:center;padding:0 20px;position:relative;z-index:50;}
+.tbl{font-family:var(--cond);font-size:17px;font-weight:900;letter-spacing:.08em;color:var(--text);text-decoration:none;margin-right:32px;}
+.tbl span{color:var(--accent);}
+.tbn{display:flex;gap:0;margin-right:auto;}
+.tbn a{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-decoration:none;padding:0 14px;height:44px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .15s;}
+.tbn a:hover{color:var(--accent);border-bottom-color:var(--accent3);}
+.tbn a.active{color:var(--accent);border-bottom-color:var(--accent);}
+.studio-auth-link{display:none;}
+.tbr{display:flex;align-items:center;gap:12px;}
+.pls{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);}
+.pd{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.tbu{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--dim);}
+.tba{width:28px;height:28px;border-radius:50%;background:rgba(255,102,0,.15);border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-size:11px;font-weight:800;color:var(--accent);}
+.ticker{flex-shrink:0;height:24px;background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;position:relative;}
+.ticker::before,.ticker::after{content:'';position:absolute;top:0;bottom:0;width:40px;z-index:2;}
+.ticker::before{left:0;background:linear-gradient(to right,var(--bg2),transparent);}
+.ticker::after{right:0;background:linear-gradient(to left,var(--bg2),transparent);}
+.ti{display:flex;gap:28px;white-space:nowrap;animation:scroll 25s linear infinite;padding:5px 0;}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.tk{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--dim);}
+.tk .up{color:var(--accent);}
+.tk .dn{color:var(--red);}
+.shell{flex:1;display:grid;grid-template-columns:208px 1fr;overflow:hidden;}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border2);display:flex;flex-direction:column;overflow-y:auto;}
+.sbu{padding:16px 16px 14px;border-bottom:1px solid var(--border2);}
+.sbav{width:44px;height:44px;border-radius:50%;background:var(--bg3);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-size:16px;font-weight:900;color:var(--accent);box-shadow:0 0 20px rgba(255,102,0,.2);margin-bottom:8px;}
+.sbnm{font-family:var(--cond);font-size:14px;font-weight:800;color:var(--text);letter-spacing:.04em;}
+.sbrl{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:2px;}
+.sbtr{display:inline-block;margin-top:7px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;padding:2px 7px;background:rgba(255,102,0,.08);border:1px solid var(--accent3);color:var(--accent2);}
+.sbs{font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;padding:12px 16px 4px;}
+.sbn{list-style:none;}
+.sbn li a{display:flex;align-items:center;gap:9px;padding:8px 16px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--dim);text-decoration:none;text-transform:uppercase;border-left:2px solid transparent;transition:all .12s;cursor:pointer;}
+.sbn li a:hover{color:var(--accent2);background:rgba(255,102,0,.03);border-left-color:var(--accent3);}
+.sbn li a.active{color:var(--accent);background:rgba(255,102,0,.06);border-left-color:var(--accent);}
+.sbico{font-size:11px;width:14px;text-align:center;flex-shrink:0;}
+.sbh{padding:12px 16px;margin-top:auto;border-top:1px solid var(--border2);}
+.sbht{font-family:var(--mono);font-size:8px;letter-spacing:.15em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;}
+.hit{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.hit span{font-family:var(--mono);font-size:9px;color:var(--dim);}
+.hd{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.hdon{background:var(--accent);box-shadow:0 0 5px var(--accent);}
+.hdwn{background:var(--amber);}
+.hdof{background:var(--red);}
+.hdid{background:var(--muted);}
+.content{overflow-y:auto;overflow-x:hidden;background:var(--bg);position:relative;}
+.content::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,102,0,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,102,0,.018) 1px,transparent 1px);background-size:48px 48px;}
+.page{padding:20px 24px;position:relative;z-index:1;}
+.section{display:none;}
+.section.active{display:block;}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border2);}
+.ph h1{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:3px;}
+.ph p{font-size:12px;color:var(--dim);}
+.phr{display:flex;gap:8px;align-items:center;}
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
+.met{background:var(--bg3);border:1px solid var(--border2);padding:12px 14px;position:relative;overflow:hidden;}
+.met::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--accent3),transparent);}
+.met.hot::after{background:linear-gradient(to right,transparent,var(--accent),transparent);}
+.ml{font-family:var(--mono);font-size:8px;letter-spacing:.15em;color:var(--dim);margin-bottom:6px;text-transform:uppercase;}
+.mv{font-family:var(--cond);font-size:24px;font-weight:800;color:var(--text);line-height:1;}
+.mv.tc{color:var(--accent);}
+.ms{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:3px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.card{background:var(--bg3);border:1px solid var(--border2);margin-bottom:12px;}
+.ch{padding:10px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;}
+.ct{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;}
+.csb{font-family:var(--mono);font-size:9px;color:var(--dim);}
+.cb{padding:16px;}
+.cb.p0{padding:0;}
+.b{font-family:var(--mono);font-size:8px;letter-spacing:.1em;padding:2px 7px;border:1px solid;text-transform:uppercase;}
+.bt{color:var(--accent);border-color:var(--accent);background:rgba(255,102,0,.07);}
+.bor{color:var(--secondary);border-color:var(--secondary);background:rgba(0,255,204,.07);}
+.bam{color:var(--amber);border-color:var(--amber);background:rgba(255,170,0,.07);}
+.bgr{color:var(--dim);border-color:var(--muted);background:transparent;}
+.btn{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;border:1px solid var(--accent3);background:transparent;color:var(--accent2);cursor:pointer;transition:all .12s;text-decoration:none;}
+.btn:hover{background:var(--accent);color:var(--bg);border-color:var(--accent);}
+.btn-sm{padding:3px 9px;font-size:8px;}
+.btn-d{border-color:var(--border2);color:var(--dim);}
+.btn-d:hover{background:var(--bg4);color:var(--text);border-color:var(--border2);}
+.sr{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(15,32,32,.4);}
+.sr:last-child{border-bottom:none;}
+.sl{font-family:var(--mono);font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;}
+.sv{font-family:var(--sans);font-size:12px;color:var(--text);}
+.cr{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;}
+.tog{width:32px;height:16px;background:var(--bg2);border:1px solid var(--muted);border-radius:8px;position:relative;cursor:pointer;transition:all .2s;}
+.tog.on{background:rgba(255,102,0,.15);border-color:var(--accent3);}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--muted);transition:all .2s;}
+.tog.on::after{left:18px;background:var(--accent);}
+.ai{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(15,32,32,.5);}
+.ai:last-child{border-bottom:none;}
+.adw{display:flex;align-items:center;flex-direction:column;padding-top:3px;}
+.ad2{width:5px;height:5px;border-radius:50%;background:var(--accent3);flex-shrink:0;}
+.aln{width:1px;background:var(--border2);flex:1;min-height:8px;margin:2px auto 0;}
+.atxt{font-family:var(--mono);font-size:10px;color:var(--dim);line-height:1.4;}
+.atm{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:1px;}
+.bbar{display:flex;gap:8px;margin-bottom:12px;}
+.bsrch{flex:1;background:var(--bg2);border:1px solid var(--border2);padding:7px 12px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;}
+.bsrch::placeholder{color:var(--muted);}
+.bsrch:focus{border-color:var(--accent3);}
+.bcats{display:flex;gap:0;border-bottom:1px solid var(--border2);}
+.bcat{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);padding:6px 12px;cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;text-transform:uppercase;transition:all .12s;}
+.bcat:hover{color:var(--text);}
+.bcat.on{color:var(--accent);border-bottom-color:var(--accent);}
+.br{display:grid;grid-template-columns:260px 1fr 80px 70px;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(15,32,32,.6);transition:background .08s;}
+.br:hover{background:rgba(255,102,0,.03);}
+.br:last-child{border-bottom:none;}
+.bk{font-family:var(--mono);font-size:9px;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bv{font-family:var(--mono);font-size:9px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bd{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:right;}
+.ba{display:flex;gap:4px;justify-content:flex-end;}
+.bhdr{display:grid;grid-template-columns:260px 1fr 80px 70px;gap:10px;padding:5px 14px;background:var(--bg2);border-bottom:1px solid var(--border2);}
+.bhdr span{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;}
+.make-r{display:grid;grid-template-columns:16px 1fr auto auto;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);transition:background .1s;}
+.make-r:last-child{border-bottom:none;}
+.make-r:hover{background:rgba(255,102,0,.03);}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sdot.on{background:var(--accent);box-shadow:0 0 6px var(--accent);}
+.sdot.off{background:var(--muted);}
+.sdot.pen{background:var(--dim);animation:pulse 1.5s infinite;}
+.srn{font-family:var(--mono);font-size:10px;color:var(--text);letter-spacing:.04em;}
+.srm{font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:2px;}
+.srs{font-family:var(--mono);font-size:8px;color:var(--muted);white-space:nowrap;}
+.sra{display:flex;gap:6px;align-items:center;}
+.dz{border:1px solid rgba(255,34,68,.25);padding:14px 16px;background:rgba(255,34,68,.03);}
+.dzt{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--red);text-transform:uppercase;margin-bottom:10px;}
+.dl-btn{background:#111;color:#ccc;border:1px solid #333;padding:5px 10px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:12px;transition:border-color .2s,color .2s;}
+.dl-btn:hover{border-color:var(--accent);color:var(--accent);}
+.dl-tab{flex:1;padding:8px;background:transparent;border:none;border-bottom:2px solid transparent;color:#666;cursor:pointer;font-family:inherit;font-size:11px;letter-spacing:1px;transition:all .2s;}
+.dl-src-active{font-weight:600;}
+@keyframes cembot-pulse{0%,100%{box-shadow:0 0 12px #00ffcc66;}50%{box-shadow:0 0 24px #00ffccaa;}}
+.dl-quick-btn{background:#0a0a0a;color:#666;border:1px solid #1a1a1a;padding:4px 8px;border-radius:12px;cursor:pointer;font-family:inherit;font-size:10px;transition:all .2s;}
+.dl-quick-btn:hover{color:#00ffcc;border-color:#00ffcc33;}
+.dl-msg-bot{background:#0d1f1a;border:1px solid #00ffcc22;border-radius:8px;padding:10px 12px;color:#ccc;font-size:12px;line-height:1.6;}
+.dl-msg-user{background:#111;border:1px solid #333;border-radius:8px;padding:8px 12px;color:#888;font-size:12px;align-self:flex-end;}
+.dl-msg-prompt{background:#00ffcc11;border:1px solid #00ffcc33;border-radius:6px;padding:8px 10px;color:#00ffcc;font-size:11px;cursor:pointer;margin-top:4px;}
+.dl-msg-prompt:hover{background:#00ffcc22;}
+.stat-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--bg3);border:1px solid var(--border2);padding:14px;position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--accent3),transparent);}
+.stat-value{font-family:var(--cond);font-size:24px;font-weight:800;color:var(--accent);line-height:1;}
+.stat-label{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:5px;text-transform:uppercase;letter-spacing:.1em;}
+.field-row{display:flex;gap:8px;}
+.field-stack{display:grid;gap:8px;}
+.input,.text-area,.text-input{width:100%;background:#111;color:#fff;border:1px solid #333;padding:8px 12px;border-radius:4px;font-family:inherit;}
+.text-area{min-height:96px;resize:vertical;}
+.empty-state{color:#444;font-size:12px;text-align:center;padding:20px;}
+@media (max-width:1200px){
+  .metrics,.g2,.stat-grid4{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .br,.bhdr{grid-template-columns:1fr 1fr 80px 70px;}
+}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr;}
+  .sidebar{border-right:none;border-bottom:1px solid var(--border2);}
+  .metrics,.g2,.stat-grid4{grid-template-columns:1fr;}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/static/mission_studio.js?v=20260401b"></script>
+  <link rel="stylesheet" href="/cem-shared.css">
+  <script src="/cem-cursor.js"></script>
+<!-- CEM-BUILD: VISUAL-OVERHAUL-APRIL4 -->
+</head>
+<body>
+<div class="cem-ambient"></div>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="g-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7B2FFF"/>
+      <stop offset="100%" stop-color="#00C9B1"/>
+    </linearGradient>
+    <linearGradient id="g-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7B2FFF"/>
+      <stop offset="100%" stop-color="#FF2D78"/>
+    </linearGradient>
+    <linearGradient id="g-amber" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#00C9B1"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="ambient-glow"></div>
+
+<div id="topbar">
+  <a href="/lab.html" class="nav-btn nav-back" style="margin-right:auto;">← THE LAB</a>
+  <a href="/" class="cem-logo" style="text-decoration:none;margin:0 24px;">CEM<em>TRADING</em><span class="logo-888">888</span></a>
+  <div class="topbar-right">
+    <div class="nav-live"><div class="live-dot"></div><span class="live-label">LIVE</span></div>
+    <button class="avatar-btn" id="user-avatar">C</button>
+  </div>
+</div>
+<script>
+document.querySelectorAll('.nav-btn').forEach(a=>{if(location.pathname.includes(a.getAttribute('href').replace('.html','').replace('/',''))||location.pathname===a.getAttribute('href'))a.classList.add('active');});
+</script>
+
+
+  <div class="ticker-item"><span class="ticker-sym">MES</span><span class="ticker-price" id="tp-MES">5,241</span><span class="chg-pill neg" id="tc-MES">▼ -0.18%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">MNQ</span><span class="ticker-price" id="tp-MNQ">18,302</span><span class="chg-pill neg" id="tc-MNQ">▼ -0.30%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">BTC</span><span class="ticker-price" id="tp-BTC">83,441</span><span class="chg-pill pos" id="tc-BTC">▲ +1.24%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">ETH</span><span class="ticker-price" id="tp-ETH">1,643</span><span class="chg-pill neg" id="tc-ETH">▼ -0.44%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">GOLD</span><span class="ticker-price" id="tp-GOLD">3,127</span><span class="chg-pill pos" id="tc-GOLD">▲ +0.38%</span></div>
+  <div class="ticker-item" style="border-right:none"><span class="ticker-sym">BEST RETURN</span><span class="ticker-price">+17.99%</span><span class="chg-pill pos">MGC SCALPER</span></div>
+</div>
+
+
+  <div class="ticker-item"><span class="ticker-sym">MES</span><span class="ticker-price" id="tp-MES">5,241</span><span class="chg-pill neg" id="tc-MES">▼ -0.18%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">MNQ</span><span class="ticker-price" id="tp-MNQ">18,302</span><span class="chg-pill neg" id="tc-MNQ">▼ -0.30%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">BTC</span><span class="ticker-price" id="tp-BTC">83,441</span><span class="chg-pill pos" id="tc-BTC">▲ +1.24%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">ETH</span><span class="ticker-price" id="tp-ETH">1,643</span><span class="chg-pill neg" id="tc-ETH">▼ -0.44%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">GOLD</span><span class="ticker-price" id="tp-GOLD">3,127</span><span class="chg-pill pos" id="tc-GOLD">▲ +0.38%</span></div>
+  <div class="ticker-item" style="border-right:none"><span class="ticker-sym">BEST RETURN</span><span class="ticker-price">+17.99%</span><span class="chg-pill pos">MGC SCALPER</span></div>
+</div>
+
+
+  <div class="ticker-item"><span class="ticker-sym">MES</span><span class="ticker-price" id="tp-MES">5,241</span><span class="chg-pill neg" id="tc-MES">▼ -0.18%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">MNQ</span><span class="ticker-price" id="tp-MNQ">18,302</span><span class="chg-pill neg" id="tc-MNQ">▼ -0.30%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">BTC</span><span class="ticker-price" id="tp-BTC">83,441</span><span class="chg-pill pos" id="tc-BTC">▲ +1.24%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">ETH</span><span class="ticker-price" id="tp-ETH">1,643</span><span class="chg-pill neg" id="tc-ETH">▼ -0.44%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">GOLD</span><span class="ticker-price" id="tp-GOLD">3,127</span><span class="chg-pill pos" id="tc-GOLD">▲ +0.38%</span></div>
+  <div class="ticker-item" style="border-right:none"><span class="ticker-sym">BEST RETURN</span><span class="ticker-price">+17.99%</span><span class="chg-pill pos">MGC SCALPER</span></div>
+</div>
+
+
+<div class="ticker">
+  <div class="ti">
+    <span class="tk">CONTENT PIECES <span class="up">▲ READY</span></span><span class="tk">ASSET LIBRARY <span class="up">▲ SHARED</span></span><span class="tk">BRAIN KEYS <span class="up">▲ SYNCED</span></span><span class="tk">MAKE.COM <span class="dn">BUILDING</span></span><span class="tk">GRANT TRACKER <span class="up">ONLINE</span></span><span class="tk">THREE.JS STUDIO <span class="up">LIVE</span></span>
+    <span class="tk">CONTENT PIECES <span class="up">▲ READY</span></span><span class="tk">ASSET LIBRARY <span class="up">▲ SHARED</span></span><span class="tk">BRAIN KEYS <span class="up">▲ SYNCED</span></span><span class="tk">MAKE.COM <span class="dn">BUILDING</span></span><span class="tk">GRANT TRACKER <span class="up">ONLINE</span></span><span class="tk">THREE.JS STUDIO <span class="up">LIVE</span></span>
+  </div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sbu">
+      <div class="sbav" id="kayla-side-avatar">KM</div>
+      <div class="sbnm" id="kayla-side-name">Kayla Morone</div>
+      <div class="sbrl">// COO · CEMTrading888 LLC</div>
+      <span class="sbtr">// CREATIVE DIRECTOR · ARCHITECT</span>
+    </div>
+    <div class="sbs">// Navigate</div>
+    <ul class="sbn">
+      <li><a href="#" class="active" onclick="showSection('overview',this)"><span class="sbico">◈</span>Overview</a></li>
+      <li><a href="#" onclick="showSection('design-lab')"><span class="sbico">🎨</span>Design Lab</a></li>
+      <li><a href="#" onclick="showSection('content-hub',this)"><span class="sbico">📱</span>Content Hub</a></li>
+      <li><a href="#" onclick="showSection('brain',this)"><span class="sbico">🧠</span>Brain / Memory</a></li>
+      <li><a href="#" onclick="showSection('grant-tracker',this)"><span class="sbico">📋</span>Grant Tracker</a></li>
+      <li><a href="#" onclick="showSection('nerve-center',this)"><span class="sbico">⚡</span>Nerve Center</a></li>
+      <li><a href="#" onclick="showSection('settings',this)"><span class="sbico">◫</span>Settings</a></li>
+    </ul>
+    <div class="sbs">// External</div>
+    <ul class="sbn">
+      <li><a href="/profile.html"><span class="sbico">◬</span>Chandler Mission Control</a></li>
+      <li><a href="/lab-dashboard.html"><span class="sbico">▶</span>Private Lab</a></li>
+      <li><a href="https://make.com" target="_blank"><span class="sbico">⇄</span>Make.com ↗</a></li>
+      <li><a href="https://github.com/CEMTrading888/cem-bot-builder" target="_blank"><span class="sbico">◎</span>GitHub ↗</a></li>
+    </ul>
+    <div class="sbh">
+      <div class="sbht">// System Health</div>
+      <div class="hit"><div class="hd hdon"></div><span>Kayla Studio · Live</span></div>
+      <div class="hit"><div class="hd hdon"></div><span>Shared Brain · Active</span></div>
+      <div class="hit"><div class="hd hdon"></div><span>3D Studio · Ready</span></div>
+      <div class="hit"><div class="hd hdwn"></div><span>Make.com · Building</span></div>
+      <div class="hit"><div class="hd hdid"></div><span>Grant Pipeline · Empty</span></div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="page">
+      <section id="section-overview" class="section active">
+        <div class="ph">
+          <div><h1>// Kayla's Studio · Overview</h1><p>Creative operations, asset production, content systems, and brand architecture.</p></div>
+          <div class="phr"><span class="b bt">CREATIVE DIRECTOR</span><span class="b bor">ARCHITECT</span></div>
+        </div>
+        <div class="metrics">
+          <div class="met hot"><div class="ml">// Content Pieces</div><div class="mv tc" id="ko-content-pieces">0</div><div class="ms">TikTok, IG, YouTube ideas tracked</div></div>
+          <div class="met"><div class="ml">// Assets Created</div><div class="mv" id="ko-assets-created">0</div><div class="ms">Design Lab outputs and exports</div></div>
+          <div class="met"><div class="ml">// Brain Keys Written</div><div class="mv" id="ko-brain-keys">0</div><div class="ms">Shared memory write count</div></div>
+          <div class="met"><div class="ml">// Active Automations</div><div class="mv" id="ko-automations">0</div><div class="ms">Make.com creative flows</div></div>
+          <div class="met"><div class="ml">// Grant Applications</div><div class="mv tc" id="ko-grants">0</div><div class="ms">Research to submission pipeline</div></div>
+        </div>
+        <div class="g2">
+          <div class="card cem-card">
+            <div class="ch"><span class="ct">// Recent Activity</span><span class="csb">Empty until you start creating</span></div>
+            <div class="cb" id="kayla-activity-log"></div>
+          </div>
+          <div class="card cem-card">
+            <div class="ch"><span class="ct">// Studio Snapshot</span><span class="csb">Primary focuses for this page</span></div>
+            <div class="cb">
+              <div class="sr"><span class="sl">Primary Feature</span><span class="sv">Three.js Design Lab</span></div>
+              <div class="sr"><span class="sl">Content Pipeline</span><span class="sv">TikTok · Instagram · YouTube</span></div>
+              <div class="sr"><span class="sl">Asset Library</span><span class="sv">Shared with Chandler via `cem_assets`</span></div>
+              <div class="sr"><span class="sl">Grant Focus</span><span class="sv">Track every application and deadline</span></div>
+              <div class="sr"><span class="sl">Brain Surface</span><span class="sv">Shared Supabase key browser</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-design-lab" class="section" data-design-lab>
+        <div class="ph"><div><h1>// Design Lab</h1><p>Fabric.js canvas editor + Three.js 3D Studio for campaign assets, scenes, thumbnails, and brand experiments.</p></div><div class="phr"><span class="b bt">2D + 3D</span><span class="b bor">PRIMARY FEATURE</span></div></div>
+
+        <div style="display:flex;gap:0;margin-bottom:12px;border:1px solid #333;border-radius:6px;overflow:hidden;width:fit-content;">
+          <button id="dl-mode-2d" onclick="dlSetMode('2d')" style="padding:8px 20px;background:#ff660022;color:#ff6600;border:none;cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:1px;">2D CANVAS</button>
+          <button id="dl-mode-3d" onclick="dlSetMode('3d')" style="padding:8px 20px;background:transparent;color:#666;border:none;cursor:pointer;font-family:inherit;font-size:12px;letter-spacing:1px;">3D STUDIO</button>
+        </div>
+
+        <div id="dl-2d-panel" style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;gap:16px;height:calc(100vh - 240px);min-height:560px;">
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;padding:8px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;">
+                <button onclick="dlAddText()" class="dl-btn">＋ Text</button>
+                <button onclick="dlAddRect()" class="dl-btn">▣ Rect</button>
+                <button onclick="dlAddCircle()" class="dl-btn">◯ Circle</button>
+                <button onclick="dlAddTriangle()" class="dl-btn">△ Triangle</button>
+                <button onclick="dlAddLine()" class="dl-btn">／ Line</button>
+                <button onclick="dlAddImage()" class="dl-btn">🖼 Image</button>
+                <button id="dl-undo" onclick="dlUndo()" class="dl-btn">↶ Undo</button>
+                <button id="dl-redo" onclick="dlRedo()" class="dl-btn">↷ Redo</button>
+                <button onclick="dlDeleteSelected()" class="dl-btn">✕ Delete</button>
+                <button onclick="dlClear()" class="dl-btn" style="color:#ff6600;">⚠ Clear</button>
+                <div style="flex:1;"></div>
+                <div style="display:flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #222;border-radius:999px;background:#0d0d0d;">
+                  <button onclick="dlZoomOut()" class="dl-btn" style="padding:4px 8px;">-</button>
+                  <span id="dl-zoom-label" style="color:#888;font-size:11px;min-width:42px;text-align:center;">100%</span>
+                  <button onclick="dlZoomIn()" class="dl-btn" style="padding:4px 8px;">+</button>
+                  <button onclick="dlZoomReset()" class="dl-btn" style="padding:4px 8px;">Reset</button>
+                </div>
+                <select id="dl-export-format" style="background:#111;color:#ff6600;border:1px solid #ff660033;padding:4px 8px;border-radius:4px;">
+                  <option value="png">PNG</option>
+                  <option value="jpg">JPG</option>
+                  <option value="svg">SVG</option>
+                </select>
+                <button onclick="dlExport()" class="dl-btn" style="background:#ff660022;color:#ff6600;border-color:#ff6600;">⬇ Export</button>
+              </div>
+              <div style="flex:1;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;">
+                <canvas id="dl-canvas"></canvas>
+              </div>
+            </div>
+
+            <div style="width:320px;display:flex;flex-direction:column;gap:12px;--dl-active:#ff6600;">
+              <div style="display:flex;border-bottom:1px solid #1a1a1a;margin-bottom:0;">
+                <button onclick="dlSetAssetTab('ai')" id="dltab-ai" class="dl-tab active">⚡ AI Generate</button>
+                <button onclick="dlSetAssetTab('library')" id="dltab-library" class="dl-tab">📦 Library</button>
+                <button onclick="dlSetAssetTab('mine')" id="dltab-mine" class="dl-tab">⭐ My Assets</button>
+              </div>
+
+              <div id="dlpanel-ai" style="display:flex;flex-direction:column;gap:12px;">
+                <div style="padding:12px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;">
+                  <div style="color:#ff6600;font-size:11px;letter-spacing:2px;margin-bottom:8px;">// AI MODEL</div>
+                  <select id="dl-model" style="width:100%;background:#111;color:#fff;border:1px solid #333;padding:8px;border-radius:4px;">
+                    <option value="grok">Grok Image (xAI)</option>
+                    <option value="flux">Flux Pro (Black Forest)</option>
+                    <option value="cembot">CEMbot Custom (Our Model)</option>
+                    <option value="dalle">DALL-E 3 (OpenAI)</option>
+                  </select>
+                </div>
+
+                <div style="padding:12px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;flex:1;display:flex;flex-direction:column;gap:8px;">
+                  <div style="color:#ff6600;font-size:11px;letter-spacing:2px;">// GENERATE IMAGE</div>
+                  <textarea id="dl-prompt" placeholder="Describe the image you want to generate..." style="flex:1;background:#111;color:#fff;border:1px solid #333;padding:8px;border-radius:4px;resize:none;min-height:80px;font-family:inherit;"></textarea>
+                  <button onclick="dlGenerate()" id="dl-generate-btn" style="width:100%;padding:10px;background:#ff660022;color:#ff6600;border:1px solid #ff6600;border-radius:4px;cursor:pointer;font-family:inherit;letter-spacing:1px;">⚡ GENERATE</button>
+                  <div id="dl-status" style="color:#888;font-size:11px;min-height:16px;"></div>
+                </div>
+
+                <div style="padding:12px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;">
+                  <div style="color:#ff6600;font-size:11px;letter-spacing:2px;margin-bottom:8px;">// GENERATED · CLICK TO ADD</div>
+                  <div id="dl-gallery" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:200px;overflow-y:auto;">
+                    <div data-empty style="color:#444;font-size:11px;grid-column:1/-1;text-align:center;padding:20px;">No images yet. Generate one above.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="dlpanel-library" style="display:none;flex-direction:column;gap:10px;">
+                <div style="display:flex;gap:6px;">
+                  <button onclick="dlLibSearch('undraw')" id="dlsrc-undraw" class="dl-btn dl-src-active" style="flex:1;font-size:10px;">unDraw</button>
+                  <button onclick="dlLibSearch('svgrepo')" id="dlsrc-svgrepo" class="dl-btn" style="flex:1;font-size:10px;">SVG Repo</button>
+                </div>
+
+                <div style="display:flex;gap:6px;">
+                  <input id="dl-lib-query" type="text" placeholder="Search assets..." style="flex:1;background:#111;color:#fff;border:1px solid #333;padding:6px 10px;border-radius:4px;font-family:inherit;font-size:12px;" onkeydown="if(event.key==='Enter') dlLibSearch(window.dlActiveSource || 'undraw')">
+                  <button onclick="dlLibSearch(window.dlActiveSource || 'undraw')" class="dl-btn" style="color:#ff6600;border-color:#ff6600;">↵</button>
+                </div>
+
+                <div id="dl-undraw-color-row" style="display:flex;align-items:center;gap:8px;">
+                  <span style="color:#666;font-size:10px;">TINT:</span>
+                  <input type="color" id="dl-undraw-color" value="#ff6600" style="width:32px;height:24px;border:1px solid #333;background:none;cursor:pointer;border-radius:4px;" onchange="dlLibSearch('undraw')">
+                  <span style="color:#444;font-size:10px;">Click image to add to canvas</span>
+                </div>
+
+                <div id="dl-lib-results" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:300px;overflow-y:auto;">
+                  <div style="color:#444;font-size:11px;grid-column:1/-1;text-align:center;padding:20px;">Search for illustrations, icons, or graphics above.</div>
+                </div>
+
+                <div id="dl-lib-status" style="color:#666;font-size:10px;min-height:14px;"></div>
+              </div>
+
+              <div id="dlpanel-mine" style="display:none;flex-direction:column;gap:10px;">
+                <div style="color:#ff6600;font-size:11px;letter-spacing:2px;">// YOUR SAVED ASSETS</div>
+                <div id="dl-mine-results" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:360px;overflow-y:auto;">
+                  <div style="color:#444;font-size:11px;grid-column:1/-1;text-align:center;padding:20px;">Loading your assets...</div>
+                </div>
+                <button onclick="dlLoadMyAssets()" class="dl-btn" style="font-size:10px;">↻ Refresh</button>
+              </div>
+
+              <div style="padding:12px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;">
+                <div style="color:#ff6600;font-size:11px;letter-spacing:2px;margin-bottom:8px;">// BRAND KIT</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <div onclick="dlInsertColor('#FF6600')" style="width:28px;height:28px;background:#FF6600;border-radius:4px;cursor:pointer;" title="Orange"></div>
+                  <div onclick="dlInsertColor('#00FFCC')" style="width:28px;height:28px;background:#00FFCC;border-radius:4px;cursor:pointer;" title="Teal"></div>
+                  <div onclick="dlInsertColor('#0a0a0a')" style="width:28px;height:28px;background:#0a0a0a;border:1px solid #333;border-radius:4px;cursor:pointer;" title="Black"></div>
+                  <div onclick="dlInsertColor('#ffffff')" style="width:28px;height:28px;background:#ffffff;border-radius:4px;cursor:pointer;" title="White"></div>
+                  <button onclick="dlAddLogo()" class="dl-btn" style="font-size:10px;">Kayla Logo</button>
+                  <button onclick="dlAddBrandText()" class="dl-btn" style="font-size:10px;">Brand Text</button>
+                </div>
+              </div>
+              <div style="padding:12px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;display:flex;flex-direction:column;gap:10px;">
+                <div style="color:#ff6600;font-size:11px;letter-spacing:2px;">// TEXT + COLOR</div>
+                <select id="dl-font-family" style="width:100%;background:#111;color:#fff;border:1px solid #333;padding:8px;border-radius:4px;">
+                  <option value="Share Tech Mono">Share Tech Mono</option>
+                  <option value="Barlow">Barlow</option>
+                  <option value="Barlow Condensed">Barlow Condensed</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Georgia">Georgia</option>
+                </select>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <input id="dl-font-size" type="number" min="10" max="180" value="32" style="flex:1;background:#111;color:#fff;border:1px solid #333;padding:8px;border-radius:4px;font-family:inherit;">
+                  <button id="dl-text-bold" type="button" class="dl-icon-btn dl-font-btn">B</button>
+                  <button id="dl-text-italic" type="button" class="dl-icon-btn dl-font-btn">I</button>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                  <label style="display:flex;flex-direction:column;gap:4px;color:#666;font-size:10px;">Fill<input id="dl-fill-color" type="color" value="#ff6600" style="width:100%;height:34px;border:1px solid #333;border-radius:6px;background:#111;"></label>
+                  <label style="display:flex;flex-direction:column;gap:4px;color:#666;font-size:10px;">Stroke<input id="dl-stroke-color" type="color" value="#00ffcc" style="width:100%;height:34px;border:1px solid #333;border-radius:6px;background:#111;"></label>
+                  <label style="display:flex;flex-direction:column;gap:4px;color:#666;font-size:10px;">BG<input id="dl-bg-color" type="color" value="#0a0a0a" style="width:100%;height:34px;border:1px solid #333;border-radius:6px;background:#111;"></label>
+                </div>
+              </div>
+              <div style="padding:12px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;display:flex;flex-direction:column;gap:8px;">
+                <div style="color:#ff6600;font-size:11px;letter-spacing:2px;">// TEMPLATES</div>
+                <button class="dl-btn dl-template-btn" data-template="bot_logo" onclick="dlApplyTemplate('bot_logo')">Bot Logo Template</button>
+                <button class="dl-btn dl-template-btn" data-template="social_post" onclick="dlApplyTemplate('social_post')">Social Post Template</button>
+                <button class="dl-btn dl-template-btn" data-template="banner" onclick="dlApplyTemplate('banner')">Banner Template</button>
+              </div>
+              <div style="padding:12px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                  <div style="color:#ff6600;font-size:11px;letter-spacing:2px;">// LAYERS</div>
+                  <div style="color:#444;font-size:10px;">Drag SVG cards onto the canvas</div>
+                </div>
+                <div id="dl-layer-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="dl-3d-panel" style="display:none;flex-direction:column;gap:8px;height:calc(100vh - 260px);min-height:560px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;padding:8px;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:6px;">
+            <button onclick="dl3dAddText()" class="dl-btn">＋ 3D Text</button>
+            <button onclick="dl3dAddBox()" class="dl-btn">▣ Box</button>
+            <button onclick="dl3dAddSphere()" class="dl-btn">● Sphere</button>
+            <button onclick="dl3dAddPlane()" class="dl-btn">▬ Plane</button>
+            <button onclick="dl3dAddParticles()" class="dl-btn">✦ Particles</button>
+            <button onclick="dl3dToggleWireframe()" class="dl-btn">⬡ Wireframe</button>
+            <button onclick="dl3dReset()" class="dl-btn" style="color:#ff6600;">↺ Reset</button>
+            <div style="flex:1;"></div>
+            <button onclick="dl3dScreenshot()" class="dl-btn" style="color:#00ffcc;border-color:#00ffcc;">📷 Screenshot</button>
+          </div>
+
+          <div style="flex:1;position:relative;background:#050505;border:1px solid #1a1a1a;border-radius:6px;overflow:hidden;">
+            <canvas id="dl-3d-canvas" style="width:100%;height:100%;display:block;"></canvas>
+            <div style="position:absolute;bottom:8px;left:8px;color:#333;font-size:10px;letter-spacing:1px;">DRAG TO ORBIT · SCROLL TO ZOOM</div>
+            <div id="dl-3d-status" style="position:absolute;top:8px;right:8px;color:#ff660044;font-size:10px;">THREE.JS r128</div>
+          </div>
+        </div>
+
+        <div id="dl-cembot-drawer" style="position:fixed;bottom:0;right:0;width:360px;background:#080808;border-top:1px solid #00ffcc33;border-left:1px solid #00ffcc33;transform:translateY(calc(100% - 48px));transition:transform .3s ease;z-index:1000;border-radius:12px 0 0 0;box-shadow:0 0 30px #00ffcc11;">
+          <div onclick="dlToggleCembot()" style="padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid #0a0a0a;user-select:none;">
+            <div id="dl-cembot-orb" style="width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #00ffcc, #005544);box-shadow:0 0 12px #00ffcc66;flex-shrink:0;animation:cembot-pulse 2s ease-in-out infinite;"></div>
+            <span style="color:#00ffcc;font-size:12px;letter-spacing:2px;flex:1;">CEMBOT · CREATIVE</span>
+            <span id="dl-cembot-chevron" style="color:#00ffcc44;font-size:14px;">▲</span>
+          </div>
+          <div id="dl-cembot-messages" style="height:280px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;"></div>
+          <div style="padding:10px 12px;border-top:1px solid #0a0a0a;display:flex;gap:8px;">
+            <input id="dl-cembot-input" type="text" placeholder="Ask CEMbot for creative help..." style="flex:1;background:#111;color:#fff;border:1px solid #333;padding:8px 12px;border-radius:4px;font-family:inherit;font-size:12px;" onkeydown="if(event.key==='Enter') dlCembotSend()">
+            <button id="dl-cembot-mic" type="button" onclick="dlCembotToggleVoice()" style="background:#111;color:#ccc;border:1px solid #333;padding:8px 12px;border-radius:4px;cursor:pointer;font-family:inherit;">🎙️</button>
+            <button id="dl-cembot-send" onclick="dlCembotSend()" style="background:#00ffcc22;color:#00ffcc;border:1px solid #00ffcc;padding:8px 12px;border-radius:4px;cursor:pointer;font-family:inherit;">▶</button>
+          </div>
+          <div style="padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid #0a0a0a;">
+            <button onclick="dlCembotQuick('What should I create for TikTok today?')" class="dl-quick-btn">TikTok idea</button>
+            <button onclick="dlCembotQuick('Give me a Grok image prompt for a trading ad')" class="dl-quick-btn">AI prompt</button>
+            <button onclick="dlCembotQuick('What colors work best for a trading brand?')" class="dl-quick-btn">Brand colors</button>
+            <button onclick="dlCembotQuick('Which AI model should I use for photorealistic images?')" class="dl-quick-btn">Best model?</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-content-hub" class="section">
+        <div class="ph"><div><h1>// Content Hub</h1><p>TikTok, Instagram, and YouTube pipeline for every content idea and deliverable.</p></div><div class="phr"><span class="b bt">SOCIAL PIPELINE</span><span class="b bgr">LOCAL STORAGE V1</span></div></div>
+        <div class="stat-grid4 cem-card">
+          <div class="stat-card cem-card"><div class="stat-value cem-card" id="ch-tiktok">0</div><div class="stat-label cem-card">TikTok Posts</div></div>
+          <div class="stat-card cem-card"><div class="stat-value cem-card" id="ch-ig">0</div><div class="stat-label cem-card">IG Posts</div></div>
+          <div class="stat-card cem-card"><div class="stat-value cem-card" id="ch-yt">0</div><div class="stat-label cem-card">YT Videos</div></div>
+          <div class="stat-card cem-card"><div class="stat-value cem-card" id="ch-ideas">0</div><div class="stat-label cem-card">Ideas Queued</div></div>
+        </div>
+        <div class="card cem-card">
+          <div class="ch"><span class="ct">// Content Pipeline</span><span class="csb">Add ideas, then turn them into campaigns</span></div>
+          <div class="cb">
+            <div id="ch-pipeline" style="display:flex;flex-direction:column;gap:8px;">
+              <div class="empty-state cem-card">No content items yet. Add your first idea below.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card cem-card">
+          <div class="ch"><span class="ct">// Add Idea</span><span class="csb">TikTok · Instagram · YouTube</span></div>
+          <div class="cb">
+            <div class="field-row">
+              <input id="ch-new-idea" class="input" type="text" placeholder="New content idea...">
+              <select id="ch-platform" class="input" style="max-width:150px;">
+                <option>TikTok</option>
+                <option>Instagram</option>
+                <option>YouTube</option>
+                <option>All</option>
+              </select>
+              <button onclick="chAddIdea()" class="btn">+ Add</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-brain" class="section">
+        <div class="ph"><div><h1>// Brain / Memory</h1><p>Shared Supabase `cem_context` surface used by both Chandler and Kayla.</p></div><span style="font-family:var(--mono);font-size:9px;color:var(--dim);">Shared brain surface</span></div>
+        <div class="bbar"><input type="text" class="bsrch" placeholder="// Search keys or content..." id="brain-search" oninput="brainSearch()"><button class="btn">Search</button></div>
+        <div class="bcats">
+          <button class="bcat on" onclick="brainFilter('all',this)">All</button>
+          <button class="bcat" onclick="brainFilter('creative',this)">Creative</button>
+          <button class="bcat" onclick="brainFilter('lab',this)">Lab</button>
+          <button class="bcat" onclick="brainFilter('tasks',this)">Tasks</button>
+          <button class="bcat" onclick="brainFilter('status',this)">Status</button>
+        </div>
+        <div class="card cem-card" style="margin-top:0;border-top:none;">
+          <div class="bhdr"><span>Key Name</span><span>Preview</span><span>Date</span><span>Actions</span></div>
+          <div id="brain-list">
+            <div class="br" data-cat="creative"><div class="bk">LAB_DASHBOARD_AND_EDUCATION_ARCHITECTURE</div><div class="bv">Lab layout, education architecture, learning surfaces, and founder-only dashboard context.</div><div class="bd">Mar 31</div><div class="ba"><button class="btn btn-sm">View</button></div></div>
+            <div class="br" data-cat="creative"><div class="bk">CEMBOT_COMPLETE_HANDOFF_NEW_CHAT</div><div class="bv">Master handoff covering philosophy, training data, consciousness stack, and product roadmap.</div><div class="bd">Mar 31</div><div class="ba"><button class="btn btn-sm">View</button></div></div>
+            <div class="br" data-cat="lab"><div class="bk">OPUS_TASK_KAYLA_PROFILE_AND_DESIGN_LAB_V1</div><div class="bv">Kayla Mission Control, 3D studio, content hub, grant tracker, and shared asset library table.</div><div class="bd">Mar 31</div><div class="ba"><button class="btn btn-sm">View</button></div></div>
+            <div class="br" data-cat="lab"><div class="bk">OPUS_TASK_DESIGN_LAB_V1</div><div class="bv">Fabric.js design lab spec, AI generation panel, export flow, and Mission Control placement.</div><div class="bd">Mar 31</div><div class="ba"><button class="btn btn-sm">View</button></div></div>
+            <div class="br" data-cat="tasks"><div class="bk">OPUS_RESULT_LAB_DASHBOARD</div><div class="bv">Lab dashboard shipped with routing, local gate, tracker surfaces, and founder-only views.</div><div class="bd">Mar 31</div><div class="ba"><button class="btn btn-sm">View</button></div></div>
+            <div class="br" data-cat="status"><div class="bk">PROJECT STATUS</div><div class="bv">Site live. Stripe live. Supabase brain active. 3D work separated to lab files. Make.com in buildout.</div><div class="bd">Mar 30</div><div class="ba"><button class="btn btn-sm">View</button></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-grant-tracker" class="section">
+        <div class="ph"><div><h1>// Grant Tracker</h1><p>Track every grant application, deadline, and status from research through award.</p></div><div class="phr"><span class="b bt">APPLICATION PIPELINE</span><span class="b bgr">DEADLINES VISIBLE</span></div></div>
+        <div class="card cem-card">
+          <div class="ch"><span class="ct">// Active Grants</span><span class="csb">Local tracker until Supabase sync lands</span></div>
+          <div class="cb">
+            <div id="gt-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+          </div>
+        </div>
+        <div class="card cem-card">
+          <div class="ch"><span class="ct">// Add Grant</span><span class="csb">Name, deadline, and current status</span></div>
+          <div class="cb">
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;">
+              <input id="gt-name" class="input" placeholder="Grant name...">
+              <input id="gt-deadline" class="input" type="date">
+              <select id="gt-status" class="input">
+                <option>Researching</option>
+                <option>In Progress</option>
+                <option>Submitted</option>
+                <option>Awarded</option>
+                <option>Rejected</option>
+              </select>
+              <button onclick="gtAdd()" class="btn">+ Add</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-nerve-center" class="section">
+        <div class="ph"><div><h1>// Nerve Center</h1><p>Creative and operations automations flowing through Make.com and the shared brain.</p></div><button class="btn btn-sm">↻ Refresh</button></div>
+        <div class="card cem-card">
+          <div class="ch"><span class="ct">// Make.com · Creative Ops</span><span class="csb">Shared founder automation map</span></div>
+          <div class="cb p0">
+            <div class="make-r"><div class="sdot pen"></div><div><div class="srn">Kayla Content Intake</div><div class="srm">New content ideas route to planning queue, captions, hooks, and repurpose checklist.</div></div><div class="srs">Planning</div><div class="sra"><span class="b bam">BUILDING</span></div></div>
+            <div class="make-r"><div class="sdot pen"></div><div><div class="srn">Asset Library Sync</div><div class="srm">Generated assets persist to shared `cem_assets` table for Chandler + Kayla access.</div></div><div class="srs">Shared</div><div class="sra"><span class="b bam">BUILDING</span></div></div>
+            <div class="make-r"><div class="sdot off"></div><div><div class="srn">Grant Deadline Reminder</div><div class="srm">Upcoming grant deadlines alert founders before applications expire.</div></div><div class="srs">Scheduled</div><div class="sra"><span class="b bgr">PLANNED</span></div></div>
+            <div class="make-r"><div class="sdot off"></div><div><div class="srn">Brain Key Publishing</div><div class="srm">Founder notes promoted into canonical brain keys for the team and CEMbot.</div></div><div class="srs">Manual</div><div class="sra"><span class="b bgr">PLANNED</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-settings" class="section">
+        <div class="ph"><div><h1>// Settings</h1><p>Identity, notifications, and system preferences for Kayla's Studio.</p></div></div>
+        <div class="g2">
+          <div>
+            <div class="card cem-card" style="margin-bottom:12px;">
+              <div class="ch"><span class="ct">// Account</span></div>
+              <div class="cb">
+                <div class="sr"><span class="sl">Name</span><span class="sv" id="kayla-account-name">Kayla Morone</span></div>
+                <div class="sr"><span class="sl">Email</span><span class="sv" id="kayla-account-email" style="font-size:11px;">kayla@cemtrading888.com</span></div>
+                <div class="sr"><span class="sl">Role</span><span class="sv">COO · CEMTrading888 LLC</span></div>
+                <div class="sr"><span class="sl">Tier</span><span class="b bt">CREATIVE DIRECTOR</span></div>
+                <div class="sr"><span class="sl">Level</span><span class="b bor">ARCHITECT</span></div>
+                <div class="sr"><span class="sl">Workspace</span><span class="sv">Kayla's Studio</span></div>
+              </div>
+            </div>
+            <div class="card cem-card">
+              <div class="ch"><span class="ct">// Notifications</span></div>
+              <div class="cb">
+                <div class="sr"><span class="sl">Content Queue Reminders</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+                <div class="sr"><span class="sl">Grant Deadline Alerts</span><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+                <div class="sr"><span class="sl">Asset Export Log</span><div class="tog" onclick="this.classList.toggle('on')"></div></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card cem-card" style="margin-bottom:12px;">
+              <div class="ch"><span class="ct">// Connections</span></div>
+              <div class="cb">
+                <div class="sr"><span class="sl">Supabase</span><div class="cr"><div class="hd hdon"></div><span class="b bt">CONNECTED</span></div></div>
+                <div class="sr"><span class="sl">Shared Asset Table</span><div class="cr"><div class="hd hdon"></div><span class="b bt">READY</span></div></div>
+                <div class="sr"><span class="sl">Make.com</span><div class="cr"><div class="hd hdwn"></div><span class="b bam">BUILDING</span></div></div>
+                <div class="sr"><span class="sl">AI Image Routing</span><div class="cr"><div class="hd hdon"></div><span class="b bt">STUBBED</span></div></div>
+              </div>
+            </div>
+            <div class="dz">
+              <div class="dzt">// Danger Zone</div>
+              <div class="sr"><span class="sl">Reset Local Studio State</span><button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="resetKaylaStudio()">Reset</button></div>
+              <div class="sr"><span class="sl">Sign Out</span><button class="btn btn-sm" style="border-color:var(--red);color:var(--red);" onclick="authSignOut()">Sign Out</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+const CEM_AUTH_SESSION_KEY='cem_auth_session_v1';
+const CEM_SUPABASE_URL=window.SUPABASE_URL||'https://gsnbqohzprencuzkirui.supabase.co';
+const CEM_SUPABASE_ANON_KEY=window.SUPABASE_ANON_KEY||'';
+const CEM_PROFILE_ROUTES=Object.freeze({
+  'cem@cemtrading888.com':'/profile.html',
+  'chandlermorone@gmail.com':'/profile.html',
+  'kayla@cemtrading888.com':'/kayla.html',
+  'kayla.nicole.ai@gmail.com':'/kayla.html'
+});
+let __cemKaylaAuthClient=null;
+function cemCreateAuthClient(){
+  if(__cemKaylaAuthClient)return __cemKaylaAuthClient;
+  if(!window.supabase?.createClient||!CEM_SUPABASE_ANON_KEY)return null;
+  __cemKaylaAuthClient=window.supabase.createClient(CEM_SUPABASE_URL,CEM_SUPABASE_ANON_KEY,{
+    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+  });
+  return __cemKaylaAuthClient;
+}
+function cemAuthEmail(value){
+  return String(value||'').trim().toLowerCase();
+}
+function cemResolveProfileRoute(email){
+  return CEM_PROFILE_ROUTES[cemAuthEmail(email)]||'/user-profile.html';
+}
+function cemDisplayName(user,fallback='Kayla Morone'){
+  const metaName=String(user?.user_metadata?.display_name||user?.user_metadata?.full_name||'').trim();
+  if(metaName)return metaName;
+  const email=cemAuthEmail(user?.email);
+  if(email)return email.split('@')[0].replace(/[._-]+/g,' ').replace(/\b\w/g,(char)=>char.toUpperCase());
+  return fallback;
+}
+function cemInitials(value){
+  const initials=String(value||'').trim().split(/\s+/).filter(Boolean).slice(0,2).map((part)=>part.charAt(0).toUpperCase()).join('');
+  return initials||'KM';
+}
+function cemSyncKaylaAuthState(user){
+  const profile={id:String(user?.id||''),email:cemAuthEmail(user?.email),name:cemDisplayName(user)};
+  try{
+    localStorage.setItem(CEM_AUTH_SESSION_KEY,JSON.stringify({...profile,route:'/kayla.html',tier:'pilot'}));
+    localStorage.setItem('cem_user_profile',JSON.stringify(profile));
+    localStorage.setItem('cem_user_tier','pilot');
+    localStorage.setItem('cem_trader_tier','pilot');
+    localStorage.setItem('cem_user',JSON.stringify({
+      id:profile.id,
+      email:profile.email,
+      username:'kayla',
+      displayName:profile.name,
+      name:profile.name,
+      role:'founder',
+      tier:'pilot',
+      theme:'tron',
+      personality:'Strategist'
+    }));
+  }catch(err){
+    console.error(err);
+  }
+  return profile;
+}
+function applyKaylaAuthUi(profile){
+  const name=String(profile?.name||'Kayla Morone').trim()||'Kayla Morone';
+  const email=String(profile?.email||'kayla@cemtrading888.com').trim()||'kayla@cemtrading888.com';
+  const initials=cemInitials(name);
+  ['kayla-top-name','kayla-side-name','kayla-account-name'].forEach((id)=>{
+    const el=document.getElementById(id);
+    if(el)el.textContent=name;
+  });
+  ['kayla-top-avatar','kayla-side-avatar'].forEach((id)=>{
+    const el=document.getElementById(id);
+    if(el)el.textContent=initials;
+  });
+  const emailEl=document.getElementById('kayla-account-email');
+  if(emailEl)emailEl.textContent=email;
+}
+async function authSignOut(){
+  const client=cemCreateAuthClient();
+  if(client)await client.auth.signOut();
+  ['cem_auth_session_v1','cem_user_profile','cem_user_tier','cem_trader_tier','cem_user'].forEach((key)=>localStorage.removeItem(key));
+  window.location.href='/';
+}
+(async function(){
+  const client=cemCreateAuthClient();
+  if(!client){
+    window.location.replace('/?login=1');
+    return;
+  }
+  const {data:{session}}=await client.auth.getSession();
+  if(!session?.user){
+    window.location.replace('/?login=1');
+    return;
+  }
+  const route=cemResolveProfileRoute(session.user.email);
+  if(route!=='/kayla.html'){
+    window.location.replace(route);
+    return;
+  }
+  applyKaylaAuthUi(cemSyncKaylaAuthState(session.user));
+  client.auth.onAuthStateChange((event,nextSession)=>{
+    if(!nextSession?.user){
+      window.location.replace('/?login=1');
+    }
+  });
+})();
+
+const KAYLA_CONTENT_KEY='kayla_content_ideas';
+const KAYLA_GRANTS_KEY='kayla_grants';
+const KAYLA_ACTIVITY_KEY='kayla_activity_log';
+const KAYLA_BRAIN_KEYS_KEY='kayla_brain_keys_written';
+const KAYLA_AUTOMATIONS_KEY='kayla_active_automations';
+const KAYLA_ASSET_COUNT_KEY='kayla_design_assets';
+const GT_COLORS={Researching:'#888','In Progress':'#00ffcc',Submitted:'#ff6600',Awarded:'#00ff00',Rejected:'#ff3333'};
+
+function escapeHtml(value){
+  return String(value??'').replace(/[&<>"']/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+}
+function readJSON(key,fallback){
+  try{
+    const raw=localStorage.getItem(key);
+    return raw?JSON.parse(raw):fallback;
+  }catch(err){
+    return fallback;
+  }
+}
+function writeJSON(key,value){
+  try{localStorage.setItem(key,JSON.stringify(value));}catch(err){}
+}
+function getActivities(){return readJSON(KAYLA_ACTIVITY_KEY,[]);}
+function logActivity(text){
+  const next=getActivities();
+  next.unshift({text,at:new Date().toISOString()});
+  writeJSON(KAYLA_ACTIVITY_KEY,next.slice(0,12));
+  renderActivity();
+}
+function formatShortDate(value){
+  try{return new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(err){return 'Just now';}
+}
+function renderActivity(){
+  const items=getActivities();
+  const el=document.getElementById('kayla-activity-log');
+  if(!el)return;
+  if(!items.length){
+    el.innerHTML='<div class="empty-state cem-card">No studio activity yet. Add content ideas, track a grant, or generate an asset to start the log.</div>';
+    return;
+  }
+  el.innerHTML=items.map((item,index)=>`<div class="ai"><div class="adw"><div class="ad2"></div>${index<items.length-1?'<div class="aln"></div>':''}</div><div><div class="atxt">${escapeHtml(item.text)}</div><div class="atm">${formatShortDate(item.at)}</div></div></div>`).join('');
+}
+function refreshOverviewStats(){
+  const ideas=readJSON(KAYLA_CONTENT_KEY,[]);
+  const grants=readJSON(KAYLA_GRANTS_KEY,[]);
+  document.getElementById('ko-content-pieces').textContent=String(ideas.length);
+  document.getElementById('ko-assets-created').textContent=String(Number(localStorage.getItem(KAYLA_ASSET_COUNT_KEY)||'0'));
+  document.getElementById('ko-brain-keys').textContent=String(Number(localStorage.getItem(KAYLA_BRAIN_KEYS_KEY)||'0'));
+  document.getElementById('ko-automations').textContent=String(Number(localStorage.getItem(KAYLA_AUTOMATIONS_KEY)||'0'));
+  document.getElementById('ko-grants').textContent=String(grants.length);
+}
+function showSection(sectionId,el){
+  event?.preventDefault?.();
+  document.querySelectorAll('.section').forEach((section)=>section.classList.remove('active'));
+  document.querySelectorAll('.sbn a').forEach((link)=>link.classList.remove('active'));
+  document.getElementById(`section-${sectionId}`).classList.add('active');
+  const activeLink=el||event?.currentTarget||event?.target?.closest('a');
+  if(activeLink)activeLink.classList.add('active');
+  if(sectionId==='design-lab'&&window.initDesignLab){window.setTimeout(()=>window.initDesignLab(),100);if(window.dlHintCembotPulse)window.dlHintCembotPulse();}
+}
+function brainSearch(){
+  const query=document.getElementById('brain-search').value.toLowerCase();
+  document.querySelectorAll('#brain-list .br').forEach((row)=>{
+    row.style.display=row.textContent.toLowerCase().includes(query)?'':'none';
+  });
+}
+function brainFilter(category,el){
+  document.querySelectorAll('.bcat').forEach((btn)=>btn.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('#brain-list .br').forEach((row)=>{
+    row.style.display=(category==='all'||row.dataset.cat===category)?'':'none';
+  });
+}
+
+let chIdeas=readJSON(KAYLA_CONTENT_KEY,[]);
+function chRender(){
+  const el=document.getElementById('ch-pipeline');
+  if(!el)return;
+  if(!chIdeas.length){
+    el.innerHTML='<div class="empty-state cem-card">No content items yet. Add your first idea below.</div>';
+  }else{
+    el.innerHTML=chIdeas.map((item,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#111;border-radius:4px;border-left:3px solid #ff6600;"><span style="color:#ff6600;font-size:10px;width:68px;">${escapeHtml(item.platform)}</span><span style="flex:1;color:#ccc;font-size:13px;">${escapeHtml(item.text)}</span><span style="color:#444;font-size:10px;">${escapeHtml(item.status||'IDEA')}</span><button onclick="chRemove(${i})" style="color:#444;background:none;border:none;cursor:pointer;">✕</button></div>`).join('');
+  }
+  const counts={TikTok:0,Instagram:0,YouTube:0};
+  chIdeas.forEach((item)=>{
+    if(item.platform==='All'){
+      counts.TikTok+=1;counts.Instagram+=1;counts.YouTube+=1;
+    }else if(counts[item.platform]!==undefined){
+      counts[item.platform]+=1;
+    }
+  });
+  document.getElementById('ch-tiktok').textContent=String(counts.TikTok);
+  document.getElementById('ch-ig').textContent=String(counts.Instagram);
+  document.getElementById('ch-yt').textContent=String(counts.YouTube);
+  document.getElementById('ch-ideas').textContent=String(chIdeas.length);
+  refreshOverviewStats();
+}
+function chAddIdea(){
+  const text=document.getElementById('ch-new-idea').value.trim();
+  const platform=document.getElementById('ch-platform').value;
+  if(!text)return;
+  chIdeas.unshift({text,platform,status:'IDEA',created:Date.now()});
+  writeJSON(KAYLA_CONTENT_KEY,chIdeas);
+  document.getElementById('ch-new-idea').value='';
+  logActivity(`Added ${platform} content idea: ${text}`);
+  chRender();
+}
+function chRemove(index){
+  const removed=chIdeas.splice(index,1)[0];
+  writeJSON(KAYLA_CONTENT_KEY,chIdeas);
+  if(removed)logActivity(`Removed content idea: ${removed.text}`);
+  chRender();
+}
+
+let gtGrants=readJSON(KAYLA_GRANTS_KEY,[]);
+function gtRender(){
+  const el=document.getElementById('gt-list');
+  if(!el)return;
+  if(!gtGrants.length){
+    el.innerHTML='<div class="empty-state cem-card">No grants tracked yet.</div>';
+  }else{
+    el.innerHTML=gtGrants.map((grant,i)=>`<div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:center;padding:8px 12px;background:#0a0a0a;border-radius:4px;border-left:3px solid ${GT_COLORS[grant.status]||'#444'};"><span style="color:#ccc;font-size:13px;">${escapeHtml(grant.name)}</span><span style="color:#888;font-size:11px;">${escapeHtml(grant.deadline||'—')}</span><span style="color:${GT_COLORS[grant.status]||'#888'};font-size:11px;">${escapeHtml(grant.status)}</span><button onclick="gtRemove(${i})" style="color:#444;background:none;border:none;cursor:pointer;">✕</button></div>`).join('');
+  }
+  refreshOverviewStats();
+}
+function gtAdd(){
+  const name=document.getElementById('gt-name').value.trim();
+  if(!name)return;
+  const grant={name,deadline:document.getElementById('gt-deadline').value,status:document.getElementById('gt-status').value};
+  gtGrants.unshift(grant);
+  writeJSON(KAYLA_GRANTS_KEY,gtGrants);
+  document.getElementById('gt-name').value='';
+  document.getElementById('gt-deadline').value='';
+  document.getElementById('gt-status').value='Researching';
+  logActivity(`Tracked grant "${grant.name}" with status ${grant.status}`);
+  gtRender();
+}
+function gtRemove(index){
+  const removed=gtGrants.splice(index,1)[0];
+  writeJSON(KAYLA_GRANTS_KEY,gtGrants);
+  if(removed)logActivity(`Removed grant "${removed.name}" from tracker`);
+  gtRender();
+}
+
+window.onMissionStudioEvent=function(type,payload){
+  if(type==='generate')logActivity(`Generated a design concept with ${payload.model||'AI image routing'}`);
+  if(type==='export')logActivity(`Exported a design asset as ${(payload.format||'png').toUpperCase()}`);
+  if(type==='screenshot')logActivity('Captured a Three.js studio screenshot');
+  if(type==='image-added')logActivity('Added a new asset into the Design Lab workspace');
+  refreshOverviewStats();
+};
+
+function resetKaylaStudio(){
+  if(!window.confirm("Reset Kayla's local studio state on this browser?"))return;
+  [KAYLA_CONTENT_KEY,KAYLA_GRANTS_KEY,KAYLA_ACTIVITY_KEY,KAYLA_BRAIN_KEYS_KEY,KAYLA_AUTOMATIONS_KEY,KAYLA_ASSET_COUNT_KEY].forEach((key)=>localStorage.removeItem(key));
+  chIdeas=[];
+  gtGrants=[];
+  renderActivity();
+  chRender();
+  gtRender();
+  refreshOverviewStats();
+}
+
+renderActivity();
+chRender();
+gtRender();
+refreshOverviewStats();
+if(window.initMissionStudio){
+  window.initMissionStudio({
+    accent:'#ff6600',
+    secondary:'#00ffcc',
+    watermark:"Kayla's Studio",
+    logoText:'KAYLA★STUDIO',
+    brandText:'BUILD THE FEELING.',
+    assetCountKey:KAYLA_ASSET_COUNT_KEY
+  });
+}
+</script>
+<script id="cem-live-ticker-apr4">
+async function updateTicker(){
+  try{
+    const r=await fetch('/api/ticker-prices');
+    const data=await r.json();
+    if(!data.success)return;
+    for(const [sym,info] of Object.entries(data.prices||{})){
+      const priceEl=document.getElementById(`tp-${sym}`);
+      const changeEl=document.getElementById(`tc-${sym}`);
+      if(priceEl){
+        if(info.price!==null&&info.price!==undefined){priceEl.textContent=Number(info.price).toLocaleString('en-US',{maximumFractionDigits:2});}
+        else{priceEl.textContent='—';}
+      }
+      if(changeEl&&info.change_pct!==null&&info.change_pct!==undefined){
+        const pct=Number(info.change_pct);
+        changeEl.textContent=`${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%`;
+        changeEl.className=`chg-pill ${pct>=0?'pos':'neg'}`;
+      }
+    }
+    document.querySelectorAll('.ticker-item').forEach(el=>{
+      if(!el.querySelector('.delayed-label')){const d=document.createElement('span');d.className='delayed-label';d.textContent='DELAYED';el.appendChild(d);}
+    });
+  }catch(e){console.error('Ticker update failed:',e);}
+}
+updateTicker();
+setInterval(updateTicker,60000);
+</script>
+<div class="settings-section" id="cem-theme-settings" style="margin:16px;padding:12px;border:1px solid var(--border-faint);border-radius:8px;background:var(--bg-card)">
+  <div class="section-header">DISPLAY</div>
+  <div style="padding:12px 0">
+    <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px">COLOR THEME</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="theme-picker">
+      <button class="theme-btn" data-theme="teal" onclick="setCEMTheme('teal')"><div style="width:100%;height:4px;background:#00C9B1;border-radius:2px;margin-bottom:6px"></div><span>TEAL</span></button>
+      <button class="theme-btn" data-theme="violet" onclick="setCEMTheme('violet')"><div style="width:100%;height:4px;background:#7B5CF5;border-radius:2px;margin-bottom:6px"></div><span>VIOLET</span></button>
+      <button class="theme-btn" data-theme="crimson" onclick="setCEMTheme('crimson')"><div style="width:100%;height:4px;background:#E8305A;border-radius:2px;margin-bottom:6px"></div><span>CRIMSON</span></button>
+      <button class="theme-btn" data-theme="aurora" onclick="setCEMTheme('aurora')"><div style="width:100%;height:4px;background:#00E5B0;border-radius:2px;margin-bottom:6px"></div><span>AURORA</span></button>
+      <button class="theme-btn" data-theme="solar" onclick="setCEMTheme('solar')"><div style="width:100%;height:4px;background:#FF8C00;border-radius:2px;margin-bottom:6px"></div><span>SOLAR</span></button>
+      <button class="theme-btn" data-theme="ghost" onclick="setCEMTheme('ghost')"><div style="width:100%;height:4px;background:#C8C8D8;border-radius:2px;margin-bottom:6px"></div><span>GHOST</span></button>
+    </div>
+  </div>
+</div>
+<script>
+function setCEMTheme(theme){document.documentElement.setAttribute('data-theme',theme);localStorage.setItem('cem_theme',theme);document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===theme));}
+(function(){var t=localStorage.getItem('cem_theme')||'teal';document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===t));})();
+</script>
+<script id="cem-ticker-v2">
+async function updateTicker(){
+  try{
+    const r = await fetch('/api/ticker-prices');
+    const data = await r.json();
+    if(!data.success) return;
+    for(const [sym,info] of Object.entries(data.prices||{})){
+      const priceEl = document.getElementById(`tp-${sym}`);
+      const changeEl = document.getElementById(`tc-${sym}`);
+      if(priceEl){priceEl.textContent = info.price!=null ? Number(info.price).toLocaleString('en-US',{maximumFractionDigits:2}) : '—';}
+      if(changeEl && info.change_pct!=null){
+        const pct = Number(info.change_pct);
+        changeEl.textContent = `${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%`;
+        changeEl.className = `chg-pill ${pct>=0?'pos':'neg'}`;
+      }
+    }
+    document.querySelectorAll('.ticker-item').forEach(el=>{
+      if(!el.querySelector('.delayed-label')){const d=document.createElement('span');d.className='delayed-label';d.textContent='DELAYED';el.appendChild(d);}
+    });
+  }catch(e){}
+}
+updateTicker();
+setInterval(updateTicker,60000);
+</script>
+<div id="cem-theme-picker" style="margin:16px;padding:12px;border:1px solid var(--border-faint);border-radius:8px;background:var(--bg-card)">
+  <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px">DISPLAY · COLOR THEME</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="theme-picker">
+    <button class="theme-btn" data-theme="teal" onclick="setCEMTheme('teal')"><div style="width:100%;height:4px;background:#00C9B1;border-radius:2px;margin-bottom:6px"></div><span>TEAL</span></button>
+    <button class="theme-btn" data-theme="violet" onclick="setCEMTheme('violet')"><div style="width:100%;height:4px;background:#7B5CF5;border-radius:2px;margin-bottom:6px"></div><span>VIOLET</span></button>
+    <button class="theme-btn" data-theme="crimson" onclick="setCEMTheme('crimson')"><div style="width:100%;height:4px;background:#E8305A;border-radius:2px;margin-bottom:6px"></div><span>CRIMSON</span></button>
+    <button class="theme-btn" data-theme="aurora" onclick="setCEMTheme('aurora')"><div style="width:100%;height:4px;background:#00E5B0;border-radius:2px;margin-bottom:6px"></div><span>AURORA</span></button>
+    <button class="theme-btn" data-theme="solar" onclick="setCEMTheme('solar')"><div style="width:100%;height:4px;background:#FF8C00;border-radius:2px;margin-bottom:6px"></div><span>SOLAR</span></button>
+    <button class="theme-btn" data-theme="ghost" onclick="setCEMTheme('ghost')"><div style="width:100%;height:4px;background:#C8C8D8;border-radius:2px;margin-bottom:6px"></div><span>GHOST</span></button>
+  </div>
+</div>
+<script>
+function setCEMTheme(theme){document.documentElement.setAttribute('data-theme',theme);localStorage.setItem('cem_theme',theme);document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===theme));}
+(function(){var t=localStorage.getItem('cem_theme')||'teal';document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===t));})();
+</script>
+<script id="cem-v3-profile">
+(function(){
+  const add=(sel,cls)=>document.querySelectorAll(sel).forEach(el=>el.classList.add(...cls.split(' ')));
+  add('button,a.btn,.btn,.action-btn','cem-btn');
+  add('.stat-card,.card,.metric,.tile,.panel','.cem-card');
+  [...document.querySelectorAll('h2,h3,h4,.section-title,.section-header')].forEach(h=>h.classList.add('cem-section-label'));
+})();
+</script>
+
+<!-- GLOBAL CEM BOT -->
+<div id="cem-global-orb" onclick="toggleCemGlobal()" style="position:fixed;bottom:24px;right:24px;width:48px;height:48px;border-radius:50%;background:rgba(0,201,177,0.12);border:2px solid rgba(0,201,177,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9999;box-shadow:0 0 20px rgba(0,201,177,0.15);transition:all 0.2s">
+  <span style="font-family:'Courier New',monospace;font-size:14px;font-weight:700;color:#00C9B1">C</span>
+</div>
+<div id="cem-global-panel" style="display:none;position:fixed;bottom:80px;right:24px;width:320px;max-height:420px;background:#0A0E1A;border:1px solid rgba(0,201,177,0.25);border-radius:12px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,0.6);overflow:hidden;font-family:'Courier New',monospace">
+  <div style="padding:10px 14px;border-bottom:1px solid rgba(0,201,177,0.1);display:flex;align-items:center;gap:8px">
+    <div style="width:8px;height:8px;border-radius:50%;background:#00C9B1;animation:livePulse 2s infinite"></div>
+    <span style="font-size:11px;font-weight:700;color:#00C9B1;letter-spacing:2px">CEM</span>
+    <span style="flex:1"></span>
+    <span onclick="toggleCemGlobal()" style="color:rgba(255,255,255,0.3);font-size:14px;cursor:pointer">&times;</span>
+  </div>
+  <div id="cem-global-msgs" style="max-height:260px;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+    <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.5" id="cem-global-welcome"></div>
+  </div>
+  <div id="cem-global-prompt" style="display:none;padding:8px 14px;border-top:1px solid rgba(0,201,177,0.1)">
+    <div id="cem-global-prompt-text" style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:6px;line-height:1.5"></div>
+    <div style="display:flex;gap:6px">
+      <button id="cem-global-no" style="flex:1;padding:6px;font-size:9px;background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);border-radius:3px;cursor:pointer;font-family:'Courier New',monospace"></button>
+      <button id="cem-global-yes" style="flex:1;padding:6px;font-size:9px;background:rgba(0,201,177,0.08);border:1px solid rgba(0,201,177,0.3);color:#00C9B1;border-radius:3px;cursor:pointer;font-family:'Courier New',monospace"></button>
+    </div>
+  </div>
+  <div style="display:flex;gap:4px;padding:8px 14px;border-top:1px solid rgba(0,201,177,0.1)">
+    <input id="cem-global-input" type="text" placeholder="Ask CEM..." onkeydown="if(event.key==='Enter')sendCemGlobal()" style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:#F0F4FF;font-size:11px;padding:7px 10px;border-radius:4px;outline:none;font-family:'Courier New',monospace">
+    <button onclick="sendCemGlobal()" style="width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,201,177,0.25);background:none;color:#00C9B1;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer">&#9654;</button>
+  </div>
+</div>
+<script>
+function toggleCemGlobal(){
+  var p=document.getElementById('cem-global-panel');
+  if(p.style.display==='none'){
+    p.style.display='block';
+    var w=document.getElementById('cem-global-welcome');
+    if(w&&!w.dataset.set){w.dataset.set='1';var path=window.location.pathname;
+      w.textContent=path.includes('lab')?'I see your strategy. Ask me anything about your setup or the market.':
+        path.includes('profile')?'I can help you filter strategies or explain your journal entries.':
+        'Hi \u2014 I\'m CEM. I\'m here on every page. What do you need?';}
+  }else{p.style.display='none';}
+}
+function addCemGlobalMsg(sender,text){
+  var m=document.getElementById('cem-global-msgs');if(!m)return;
+  var d=document.createElement('div');
+  d.style.cssText='padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);';
+  d.innerHTML='<span style="color:#00C9B1;font-weight:700;font-size:10px">'+sender+'</span> <span style="font-size:11px;color:rgba(255,255,255,0.5)">'+text+'</span>';
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
+}
+function sendCemGlobal(){
+  var i=document.getElementById('cem-global-input');if(!i||!i.value.trim())return;
+  var msg=i.value.trim();i.value='';addCemGlobalMsg('You',msg);
+  var path=window.location.pathname;
+  var ctx=path.includes('lab')?'User is in The Lab building strategies.':path.includes('profile')?'User is viewing their profile.':'User is on CEMTrading888.';
+  fetch('/api/coach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,context:ctx,page:path})})
+  .then(function(r){return r.json()}).then(function(d){addCemGlobalMsg('CEM',d.response||d.message||'Let me think about that.');})
+  .catch(function(){addCemGlobalMsg('CEM','Connection issue.');});
+}
+</script>
+
+</body>
+</html>

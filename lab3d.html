@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('cem_theme')||'teal');})();</script>
+<!-- CEM-BUILD: APRIL4-MASTER -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CEM 3D Lab</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a0f; color: #00ffcc; font-family: monospace; overflow: hidden; }
+    #cchart-wrap {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    #lab-status {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      font-size: 12px;
+      color: #00ffcc;
+      z-index: 10;
+      pointer-events: none;
+    }
+    #lab-error {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      color: #ff3333;
+      font-size: 14px;
+      z-index: 10;
+      display: none;
+    }
+  </style>
+
+<link rel="stylesheet" href="/cem-shared.css">
+</head>
+<body>
+  <div id="cchart-wrap"></div>
+  <div id="lab-status">// CEM 3D LAB — LAYER 0 — LOADING...</div>
+  <div id="lab-error"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    const status = document.getElementById('lab-status');
+    const errDiv = document.getElementById('lab-error');
+
+    function showError(msg) {
+      errDiv.style.display = 'block';
+      errDiv.textContent = '// ERROR: ' + msg;
+      console.error(msg);
+    }
+
+    async function init() {
+      // === FETCH CANDLE DATA ===
+      try {
+        const res = await fetch('/api/candles?symbol=MGC&resolution=D&count=1260');
+        const json = await res.json();
+        const bars = json.bars || json.candles || json;
+        window.__CEM_CANDLE_DATA = bars.map(b => ({
+          open: b.o || b.open,
+          high: b.h || b.high,
+          low: b.l || b.low,
+          close: b.c || b.close,
+          time: b.t || b.time,
+          volume: b.v || b.volume
+        }));
+        status.textContent = '// CEM 3D LAB — DATA: ' + window.__CEM_CANDLE_DATA.length + ' bars loaded';
+      } catch(e) {
+        showError('Failed to fetch candle data: ' + e.message);
+        return;
+      }
+
+      // === SCENE SETUP ===
+      const container = document.getElementById('cchart-wrap');
+      const W = container.clientWidth;
+      const H = container.clientHeight;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0a0a0f);
+
+      const camera = new THREE.PerspectiveCamera(50, W/H, 0.1, 1000);
+      camera.position.set(0, 0, 20);
+      camera.lookAt(0, 0, 0);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(W, H);
+
+      // CONTAIN IN #cchart-wrap
+      container.style.position = 'relative';
+      container.style.overflow = 'hidden';
+      renderer.domElement.style.position = 'absolute';
+      renderer.domElement.style.top = '0';
+      renderer.domElement.style.left = '0';
+      renderer.domElement.style.width = '100%';
+      renderer.domElement.style.height = '100%';
+      renderer.domElement.style.zIndex = '2';
+      renderer.domElement.style.pointerEvents = 'none';
+      renderer.domElement.style.display = 'block';
+      container.appendChild(renderer.domElement);
+
+      // LIGHTING
+      scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+
+      // SUBTLE TEAL POINT LIGHT
+      const ptLight = new THREE.PointLight(0x00ffcc, 0.5, 50);
+      ptLight.position.set(0, 0, 10);
+      scene.add(ptLight);
+
+      // RESIZE HANDLER
+      window.addEventListener('resize', () => {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      });
+
+      // ANIMATE LOOP
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      status.textContent = '// CEM 3D LAB — LAYER 0 COMPLETE — Scene rendering, ' + window.__CEM_CANDLE_DATA.length + ' bars ready';
+    }
+
+    init().catch(e => showError(e.message));
+  </script>
+</body>
+</html>

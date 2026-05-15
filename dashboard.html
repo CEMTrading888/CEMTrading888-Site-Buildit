@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('cem_theme')||'teal');})();</script>
+<!-- CEM-BUILD: APRIL4-MASTER -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CEM//TRADING_888 - Dashboard</title>
+  <style>
+    :root { --teal: #1D9E75; --orange: #D85A30; --dark: #0a0a0a; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--dark); color: #eee; font-family: 'Space Mono', monospace; }
+    .header { background: #111; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--teal); position: sticky; top: 0; z-index: 300; }
+    .logo { color: var(--teal); font-size: 22px; font-weight: 700; letter-spacing: 3px; text-decoration: none; }
+    .nav a { color: #ccc; text-decoration: none; margin-left: 20px; font-size: 13px; letter-spacing: 1px; transition: color 0.2s; }
+    .nav a:hover, .nav a.active { color: var(--teal); }
+    .nav a.nav-cta { background: var(--orange); color: #fff; padding: 8px 16px; border-radius: 6px; margin-left: 20px; }
+    .ticker { background: #0d0d0d; padding: 8px 24px; border-bottom: 1px solid #222; font-size: 12px; display: flex; gap: 32px; }
+    .content { max-width: 960px; margin: 60px auto; padding: 0 24px; }
+    .coming-soon { text-align: center; padding: 80px 40px; background: #111; border: 1px solid #222; border-radius: 16px; }
+    .coming-soon h1 { color: var(--teal); font-size: 28px; letter-spacing: 4px; margin-bottom: 20px; }
+    .coming-soon p { color: #aaa; font-size: 14px; line-height: 1.8; max-width: 500px; margin: 0 auto 32px; }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 48px 0; }
+    .preview-card { background: #1a1a1a; border: 1px dashed #333; border-radius: 12px; padding: 24px; text-align: center; opacity: 0.6; }
+    .preview-card .icon { font-size: 32px; margin-bottom: 12px; }
+    .preview-card h3 { color: var(--teal); font-size: 13px; letter-spacing: 2px; margin-bottom: 8px; }
+    .preview-card p { color: #666; font-size: 12px; }
+    .cta-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn { padding: 14px 28px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; letter-spacing: 1px; display: inline-block; }
+    .btn-teal { background: var(--teal); color: #000; border: none; }
+    .btn-outline { background: transparent; color: var(--teal); border: 1px solid var(--teal); }
+    #grokCoach { position: fixed; bottom: 30px; right: 30px; width: 340px; background: #111; border: 2px solid var(--teal); border-radius: 12px; padding: 16px; box-shadow: 0 0 30px rgba(29,158,117,0.6); display: none; z-index: 500; }
+  </style>
+
+<link rel="stylesheet" href="/cem-shared.css">
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="logo">CEM//TRADING_888</a>
+  <div class="nav">
+    <a href="index.html">Simulator</a>
+    <a href="education.html">Education</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="pricing.html" class="nav-cta">Upgrade →</a>
+  </div>
+</div>
+
+<div class="ticker">
+  <span>MES 5,847.25 <span style="color:#1D9E75">+12.50 ▲</span></span>
+  <span>MNQ 20,412.50 <span style="color:#1D9E75">+38.75 ▲</span></span>
+  <span>MGC 3,021.40 <span style="color:#ff5a5a">-4.20 ▼</span></span>
+</div>
+
+<div class="content">
+  <div class="coming-soon">
+    <h1>// DASHBOARD</h1>
+    <p>Your personal trading command center. Save bots, track paper trading results, view modification history, and get personalized AI coaching — all in one place.</p>
+    <p style="color:var(--orange); font-size:13px; margin-bottom:32px;">🔒 Login & profiles launching with Living Bot subscription. Follow <strong>@CEMTrading888</strong> on X for updates.</p>
+
+    <div class="preview-grid">
+      <div class="preview-card">
+        <div class="icon">🤖</div>
+        <h3>SAVED BOTS</h3>
+        <p>All your strategies in one place, with full edit history</p>
+      </div>
+      <div class="preview-card">
+        <div class="icon">📊</div>
+        <h3>PAPER TRADING</h3>
+        <p>Run your bot live in simulation with real market data</p>
+      </div>
+      <div class="preview-card">
+        <div class="icon">📈</div>
+        <h3>PERFORMANCE</h3>
+        <p>Win rate, return, Sharpe ratio tracked over time</p>
+      </div>
+      <div class="preview-card">
+        <div class="icon">🏆</div>
+        <h3>LEADERBOARD</h3>
+        <p>See how your bot ranks against other CEM traders</p>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <a href="index.html" class="btn btn-teal">TRY FREE SIMULATOR →</a>
+      <a href="pricing.html" class="btn btn-outline">SEE PRICING →</a>
+    </div>
+  </div>
+</div>
+
+<div id="grokCoach">
+  <strong style="color:#1D9E75;">// AI COACH</strong>
+  <div id="coachMessage" style="margin-top:12px; font-size:13px; line-height:1.5;"></div>
+  <button onclick="document.getElementById('grokCoach').style.display='none'" style="margin-top:12px; padding:8px 16px; background:#1D9E75; color:#000; border:none; border-radius:6px; cursor:pointer;">Got it</button>
+</div>
+
+<script>
+window.onload = () => {
+  setTimeout(() => {
+    document.getElementById('coachMessage').innerHTML = "The dashboard is coming soon with Living Bot subscriptions! In the meantime, use the free simulator to build and test your strategies. When login launches, all your work will be saved here automatically.";
+    document.getElementById('grokCoach').style.display = 'block';
+  }, 1000);
+};
+</script>
+
+</body>
+</html>

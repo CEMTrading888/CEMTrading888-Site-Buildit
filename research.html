@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang='en'><head>
+<meta charset=\"UTF-8\">
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('cem_theme')||'teal');})();</script>
+<!-- CEM-BUILD: APRIL4-MASTER --><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Research — CEMTrading888</title><link href='https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap' rel='stylesheet'><link rel='stylesheet' href='/cem-shared.css'><style>.page-wrap{position:relative;min-height:calc(100dvh - 80px);padding:42px 28px;}.page-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 50% at 50% -5%, rgba(0,201,177,0.07) 0%, transparent 60%);pointer-events:none;z-index:0;}.inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;}.headline{font-family:var(--font-mono);font-size:24px;letter-spacing:4px;color:var(--teal);margin-bottom:10px;}.sub{color:var(--text-secondary);font-size:13px;line-height:1.7;margin-bottom:28px;max-width:780px;}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}.feature{padding:18px;background:var(--bg-card);border:1px solid var(--border-faint);border-radius:8px;box-shadow:0 1px 0 rgba(255,255,255,0.07) inset;}.feature h3{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--teal);margin-bottom:8px;}.feature p{font-size:13px;color:var(--text-secondary);line-height:1.7;}</style><!-- CEM-BUILD: VISUAL-OVERHAUL-APRIL4 -->
+</head><body>
+<div class="ambient-glow"></div>
+<div id="topbar">
+  <div class="logo" onclick="window.location.href='/'" style="cursor:pointer">CEM<em>TRADING</em>888</div>
+  <div class="nav-links" style="display:flex;align-items:center;gap:2px;flex:1">
+    <a href="/lab.html" class="nav-btn">THE LAB</a>
+    <a href="/user-profile.html" class="nav-btn">STRATEGIES</a>
+    <a href="/research.html" class="nav-btn">RESEARCH</a>
+    <a href="/user-profile.html" class="nav-btn">PROFILE</a>
+    <a href="/about.html" class="nav-btn">ABOUT</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="display:flex;align-items:center;gap:5px"><div class="status-dot"></div><span style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--text-muted)">LIVE</span></div>
+    <button class="avatar-btn" onclick="window.location.href='/profile.html'">CM</button>
+  </div>
+</div>
+<script>
+document.querySelectorAll('.nav-btn').forEach(a=>{if(location.pathname.includes(a.getAttribute('href').replace('.html','').replace('/',''))||location.pathname===a.getAttribute('href'))a.classList.add('active');});
+</script>
+<div id="ticker-bar">
+  <div class="ticker-item"><span class="ticker-sym">MGC</span><span class="ticker-price" id="tp-MGC">1,926</span><span class="chg-pill pos" id="tc-MGC">▲ +0.31%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">MES</span><span class="ticker-price" id="tp-MES">5,241</span><span class="chg-pill neg" id="tc-MES">▼ -0.18%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">MNQ</span><span class="ticker-price" id="tp-MNQ">18,302</span><span class="chg-pill neg" id="tc-MNQ">▼ -0.30%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">BTC</span><span class="ticker-price" id="tp-BTC">83,441</span><span class="chg-pill pos" id="tc-BTC">▲ +1.24%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">ETH</span><span class="ticker-price" id="tp-ETH">1,643</span><span class="chg-pill neg" id="tc-ETH">▼ -0.44%</span></div>
+  <div class="ticker-item"><span class="ticker-sym">GOLD</span><span class="ticker-price" id="tp-GOLD">3,127</span><span class="chg-pill pos" id="tc-GOLD">▲ +0.38%</span></div>
+  <div class="ticker-item" style="border-right:none"><span class="ticker-sym">BEST RETURN</span><span class="ticker-price">+17.99%</span><span class="chg-pill pos">MGC SCALPER</span></div>
+</div>
+<div class='page-wrap'><div class='inner'><div class='headline'>// RESEARCH</div><p class='sub'>Advanced market research tools coming soon. Strategy analysis, pattern recognition, and market regime detection.</p><div class='grid'><div class='feature'><h3>MARKET REGIME DETECTION</h3><p>Identify trend, range, and volatility state transitions in real time to prevent strategy mismatch.</p></div><div class='feature'><h3>PATTERN LIBRARY</h3><p>Search and compare confirmed setups from prior runs to accelerate hypothesis quality and reduce noise.</p></div><div class='feature'><h3>COMMUNITY INTELLIGENCE</h3><p>Surface anonymized strategy behavior and collective edge distributions across instruments and conditions.</p></div></div></div></div><script id="cem-live-ticker-apr4">
+async function updateTicker(){
+  try{
+    const r=await fetch('/api/ticker-prices');
+    const data=await r.json();
+    if(!data.success)return;
+    for(const [sym,info] of Object.entries(data.prices||{})){
+      const priceEl=document.getElementById(`tp-${sym}`);
+      const changeEl=document.getElementById(`tc-${sym}`);
+      if(priceEl){
+        if(info.price!==null&&info.price!==undefined){priceEl.textContent=Number(info.price).toLocaleString('en-US',{maximumFractionDigits:2});}
+        else{priceEl.textContent='—';}
+      }
+      if(changeEl&&info.change_pct!==null&&info.change_pct!==undefined){
+        const pct=Number(info.change_pct);
+        changeEl.textContent=`${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%`;
+        changeEl.className=`chg-pill ${pct>=0?'pos':'neg'}`;
+      }
+    }
+    document.querySelectorAll('.ticker-item').forEach(el=>{
+      if(!el.querySelector('.delayed-label')){const d=document.createElement('span');d.className='delayed-label';d.textContent='DELAYED';el.appendChild(d);}
+    });
+  }catch(e){console.error('Ticker update failed:',e);}
+}
+updateTicker();
+setInterval(updateTicker,60000);
+</script>
+<script id="cem-ticker-v2">
+async function updateTicker(){
+  try{
+    const r = await fetch('/api/ticker-prices');
+    const data = await r.json();
+    if(!data.success) return;
+    for(const [sym,info] of Object.entries(data.prices||{})){
+      const priceEl = document.getElementById(`tp-${sym}`);
+      const changeEl = document.getElementById(`tc-${sym}`);
+      if(priceEl){priceEl.textContent = info.price!=null ? Number(info.price).toLocaleString('en-US',{maximumFractionDigits:2}) : '—';}
+      if(changeEl && info.change_pct!=null){
+        const pct = Number(info.change_pct);
+        changeEl.textContent = `${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%`;
+        changeEl.className = `chg-pill ${pct>=0?'pos':'neg'}`;
+      }
+    }
+    document.querySelectorAll('.ticker-item').forEach(el=>{
+      if(!el.querySelector('.delayed-label')){const d=document.createElement('span');d.className='delayed-label';d.textContent='DELAYED';el.appendChild(d);}
+    });
+  }catch(e){}
+}
+updateTicker();
+setInterval(updateTicker,60000);
+</script>
+</body></html>

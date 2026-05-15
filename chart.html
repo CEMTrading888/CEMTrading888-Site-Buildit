@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('cem_theme')||'teal');})();</script>
+<!-- CEM-BUILD: APRIL4-MASTER -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CEM Chart</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+:root{
+  --bg:#080C14;--bg2:#0F1520;--bg3:#1E2A3A;
+  --teal:#00C9B1;--teal-dim:#00897B;
+  --orange:#FF6B35;--gold:#F5A623;
+  --green:#00D68F;--red:#FF4757;
+  --text:#E8EDF5;--muted:#6B7A90;--dim:rgba(255,255,255,.2);
+  --border:rgba(0,201,177,.12);
+  --fm:'Space Mono',monospace;--fn:'Space Grotesk',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--fn);overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+
+/* ── TOP BAR ── */
+#topbar{height:40px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:6px;flex-shrink:0;z-index:10;}
+#asset-select{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--fm);font-size:12px;padding:4px 8px;border-radius:4px;outline:none;min-width:100px;}
+#asset-select:focus{border-color:var(--teal);}
+.sep{width:1px;height:20px;background:var(--border);margin:0 4px;flex-shrink:0;}
+.tf-btn{font-family:var(--fm);font-size:11px;padding:4px 8px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;transition:all .12s;}
+.tf-btn:hover{color:var(--teal);}
+.tf-btn.on{color:var(--teal);border-bottom-color:var(--teal);}
+.ct-btn{font-family:var(--fm);font-size:11px;padding:4px 8px;background:transparent;border:1px solid transparent;color:var(--muted);cursor:pointer;border-radius:3px;transition:all .12s;}
+.ct-btn:hover{color:var(--teal);background:rgba(0,201,177,.05);}
+.ct-btn.on{color:var(--teal);border-color:var(--teal);background:rgba(0,201,177,.08);}
+.spacer{flex:1;}
+#status{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:.08em;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;margin-right:4px;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── OHLCV BAR ── */
+#ohlcv{height:24px;background:rgba(0,0,0,.2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:14px;font-family:var(--fm);font-size:12px;flex-shrink:0;}
+.ov-label{color:var(--muted);font-size:10px;margin-right:2px;}
+.ov-val{color:var(--teal);}
+.ov-chg{color:var(--green);}
+.ov-chg.neg{color:var(--red);}
+.ov-dt{color:var(--dim);font-size:10px;margin-left:auto;}
+
+/* ── CHART ── */
+#chart{flex:1;position:relative;min-height:0;}
+</style>
+
+<link rel="stylesheet" href="/cem-shared.css">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <select id="asset-select" onchange="switchAsset(this.value)">
+    <optgroup label="Micro Futures">
+      <option value="MGC=F" selected>MGC — Micro Gold</option>
+      <option value="MES=F">MES — Micro S&P 500</option>
+      <option value="MNQ=F">MNQ — Micro Nasdaq</option>
+      <option value="MYM=F">MYM — Micro Dow</option>
+      <option value="M2K=F">M2K — Micro Russell</option>
+      <option value="MCL=F">MCL — Micro Crude</option>
+      <option value="MBT=F">MBT — Micro Bitcoin</option>
+    </optgroup>
+    <optgroup label="Standard Futures">
+      <option value="GC=F">GC — Gold</option>
+      <option value="ES=F">ES — E-mini S&P</option>
+      <option value="NQ=F">NQ — E-mini Nasdaq</option>
+      <option value="CL=F">CL — Crude Oil</option>
+      <option value="SI=F">SI — Silver</option>
+      <option value="ZB=F">ZB — 30yr Bond</option>
+    </optgroup>
+    <optgroup label="Forex">
+      <option value="EURUSD=X">EUR/USD</option>
+      <option value="GBPUSD=X">GBP/USD</option>
+      <option value="USDJPY=X">USD/JPY</option>
+    </optgroup>
+    <optgroup label="Crypto">
+      <option value="BTC-USD">BTC/USD</option>
+      <option value="ETH-USD">ETH/USD</option>
+      <option value="SOL-USD">SOL/USD</option>
+    </optgroup>
+    <optgroup label="Stocks/ETFs">
+      <option value="SPY">SPY</option>
+      <option value="QQQ">QQQ</option>
+      <option value="AAPL">AAPL</option>
+      <option value="NVDA">NVDA</option>
+      <option value="TSLA">TSLA</option>
+    </optgroup>
+  </select>
+  <div class="sep"></div>
+
+  <!-- Chart Types -->
+  <button class="ct-btn on" data-type="candle" onclick="setChartType('candle',this)">&#128367;</button>
+  <button class="ct-btn" data-type="line" onclick="setChartType('line',this)">&#9585;</button>
+  <button class="ct-btn" data-type="area" onclick="setChartType('area',this)">&#9707;</button>
+  <div class="sep"></div>
+
+  <!-- Timeframes -->
+  <button class="tf-btn" data-tf="5m" onclick="setTimeframe('5m','5m','10d',this)">5m</button>
+  <button class="tf-btn" data-tf="15m" onclick="setTimeframe('15m','15m','1mo',this)">15m</button>
+  <button class="tf-btn" data-tf="1h" onclick="setTimeframe('1h','1h','3mo',this)">1h</button>
+  <button class="tf-btn" data-tf="4h" onclick="setTimeframe('4h','4h','6mo',this)">4h</button>
+  <button class="tf-btn on" data-tf="D" onclick="setTimeframe('D','1d','5y',this)">D</button>
+  <button class="tf-btn" data-tf="W" onclick="setTimeframe('W','1wk','10y',this)">W</button>
+
+  <div class="spacer"></div>
+  <div id="status"><span class="live-dot"></span>MGC · D</div>
+</div>
+
+<!-- OHLCV -->
+<div id="ohlcv">
+  <span><span class="ov-label">O</span><span class="ov-val" id="ov-o">—</span></span>
+  <span><span class="ov-label">H</span><span class="ov-val" id="ov-h">—</span></span>
+  <span><span class="ov-label">L</span><span class="ov-val" id="ov-l">—</span></span>
+  <span><span class="ov-label">C</span><span class="ov-val" id="ov-c">—</span></span>
+  <span><span class="ov-label">V</span><span class="ov-val" id="ov-v">—</span></span>
+  <span class="ov-chg" id="ov-chg">—</span>
+  <span class="ov-dt" id="ov-dt"></span>
+</div>
+
+<!-- CHART -->
+<div id="chart"></div>
+
+<script>
+/* ═══ STATE ═══ */
+let currentSymbol = 'MGC=F';
+let currentInterval = '1d';
+let currentRange = '5y';
+let currentTf = 'D';
+let chart = null;
+let candleSeries = null;
+let volumeSeries = null;
+let ema9Series = null;
+let ema21Series = null;
+
+/* ═══ SHARED STATE (localStorage + postMessage) ═══ */
+const CEM_STATE_KEY = 'cem_shared_state';
+
+function publishState(extra = {}) {
+  const state = {
+    symbol: currentSymbol,
+    interval: currentInterval,
+    range: currentRange,
+    timeframe: currentTf,
+    timestamp: Date.now(),
+    ...extra
+  };
+  localStorage.setItem(CEM_STATE_KEY, JSON.stringify(state));
+  // Notify parent iframe if embedded
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'cem:chart-state', ...state }, '*');
+  }
+  // Notify same-origin listeners
+  window.dispatchEvent(new CustomEvent('cem:chart-update', { detail: state }));
+}
+
+// Listen for commands from lab.html
+window.addEventListener('message', function(e) {
+  if (!e.data || e.data.type !== 'cem:chart-command') return;
+  const cmd = e.data;
+  if (cmd.action === 'switchAsset' && cmd.symbol) switchAsset(cmd.symbol);
+  if (cmd.action === 'setTimeframe' && cmd.tf) {
+    const btn = document.querySelector(`.tf-btn[data-tf="${cmd.tf}"]`);
+    if (btn) btn.click();
+  }
+  if (cmd.action === 'scrollToTime' && cmd.time && chart) {
+    chart.timeScale().scrollToRealTime();
+  }
+});
+
+/* ═══ CHART INIT ═══ */
+function initChart() {
+  const el = document.getElementById('chart');
+  if (!el || chart) return;
+
+  chart = LightweightCharts.createChart(el, {
+    width: el.clientWidth,
+    height: el.clientHeight,
+    layout: {
+      background: { type: 'solid', color: 'transparent' },
+      textColor: 'rgba(0,201,177,.35)',
+      fontSize: 10,
+      fontFamily: "'Space Mono', monospace"
+    },
+    grid: {
+      vertLines: { color: 'rgba(0,201,177,.025)' },
+      horzLines: { color: 'rgba(0,201,177,.025)' }
+    },
+    crosshair: {
+      mode: 1,
+      vertLine: { color: 'rgba(0,201,177,.3)', width: 1, style: 2, labelBackgroundColor: 'rgba(0,201,177,.88)' },
+      horzLine: { color: 'rgba(0,201,177,.3)', width: 1, style: 2, labelBackgroundColor: 'rgba(0,201,177,.88)' }
+    },
+    rightPriceScale: { borderColor: 'rgba(0,201,177,.07)', textColor: 'rgba(0,201,177,.3)' },
+    timeScale: { borderColor: 'rgba(0,201,177,.07)', timeVisible: true }
+  });
+
+  // Crosshair → OHLCV
+  chart.subscribeCrosshairMove(function(p) {
+    if (!p.time || !p.seriesData.size) return;
+    const d = p.seriesData.get(candleSeries);
+    if (!d) return;
+    document.getElementById('ov-o').textContent = d.open?.toFixed(2) ?? '—';
+    document.getElementById('ov-h').textContent = d.high?.toFixed(2) ?? '—';
+    document.getElementById('ov-l').textContent = d.low?.toFixed(2) ?? '—';
+    document.getElementById('ov-c').textContent = d.close?.toFixed(2) ?? '—';
+    // Volume
+    if (volumeSeries) {
+      const vd = p.seriesData.get(volumeSeries);
+      document.getElementById('ov-v').textContent = vd?.value ? Number(vd.value).toLocaleString() : '—';
+    }
+    // Change
+    const chg = d.close - d.open;
+    const chgEl = document.getElementById('ov-chg');
+    chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2);
+    chgEl.className = 'ov-chg' + (chg < 0 ? ' neg' : '');
+    // Datetime
+    const t = d.time || p.time;
+    if (typeof t === 'number') {
+      document.getElementById('ov-dt').textContent = new Date(t * 1000).toISOString().replace('T', ' ').slice(0, 16);
+    }
+  });
+
+  // Resize observer
+  new ResizeObserver(function() {
+    if (chart) chart.resize(el.clientWidth, el.clientHeight);
+  }).observe(el);
+
+  loadData();
+}
+
+/* ═══ DATA LOADING ═══ */
+async function loadData() {
+  if (!chart) return;
+
+  // Remove old series
+  [candleSeries, volumeSeries, ema9Series, ema21Series].forEach(function(s) {
+    if (s) try { chart.removeSeries(s); } catch(e) {}
+  });
+  candleSeries = volumeSeries = ema9Series = ema21Series = null;
+
+  try {
+    const params = new URLSearchParams({ symbol: currentSymbol, interval: currentInterval, range: currentRange, ohlcv: '1' });
+    const resp = await fetch('/api/prices?' + params.toString(), { cache: 'no-store' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const payload = await resp.json();
+
+    let bars = payload.bars || payload.data || payload.ohlcv || (Array.isArray(payload) ? payload : []);
+    const candles = bars.map(function(b) {
+      const o = Number(b.open ?? b.o), h = Number(b.high ?? b.h), l = Number(b.low ?? b.l), c = Number(b.close ?? b.c);
+      const t = b.time ?? b.t ?? b.timestamp;
+      const v = Number(b.volume ?? b.v ?? 0);
+      if (t == null || ![o,h,l,c].every(Number.isFinite)) return null;
+      return { time: t, open: o, high: h, low: l, close: c, volume: Number.isFinite(v) ? v : 0 };
+    }).filter(Boolean);
+
+    if (!candles.length) {
+      candles.push(...generateFallback());
+    }
+
+    // Candlestick series
+    candleSeries = chart.addCandlestickSeries({
+      upColor: '#00D68FDD', downColor: '#FF4757DD',
+      borderUpColor: '#00D68F', borderDownColor: '#FF4757',
+      wickUpColor: '#00D68FAA', wickDownColor: '#FF4757AA'
+    });
+    candleSeries.setData(candles);
+
+    // Volume histogram
+    volumeSeries = chart.addHistogramSeries({
+      priceFormat: { type: 'volume' },
+      priceScaleId: 'vol',
+      scaleMargins: { top: 0.8, bottom: 0 }
+    });
+    chart.priceScale('vol').applyOptions({
+      scaleMargins: { top: 0.8, bottom: 0 },
+      drawTicks: false, borderVisible: false, visible: false
+    });
+    volumeSeries.setData(candles.map(function(b) {
+      return { time: b.time, value: b.volume, color: (b.close >= b.open ? '#00D68F' : '#FF4757') + '55' };
+    }));
+
+    // EMA 9 + 21
+    const closes = candles.map(function(b) { return b.close; });
+    ema9Series = chart.addLineSeries({ color: '#00C9B1CC', lineWidth: 1.5, priceLineVisible: false });
+    ema9Series.setData(calcEMA(candles, closes, 9));
+    ema21Series = chart.addLineSeries({ color: '#FF6B35AA', lineWidth: 1.5, priceLineVisible: false });
+    ema21Series.setData(calcEMA(candles, closes, 21));
+
+    chart.timeScale().fitContent();
+
+    // Publish state with last price
+    const last = candles[candles.length - 1];
+    publishState({
+      lastPrice: last?.close,
+      candleCount: candles.length,
+      dataReady: true
+    });
+
+    // Store candle data for lab.html to read
+    localStorage.setItem('cem_candle_data', JSON.stringify(candles.slice(-500)));
+
+  } catch (err) {
+    console.warn('Chart data load failed:', err);
+    // Fallback data
+    const fb = generateFallback();
+    candleSeries = chart.addCandlestickSeries({
+      upColor: '#00D68FDD', downColor: '#FF4757DD',
+      borderUpColor: '#00D68F', borderDownColor: '#FF4757',
+      wickUpColor: '#00D68FAA', wickDownColor: '#FF4757AA'
+    });
+    candleSeries.setData(fb);
+    chart.timeScale().fitContent();
+  }
+}
+
+/* ═══ EMA CALCULATION ═══ */
+function calcEMA(candles, closes, period) {
+  const alpha = 2 / (period + 1);
+  let ema = closes[0];
+  return candles.map(function(bar, i) {
+    ema = i === 0 ? closes[0] : closes[i] * alpha + ema * (1 - alpha);
+    return { time: bar.time, value: ema };
+  });
+}
+
+/* ═══ FALLBACK DATA ═══ */
+function generateFallback() {
+  let p = 2580, t = Math.floor(new Date('2024-01-01').getTime() / 1000), d = [];
+  for (let i = 0; i < 240; i++) {
+    const ch = (Math.random() - 0.47) * 16;
+    const o = p, c = p + ch;
+    const h = Math.max(o, c) + Math.random() * 10;
+    const l = Math.min(o, c) - Math.random() * 10;
+    d.push({ time: t, open: +o.toFixed(2), high: +h.toFixed(2), low: +l.toFixed(2), close: +c.toFixed(2), volume: Math.floor(1200 + Math.random() * 6400) });
+    p = c; t += 86400;
+  }
+  return d;
+}
+
+/* ═══ USER ACTIONS ═══ */
+function switchAsset(symbol) {
+  currentSymbol = symbol;
+  const name = document.getElementById('asset-select').selectedOptions[0]?.text?.split('—')[0]?.trim() || symbol;
+  document.getElementById('status').innerHTML = '<span class="live-dot"></span>' + name + ' · ' + currentTf;
+  loadData();
+}
+
+function setTimeframe(tf, interval, range, btn) {
+  currentTf = tf;
+  currentInterval = interval;
+  currentRange = range;
+  document.querySelectorAll('.tf-btn').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  const name = document.getElementById('asset-select').selectedOptions[0]?.text?.split('—')[0]?.trim() || currentSymbol;
+  document.getElementById('status').innerHTML = '<span class="live-dot"></span>' + name + ' · ' + tf;
+  loadData();
+}
+
+function setChartType(type, btn) {
+  document.querySelectorAll('.ct-btn').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  // Lightweight Charts doesn't switch series type easily — rebuild
+  loadData();
+}
+
+/* ═══ BOOT ═══ */
+initChart();
+// Failsafe
+window.addEventListener('load', function() {
+  if (!chart) initChart();
+  else {
+    var el = document.getElementById('chart');
+    if (el) chart.resize(el.clientWidth, el.clientHeight);
+  }
+});
+</script>
+</body>
+</html>

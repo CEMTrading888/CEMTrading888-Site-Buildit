@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- CEM-BUILD: GROUNDUP-APRIL4 -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Lab — CEMTrading888</title>
+  <link rel="stylesheet" href="/cem-shared.css">
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('cem_theme') || 'teal');</script>
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+  <style>
+    html, body { height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+    #main { flex: 1; display: flex; overflow: hidden; position: relative; padding-top: 78px; }
+
+    /* LEFT TOOL RAIL */
+    #lab-left-rail {
+      width: 44px; background: rgba(0,2,8,0.7); backdrop-filter: blur(10px);
+      border-right: 1px solid var(--border-faint);
+      display: flex; flex-direction: column; align-items: center; padding: 8px 0; gap: 2px;
+      flex-shrink: 0; z-index: 10;
+    }
+    .lr-btn {
+      width: 28px; height: 28px; background: none; border: none;
+      color: var(--text-muted); border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; transition: all 0.15s; position: relative;
+    }
+    .lr-btn:hover { color: var(--accent); background: var(--accent-bg); }
+    .lr-btn.active { color: var(--accent); background: rgba(255,255,255,0.06); box-shadow: 0 0 0 1px var(--accent-border); }
+    .lr-sep { width: 20px; height: 1px; background: var(--border-faint); margin: 4px 0; flex-shrink: 0; }
+    .lr-spacer { flex: 1; }
+
+    /* CHART AREA */
+    #chart-area { flex: 1; position: relative; overflow: hidden; }
+    #chart-canvas { position: absolute; inset: 0; z-index: 1; }
+
+    /* CHART TOPBAR */
+    #chart-topbar {
+      position: absolute; top: 0; left: 0; right: 0; height: 36px;
+      display: flex; align-items: center; gap: 0;
+      background: rgba(0,4,12,0.7); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-faint);
+      padding: 0 12px; z-index: 5; flex-shrink: 0;
+    }
+    .asset-pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 4px;
+      border: 1px solid var(--accent-border); background: var(--accent-bg);
+      margin-right: 12px; font-family: var(--font-mono); font-size: 11px;
+      font-weight: 700; color: var(--accent); position: relative;
+    }
+    .ctrl-btn {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 1px;
+      color: var(--text-muted); padding: 4px 10px; border-radius: 3px;
+      border: 1px solid var(--border-faint); background: none;
+      transition: all 0.15s; margin-right: 4px;
+    }
+    .ctrl-btn:hover, .ctrl-btn.active { color: var(--accent); border-color: var(--accent-border); }
+    #ohlcv-bar {
+      flex: 1; display: flex; align-items: center; gap: 14px;
+      font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); margin-left: 8px;
+    }
+
+    /* CANDLE COLOR PICKER */
+    .candle-picker { position: relative; display: inline-flex; }
+    .candle-picker-pop {
+      display: none; position: absolute; top: 100%; right: 0; min-width: 200px;
+      background: rgba(4,8,18,0.98); border: 1px solid var(--accent-border);
+      border-radius: 8px; padding: 12px; z-index: 30; box-shadow: var(--accent-glow-sm);
+      margin-top: 4px;
+    }
+    .candle-picker-pop.open { display: block; }
+    .candle-preset {
+      display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+      border-radius: 4px; transition: background 0.1s; margin-bottom: 4px;
+    }
+    .candle-preset:hover { background: rgba(255,255,255,0.05); }
+    .candle-swatch { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border-faint); }
+
+    /* THEME DOTS */
+    .theme-dots { display: flex; align-items: center; gap: 6px; margin-left: 8px; }
+    .theme-dot {
+      width: 11px; height: 11px; border-radius: 50%; border: 1px solid transparent;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .theme-dot.active { border-color: #fff; transform: scale(1.3); }
+
+    /* RIGHT PANEL — two zones */
+    #right-panel {
+      width: 320px; background: rgba(4,6,14,0.97);
+      border-left: 1px solid var(--border-faint);
+      display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+    }
+    #strategy-zone { flex: 1; overflow-y: auto; overflow-x: hidden; }
+    #cembot-zone {
+      height: 280px; flex-shrink: 0; border-top: 1px solid var(--accent-border);
+      display: flex; flex-direction: column; background: rgba(0,4,12,0.5);
+    }
+
+    /* ASSET DROPDOWN */
+    #asset-dropdown {
+      position: absolute; top: 36px; left: 0; width: 200px;
+      background: rgba(4,8,18,0.98); border: 1px solid var(--accent-border);
+      border-radius: 6px; z-index: 20; box-shadow: var(--accent-glow-sm); display: none;
+    }
+    .asset-opt {
+      padding: 8px 14px; font-family: var(--font-mono); font-size: 10px;
+      color: var(--text-secondary); border-bottom: 1px solid var(--border-faint);
+      transition: background 0.1s;
+    }
+    .asset-opt:hover { background: var(--accent-bg); color: var(--accent); }
+    .asset-section-hdr {
+      padding: 6px 14px; font-family: var(--font-mono); font-size: 8px;
+      letter-spacing: 2px; color: var(--accent-dim); text-transform: uppercase;
+      background: var(--accent-bg);
+    }
+
+    /* INDICATOR DROPDOWN */
+    #ind-dropdown {
+      position: absolute; right: 4px; top: 36px; width: 240px;
+      background: rgba(4,8,18,0.98); border: 1px solid var(--accent-border);
+      border-radius: 8px; z-index: 20; box-shadow: var(--accent-glow-sm);
+      display: none; max-height: 360px; overflow-y: auto;
+    }
+    .ind-row { padding: 6px 12px; border-bottom: 1px solid var(--border-faint); }
+    .ind-toggle-row { display: flex; align-items: center; gap: 8px; }
+    .ind-name { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); flex: 1; }
+    .ind-gear { background: none; border: none; color: var(--text-muted); font-size: 11px; padding: 2px 4px; border-radius: 3px; }
+    .ind-gear:hover { color: var(--accent); background: var(--accent-bg); }
+    .ind-params { display: none; padding: 8px 0 4px 24px; }
+    .ind-param { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-family: var(--font-mono); font-size: 9px; }
+    .ind-param span { color: var(--text-muted); flex: 1; }
+    .ind-param input[type=number] {
+      width: 56px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-faint);
+      color: var(--accent); font-family: var(--font-mono); font-size: 9px;
+      padding: 2px 6px; border-radius: 3px; outline: none;
+    }
+
+    /* CEMBOT PANEL INSIDE ZONE */
+    #cembot-messages {
+      flex: 1; overflow-y: auto; padding: 8px 12px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .msg-bot, .msg-user {
+      max-width: 90%; padding: 8px 12px; border-radius: 8px;
+      font-size: 12px; line-height: 1.6;
+    }
+    .msg-bot {
+      background: var(--accent-bg); border: 1px solid var(--accent-border);
+      color: var(--text-primary); align-self: flex-start;
+    }
+    .msg-user {
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border-faint);
+      color: var(--text-secondary); align-self: flex-end;
+    }
+    #cembot-input-row {
+      padding: 8px 12px; border-top: 1px solid var(--border-faint);
+      display: flex; gap: 6px; align-items: center;
+    }
+    #cembot-input {
+      flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border-faint);
+      color: var(--text-primary); font-size: 11px; padding: 7px 10px; border-radius: 4px;
+      outline: none; font-family: var(--font-body);
+    }
+    #cembot-input:focus { border-color: var(--accent-border); }
+    .voice-btn, .send-btn {
+      width: 30px; height: 30px; border-radius: 4px;
+      border: 1px solid var(--border-faint); background: none;
+      color: var(--text-muted); display: flex; align-items: center; justify-content: center;
+      font-size: 13px; transition: all 0.15s;
+    }
+    .voice-btn:hover, .send-btn:hover { color: var(--accent); border-color: var(--accent-border); }
+    .voice-btn.listening { color: var(--negative); border-color: var(--negative); animation: livePulse 1s infinite; }
+
+    /* CEMBOT Y/N PROMPT BUBBLES */
+    #cembot-prompt {
+      display: none; padding: 10px 12px; border-top: 1px solid var(--border-faint);
+    }
+    #cembot-prompt-text {
+      font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5;
+    }
+
+    /* QUICK CHIPS */
+    .chip-row { display: flex; gap: 4px; flex-wrap: wrap; padding: 4px 12px; }
+    .chip {
+      font-family: var(--font-mono); font-size: 7px; letter-spacing: 1px;
+      padding: 3px 8px; border-radius: 10px; border: 1px solid var(--border-faint);
+      color: var(--text-muted); background: none; transition: all 0.15s;
+    }
+    .chip:hover { color: var(--accent); border-color: var(--accent-border); }
+
+    /* RUN BACKTEST */
+    #run-backtest {
+      margin: 8px 12px 4px; width: calc(100% - 24px); padding: 12px;
+      background: var(--accent-bg); border: 1px solid var(--accent-border);
+      color: var(--accent); font-family: var(--font-mono);
+      font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+      border-radius: 4px; box-shadow: var(--accent-glow-sm);
+      transition: all 0.25s;
+    }
+    #run-backtest:hover:not(:disabled) {
+      background: rgba(255,255,255,0.08); box-shadow: var(--accent-glow-lg); letter-spacing: 6px;
+    }
+    #run-backtest:disabled { opacity: 0.4; }
+
+    /* SIM BAR */
+    #sim-bar {
+      height: 32px; background: rgba(0,0,0,0.5); border-top: 1px solid var(--border-faint);
+      display: flex; align-items: center; gap: 8px; padding: 0 12px; flex-shrink: 0;
+    }
+    .sim-btn {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px;
+      padding: 4px 14px; border-radius: 3px; border: 1px solid; transition: all 0.15s;
+    }
+    #sim-long { background: var(--positive-bg); border-color: rgba(0,201,177,0.4); color: var(--positive); }
+    #sim-short { background: var(--negative-bg); border-color: rgba(255,71,87,0.4); color: var(--negative); }
+    #sim-pause, #sim-review { background: none; border-color: var(--border-faint); color: var(--text-muted); }
+
+    /* SCRUBBER BAR */
+    #scrubber-bar {
+      display: none; height: 48px; background: rgba(0,2,8,0.9);
+      border-top: 1px solid var(--border-faint);
+      padding: 0 12px; align-items: center; gap: 8px; flex-shrink: 0;
+    }
+    #scrubber-bar.active { display: flex; }
+    #scrub-slider { flex: 1; }
+    .scrub-btn {
+      font-family: var(--font-mono); font-size: 9px; padding: 4px 10px;
+      border-radius: 3px; border: 1px solid var(--border-faint);
+      background: none; color: var(--text-muted); transition: all 0.15s;
+    }
+    .scrub-btn:hover { color: var(--accent); border-color: var(--accent-border); }
+    #scrub-time { font-family: var(--font-mono); font-size: 10px; color: var(--accent); min-width: 60px; }
+  </style>
+</head>
+<body>
+<div class="tron-grid"></div>
+
+  <!-- TOPBAR injected by nav.js or inline -->
+  <div id="topbar">
+    <a href="/" class="cem-logo" style="text-decoration:none;margin-right:36px;">
+      <span class="logo-cem">CEM</span><em>TRADING</em><span class="logo-888">888</span>
+    </a>
+    <div class="nav-links">
+      <a href="/lab.html" class="nav-btn active" id="nav-lab">THE LAB</a>
+      <a href="/user-profile.html" class="nav-btn" id="nav-profile">PROFILE</a>
+    </div>
+    <div class="topbar-right">
+      <div class="live-indicator"><div class="live-dot"></div><span class="live-label">LIVE</span></div>
+      <button class="avatar-btn" id="user-avatar" onclick="window.location.href='/user-profile.html'">C</button>
+    </div>
+  </div>
+
+  <!-- TICKER BAR -->
+  <div id="ticker-bar">
+    <div class="ticker-item"><span class="ticker-sym">MGC</span><span class="ticker-price" id="tp-MGC">—</span><span class="chg-pill pos" id="tc-MGC">—</span></div>
+    <div class="ticker-item"><span class="ticker-sym">MES</span><span class="ticker-price" id="tp-MES">—</span><span class="chg-pill neg" id="tc-MES">—</span></div>
+    <div class="ticker-item"><span class="ticker-sym">MNQ</span><span class="ticker-price" id="tp-MNQ">—</span><span class="chg-pill neg" id="tc-MNQ">—</span></div>
+    <div class="ticker-item"><span class="ticker-sym">BTC</span><span class="ticker-price" id="tp-BTC">—</span><span class="chg-pill pos" id="tc-BTC">—</span></div>
+    <div class="ticker-item"><span class="ticker-sym">ETH</span><span class="ticker-price" id="tp-ETH">—</span><span class="chg-pill neg" id="tc-ETH">—</span></div>
+    <div class="ticker-item" style="border-right:none"><span class="ticker-sym">DELAYED</span><span class="ticker-price ticker-delayed">15 MIN</span></div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="main">
+
+    <!-- LEFT TOOL RAIL -->
+    <div id="lab-left-rail">
+      <button class="lr-btn active" id="tool-cursor" title="Select" onclick="setTool('cursor')">✛</button>
+      <div class="lr-sep"></div>
+      <button class="lr-btn" id="tool-trend" title="Trend Line" onclick="setTool('trend-line')">╱</button>
+      <button class="lr-btn" id="tool-hline" title="Horizontal Line" onclick="setTool('horizontal-line')">—</button>
+      <button class="lr-btn" id="tool-vline" title="Vertical Line" onclick="setTool('vertical-line')">|</button>
+      <button class="lr-btn" id="tool-ray" title="Ray" onclick="setTool('ray')">→</button>
+      <button class="lr-btn" id="tool-channel" title="Parallel Channel" onclick="setTool('parallel-channel')">≋</button>
+      <div class="lr-sep"></div>
+      <button class="lr-btn" id="tool-fib" title="Fibonacci" onclick="setTool('fib-retracement')" style="font-size:9px;letter-spacing:-1px">FIB</button>
+      <button class="lr-btn" id="tool-measure" title="Price Range" onclick="setTool('price-range')">⇕</button>
+      <div class="lr-sep"></div>
+      <button class="lr-btn" id="tool-rect" title="Rectangle" onclick="setTool('rectangle')">▭</button>
+      <button class="lr-btn" id="tool-text" title="Text Label" onclick="setTool('text')">T</button>
+      <div class="lr-sep"></div>
+      <button class="lr-btn" id="tool-eraser" title="Delete Selected" onclick="eraseSelected()">⌫</button>
+      <div class="lr-spacer"></div>
+      <button class="lr-btn" id="tool-watchlist" title="Watchlist" onclick="toggleWatchlist()">≡</button>
+    </div>
+
+    <!-- CHART AREA -->
+    <div id="chart-area">
+      <div id="chart-topbar">
+        <div class="asset-pill" id="asset-pill" onclick="toggleAssetDropdown()">
+          <span id="current-asset">MGC</span>
+          <span style="font-size:9px;opacity:0.6">▾</span>
+        </div>
+        <div id="asset-dropdown">
+          <div class="asset-section-hdr">Micro Futures</div>
+          <div class="asset-opt" onclick="switchAsset('MGC')">MGC — Micro Gold</div>
+          <div class="asset-opt" onclick="switchAsset('MES')">MES — Micro S&P 500</div>
+          <div class="asset-opt" onclick="switchAsset('MNQ')">MNQ — Micro Nasdaq</div>
+          <div class="asset-opt" onclick="switchAsset('M2K')">M2K — Micro Russell</div>
+          <div class="asset-section-hdr">Crypto</div>
+          <div class="asset-opt" onclick="switchAsset('BTC')">BTC — Bitcoin</div>
+          <div class="asset-opt" onclick="switchAsset('ETH')">ETH — Ethereum</div>
+          <div class="asset-opt" onclick="switchAsset('SOL')">SOL — Solana</div>
+          <div class="asset-section-hdr">Stocks</div>
+          <div class="asset-opt" onclick="switchAsset('AAPL')">AAPL — Apple</div>
+          <div class="asset-opt" onclick="switchAsset('NVDA')">NVDA — Nvidia</div>
+          <div class="asset-opt" onclick="switchAsset('TSLA')">TSLA — Tesla</div>
+          <div class="asset-opt" onclick="switchAsset('SPY')">SPY — S&P ETF</div>
+          <div class="asset-section-hdr">Forex</div>
+          <div class="asset-opt" onclick="switchAsset('EURUSD=X')">EUR/USD</div>
+          <div class="asset-opt" onclick="switchAsset('GBPUSD=X')">GBP/USD</div>
+        </div>
+
+        <button class="ctrl-btn active" id="type-candles" onclick="setChartType('candles')">Candles</button>
+        <button class="ctrl-btn" id="type-line" onclick="setChartType('line')">Line</button>
+        <button class="ctrl-btn" id="type-area" onclick="setChartType('area')">Area</button>
+
+        <!-- Candle Color Picker -->
+        <div class="candle-picker">
+          <button class="ctrl-btn" onclick="toggleCandlePicker()" title="Candle Colors">
+            <span id="candle-up-swatch" style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#00C9B1;margin-right:3px"></span>
+            <span id="candle-dn-swatch" style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#FF4757"></span>
+          </button>
+          <div class="candle-picker-pop" id="candle-pop">
+            <div style="font-family:var(--font-mono);font-size:7px;letter-spacing:2px;color:var(--text-muted);margin-bottom:8px">CANDLE COLORS</div>
+            <div class="candle-preset" onclick="setCandleColors('#00C9B1','#FF4757')"><div class="candle-swatch" style="background:#00C9B1"></div><div class="candle-swatch" style="background:#FF4757"></div><span style="font-family:var(--font-mono);font-size:9px;color:var(--text-secondary)">Neon (default)</span></div>
+            <div class="candle-preset" onclick="setCandleColors('#26A69A','#EF5350')"><div class="candle-swatch" style="background:#26A69A"></div><div class="candle-swatch" style="background:#EF5350"></div><span style="font-family:var(--font-mono);font-size:9px;color:var(--text-secondary)">Classic</span></div>
+            <div class="candle-preset" onclick="setCandleColors('#FFD700','#C0C0C0')"><div class="candle-swatch" style="background:#FFD700"></div><div class="candle-swatch" style="background:#C0C0C0"></div><span style="font-family:var(--font-mono);font-size:9px;color:var(--text-secondary)">Gold / Silver</span></div>
+            <div class="candle-preset" onclick="setCandleColors('#FFFFFF','#666666')"><div class="candle-swatch" style="background:#FFFFFF"></div><div class="candle-swatch" style="background:#666666"></div><span style="font-family:var(--font-mono);font-size:9px;color:var(--text-secondary)">Mono</span></div>
+            <div class="candle-preset" onclick="setCandleColors('#EF5350','#26A69A')"><div class="candle-swatch" style="background:#EF5350"></div><div class="candle-swatch" style="background:#26A69A"></div><span style="font-family:var(--font-mono);font-size:9px;color:var(--text-secondary)">Inverse</span></div>
+          </div>
+        </div>
+
+        <!-- Timeframe -->
+        <select id="tf-select" class="ctrl-btn" style="cursor:pointer" onchange="setTimeframe(this.value)">
+          <option value="1m">1M</option><option value="5m">5M</option><option value="15m">15M</option>
+          <option value="1h">1H</option><option value="1d" selected>1D</option><option value="1wk">1W</option>
+        </select>
+
+        <!-- Range -->
+        <select id="range-select" class="ctrl-btn" style="cursor:pointer" onchange="setRange(this.value)">
+          <option value="1mo">1M</option><option value="3mo">3M</option><option value="6mo">6M</option>
+          <option value="1y">1Y</option><option value="2y">2Y</option><option value="5y" selected>5Y</option><option value="max">MAX</option>
+        </select>
+
+        <!-- Indicators -->
+        <div style="position:relative">
+          <button class="ctrl-btn" id="ind-btn" onclick="toggleIndDropdown()">● Ind (<span id="ind-count">0</span>)</button>
+          <div id="ind-dropdown"></div>
+        </div>
+
+        <!-- Theme dots -->
+        <div class="theme-dots">
+          <div class="theme-dot active" style="background:#00C9B1" title="Teal" onclick="setTheme('teal')"></div>
+          <div class="theme-dot" style="background:#7B5CF5" title="Violet" onclick="setTheme('violet')"></div>
+          <div class="theme-dot" style="background:#DC3232" title="Crimson" onclick="setTheme('crimson')"></div>
+          <div class="theme-dot" style="background:#00FF9F" title="Aurora" onclick="setTheme('aurora')"></div>
+          <div class="theme-dot" style="background:#FFB800" title="Solar" onclick="setTheme('solar')"></div>
+          <div class="theme-dot" style="background:#C8C8D8" title="Ghost" onclick="setTheme('ghost')"></div>
+        </div>
+
+        <div id="ohlcv-bar">
+          <span>O <b id="ov-o">—</b></span>
+          <span>H <b id="ov-h">—</b></span>
+          <span>L <b id="ov-l">—</b></span>
+          <span>C <b id="ov-c">—</b></span>
+          <span>V <b id="ov-v">—</b></span>
+        </div>
+      </div>
+
+      <div id="backtest-progress-bar" style="position:absolute;top:36px;left:0;height:2px;width:0%;background:linear-gradient(90deg,#7B2FFF,var(--accent));transition:width 0.35s ease;z-index:50;border-radius:0 1px 1px 0;box-shadow:0 0 8px var(--accent-dim);display:none;pointer-events:none;"></div>
+      <div id="chart-canvas"></div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div id="right-panel">
+
+      <!-- STRATEGY ZONE (scrollable top) -->
+      <div id="strategy-zone">
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="strategy" onclick="switchTab(this,'strategy')">Strategy</button>
+          <button class="tab-btn" data-tab="results" onclick="switchTab(this,'results')">Results</button>
+          <button class="tab-btn" data-tab="paper" onclick="switchTab(this,'paper')">Paper</button>
+        </div>
+
+        <!-- STRATEGY TAB -->
+        <div id="tab-strategy" style="overflow-y:auto">
+          <div class="sec-hdr">Entry Signals</div>
+          <div class="param-row"><span class="param-lbl">EMA Fast</span><input type="range" id="sl-ema-fast" data-key="ema-fast" min="2" max="50" value="9" oninput="updateParam('ema-fast',this.value)"><span class="param-val" id="sl-ema-fast-val">9</span></div>
+          <div class="param-row"><span class="param-lbl">EMA Slow</span><input type="range" id="sl-ema-slow" data-key="ema-slow" min="5" max="200" value="21" oninput="updateParam('ema-slow',this.value)"><span class="param-val" id="sl-ema-slow-val">21</span></div>
+          <div class="param-row"><span class="param-lbl">RSI Period</span><input type="range" id="sl-rsi-period" data-key="rsi-period" min="2" max="50" value="14" oninput="updateParam('rsi-period',this.value)"><span class="param-val" id="sl-rsi-period-val">14</span></div>
+          <div class="param-row"><span class="param-lbl">RSI Entry</span><input type="range" id="sl-rsi-entry" data-key="rsi-entry" min="20" max="80" value="50" oninput="updateParam('rsi-entry',this.value)"><span class="param-val" id="sl-rsi-entry-val">50</span></div>
+          <div class="param-row"><span class="param-lbl">MACD Fast</span><input type="range" id="sl-macd-fast" data-key="macd-fast" min="5" max="30" value="12" oninput="updateParam('macd-fast',this.value)"><span class="param-val" id="sl-macd-fast-val">12</span></div>
+          <div class="param-row"><span class="param-lbl">MACD Slow</span><input type="range" id="sl-macd-slow" data-key="macd-slow" min="10" max="50" value="26" oninput="updateParam('macd-slow',this.value)"><span class="param-val" id="sl-macd-slow-val">26</span></div>
+          <div class="param-row"><span class="param-lbl">BB Period</span><input type="range" id="sl-bb-period" data-key="bb-period" min="5" max="50" value="20" oninput="updateParam('bb-period',this.value)"><span class="param-val" id="sl-bb-period-val">20</span></div>
+          <div class="param-row"><span class="param-lbl">ATR Period</span><input type="range" id="sl-atr" data-key="atr" min="5" max="30" value="14" oninput="updateParam('atr',this.value)"><span class="param-val" id="sl-atr-val">14</span></div>
+
+          <div class="sec-hdr">Exit Rules</div>
+          <div class="param-row"><span class="param-lbl">Stop Loss %</span><input type="range" id="sl-stop" data-key="stop" min="0.1" max="10" step="0.1" value="1.5" oninput="updateParam('stop',this.value)"><span class="param-val" id="sl-stop-val" style="color:var(--negative)">1.5</span></div>
+          <div class="param-row"><span class="param-lbl">Take Profit %</span><input type="range" id="sl-tp" data-key="tp" min="0.1" max="20" step="0.1" value="3.0" oninput="updateParam('tp',this.value)"><span class="param-val" id="sl-tp-val">3.0</span></div>
+          <div class="param-row"><span class="param-lbl">Max Bars</span><input type="range" id="sl-maxbars" data-key="maxbars" min="1" max="100" value="20" oninput="updateParam('maxbars',this.value)"><span class="param-val" id="sl-maxbars-val">20</span></div>
+          <div class="param-row"><span class="param-lbl">Trailing Stop %</span><input type="range" id="sl-trail" data-key="trail" min="0" max="5" step="0.1" value="0" oninput="updateParam('trail',this.value)"><span class="param-val" id="sl-trail-val">OFF</span></div>
+
+          <div class="sec-hdr">Risk Management</div>
+          <div class="param-row"><span class="param-lbl">Account Size ($)</span><input type="number" id="inp-account" class="cem-input" style="width:90px;padding:4px 8px;font-size:10px" value="10000" oninput="updateCalcs()"></div>
+          <div class="param-row"><span class="param-lbl">Risk Per Trade %</span><input type="range" id="sl-risk" data-key="risk" min="0.1" max="10" step="0.1" value="1.5" oninput="updateParam('risk',this.value)"><span class="param-val" id="sl-risk-val">1.5</span></div>
+          <div class="param-row"><span class="param-lbl">Max Daily Loss %</span><input type="range" id="sl-maxloss" data-key="maxloss" min="1" max="20" value="5" oninput="updateParam('maxloss',this.value)"><span class="param-val" id="sl-maxloss-val">5</span></div>
+          <div class="param-row"><span class="param-lbl">Max Position</span><input type="range" id="sl-maxpos" data-key="maxpos" min="1" max="20" value="5" oninput="updateParam('maxpos',this.value)"><span class="param-val" id="sl-maxpos-val">5</span></div>
+
+          <div class="sec-hdr">Live Calculations</div>
+          <div class="calc-grid">
+            <div class="calc-card"><span class="calc-lbl">R:R Ratio</span><div class="calc-val t" id="cc-rr">2.0:1</div></div>
+            <div class="calc-card"><span class="calc-lbl">Breakeven</span><div class="calc-val" id="cc-be">33.3%</div></div>
+            <div class="calc-card"><span class="calc-lbl">Risk/Trade</span><div class="calc-val t" id="cc-risk">$150</div></div>
+            <div class="calc-card"><span class="calc-lbl">Position Size</span><div class="calc-val" id="cc-pos">—</div></div>
+            <div class="calc-card"><span class="calc-lbl">Max Day Loss</span><div class="calc-val r" id="cc-maxloss">$500</div></div>
+            <div class="calc-card"><span class="calc-lbl">Loss/Day Max</span><div class="calc-val" id="cc-lossdaymax">—</div></div>
+          </div>
+
+          <button id="run-backtest" onclick="runBacktest()">▶ RUN BACKTEST</button>
+          <div style="padding:6px 12px 12px;font-family:var(--font-mono);font-size:8px;color:var(--text-muted);text-align:center;line-height:1.6">
+            Historical data sourced from CME Globex via Databento.<br>Trading involves substantial risk. Backtests are educational only.
+          </div>
+        </div>
+
+        <!-- RESULTS TAB -->
+        <div id="tab-results" style="display:none;overflow-y:auto">
+          <div class="sec-hdr">Backtest Results</div>
+          <div class="calc-grid">
+            <div class="calc-card"><span class="calc-lbl">Total Return</span><div class="calc-val t" id="res-return">—</div></div>
+            <div class="calc-card"><span class="calc-lbl">Win Rate</span><div class="calc-val" id="res-winrate">—</div></div>
+            <div class="calc-card"><span class="calc-lbl">Sharpe Ratio</span><div class="calc-val" id="res-sharpe">—</div></div>
+            <div class="calc-card"><span class="calc-lbl">Max Drawdown</span><div class="calc-val r" id="res-maxdd">—</div></div>
+            <div class="calc-card"><span class="calc-lbl">Total Trades</span><div class="calc-val" id="res-trades">—</div></div>
+            <div class="calc-card"><span class="calc-lbl">Profit Factor</span><div class="calc-val" id="res-pf">—</div></div>
+          </div>
+          <div class="sec-hdr">Trade Scrub</div>
+          <input type="range" id="scrub-slider" min="0" max="0" value="0" step="1" disabled style="width:calc(100% - 24px);margin:8px 12px">
+          <div id="scrub-comment" style="padding:8px 14px;font-size:11px;color:var(--text-secondary);line-height:1.5">Run a backtest to review trades here.</div>
+          <div class="sec-hdr">Trade Log</div>
+          <div id="trade-log" style="padding:0 12px 12px"></div>
+        </div>
+
+        <!-- PAPER TAB -->
+        <div id="tab-paper" style="display:none;overflow-y:auto">
+          <div class="sec-hdr">Paper Trading</div>
+          <div style="padding:12px">
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-faint);font-family:var(--font-mono)"><span style="font-size:9px;color:var(--text-muted)">PAPER P&L</span><span id="paper-pnl" style="color:var(--accent)">$0.00</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-faint);font-family:var(--font-mono)"><span style="font-size:9px;color:var(--text-muted)">TRADES</span><span id="paper-total">0</span></div>
+            <button class="btn-primary" style="width:100%;margin-top:12px" onclick="startPaperTrade()">▶ START PAPER TRADING</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CEMBOT ZONE (always visible bottom) -->
+      <div id="cembot-zone">
+        <div style="padding:6px 12px;font-family:var(--font-mono);font-size:7px;letter-spacing:2px;color:var(--accent-dim);display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border-faint)">
+          <div class="live-dot" style="width:5px;height:5px"></div> // CEMBOT
+        </div>
+        <div class="chip-row">
+          <button class="chip" onclick="sendCembotMsg('Read my chart')">📊 Chart</button>
+          <button class="chip" onclick="sendCembotMsg('Analyze strategy')">⚡ Strategy</button>
+          <button class="chip" onclick="sendCembotMsg('Check risk')">🎯 Risk</button>
+          <button class="chip" onclick="sendCembotMsg('Market conditions')">📈 Market</button>
+        </div>
+        <div id="cembot-messages">
+          <div class="msg-bot">Hey — I'm CEMbot. I'm reading your strategy in real time. Ask me anything.</div>
+        </div>
+        <div id="cembot-prompt">
+          <div id="cembot-prompt-text"></div>
+          <div style="display:flex;gap:8px">
+            <button id="cembot-prompt-no" class="btn-ghost" style="flex:1;padding:8px;font-size:9px" onclick="cembotDecline()"></button>
+            <button id="cembot-prompt-yes" class="btn-primary" style="flex:1;padding:8px;font-size:9px" onclick="cembotAccept()"></button>
+          </div>
+        </div>
+        <div id="cembot-input-row">
+          <button class="voice-btn" id="voice-btn" onclick="toggleVoice()" title="Voice">🎤</button>
+          <input type="text" id="cembot-input" placeholder="Ask CEMbot..." onkeydown="if(event.key==='Enter')sendCembot()">
+          <button class="send-btn" onclick="sendCembot()">▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRUBBER BAR -->
+  <div id="scrubber-bar">
+    <button class="scrub-btn" onclick="scrubReset()">◀◀</button>
+    <button class="scrub-btn" onclick="scrubBack()">◀</button>
+    <button class="scrub-btn" id="scrub-play-btn" onclick="scrubPlay()">▶</button>
+    <button class="scrub-btn" onclick="scrubFwd()">▶▶</button>
+    <input type="range" id="main-scrub-slider" min="0" max="0" value="0" style="flex:1" oninput="seekToBar(this.value)">
+    <span id="scrub-time">—</span>
+    <select class="ctrl-btn" id="scrub-speed" style="font-size:8px;padding:2px 6px">
+      <option value="1000">1x</option><option value="500">2x</option><option value="200">5x</option><option value="100">10x</option><option value="0">BAR</option>
+    </select>
+  </div>
+
+  <!-- SIM BAR -->
+  <div id="sim-bar">
+    <button class="sim-btn" id="sim-long" onclick="simLong()">SIM LONG</button>
+    <button class="sim-btn" id="sim-short" onclick="simShort()">SIM SHORT</button>
+    <button class="sim-btn" id="sim-pause" onclick="simPause()">PAUSE</button>
+    <button class="sim-btn" id="sim-review" onclick="simReview()">REVIEW</button>
+    <button class="sim-btn" id="btn-replay" onclick="toggleReplay()" style="margin-left:auto;border-color:var(--accent-border);color:var(--accent)">▶ REPLAY</button>
+    <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted)" id="sim-status">Ready</span>
+  </div>
+
+  <div id="cem-toast"></div>
+
+  <!-- CHART BOOTSTRAP — runs before auth, no dependencies -->
+  <script>
+  (function() {
+    var THEMES = {
+      teal:   { bgVoid:'#000C14', accent:'#00C9B1', textPrimary:'#F0F4FF', textMuted:'rgba(240,244,255,0.28)', gridLine:'rgba(255,255,255,0.04)', borderFaint:'rgba(255,255,255,0.06)' },
+      violet: { bgVoid:'#0A0A1A', accent:'#7B5CF5', textPrimary:'#F0F4FF', textMuted:'rgba(240,244,255,0.28)', gridLine:'rgba(255,255,255,0.04)', borderFaint:'rgba(255,255,255,0.06)' },
+      crimson:{ bgVoid:'#0D0608', accent:'#DC3232', textPrimary:'#F0F4FF', textMuted:'rgba(240,244,255,0.28)', gridLine:'rgba(255,255,255,0.04)', borderFaint:'rgba(255,255,255,0.06)' },
+      aurora: { bgVoid:'#020E0C', accent:'#00FF9F', textPrimary:'#F0F4FF', textMuted:'rgba(240,244,255,0.28)', gridLine:'rgba(255,255,255,0.04)', borderFaint:'rgba(255,255,255,0.06)' },
+      solar:  { bgVoid:'#0C0800', accent:'#FFB800', textPrimary:'#F0F4FF', textMuted:'rgba(240,244,255,0.28)', gridLine:'rgba(255,255,255,0.04)', borderFaint:'rgba(255,255,255,0.06)' },
+      ghost:  { bgVoid:'#0D0D0F', accent:'#C8C8D8', textPrimary:'#F0F4FF', textMuted:'rgba(240,244,255,0.28)', gridLine:'rgba(255,255,255,0.04)', borderFaint:'rgba(255,255,255,0.06)' }
+    };
+    window._CEM_THEMES = THEMES;
+
+    function tryInitChart() {
+      var c = document.getElementById('chart-canvas');
+      if (!c || !window.LightweightCharts || window.chart) return;
+      var themeName = localStorage.getItem('cem_theme') || 'teal';
+      var t = THEMES[themeName] || THEMES.teal;
+      window.chart = LightweightCharts.createChart(c, {
+        width: c.offsetWidth || 1200, height: c.offsetHeight || 650,
+        layout: { background: { type:'solid', color: t.bgVoid }, textColor: t.textPrimary },
+        grid: { vertLines: { color: t.gridLine }, horzLines: { color: t.gridLine } },
+        crosshair: { mode: 1, vertLine: { color: t.accent, labelBackgroundColor: t.accent }, horzLine: { color: t.accent, labelBackgroundColor: t.accent } },
+        rightPriceScale: { borderColor: t.borderFaint, textColor: t.textMuted },
+        timeScale: { borderColor: t.borderFaint, timeVisible: true }
+      });
+      var savedUp = localStorage.getItem('cem_candle_up') || '#00C9B1';
+      var savedDn = localStorage.getItem('cem_candle_down') || '#FF4757';
+      window.mainSeries = window.chart.addCandlestickSeries({
+        upColor: savedUp, downColor: savedDn,
+        borderUpColor: savedUp, borderDownColor: savedDn,
+        wickUpColor: savedUp, wickDownColor: savedDn
+      });
+      window.addEventListener('resize', function() {
+        if (window.chart && c) window.chart.applyOptions({ width: c.offsetWidth, height: c.offsetHeight });
+      });
+      window.chart.subscribeCrosshairMove(function(param) {
+        if (!param.time) return;
+        var bar = param.seriesData && param.seriesData.get(window.mainSeries);
+        if (!bar) return;
+        var s = function(id,v) { var e = document.getElementById(id); if(e) e.textContent = v; };
+        s('ov-o', bar.open ? bar.open.toFixed(2) : '—');
+        s('ov-h', bar.high ? bar.high.toFixed(2) : '—');
+        s('ov-l', bar.low ? bar.low.toFixed(2) : '—');
+        s('ov-c', bar.close ? bar.close.toFixed(2) : '—');
+        s('ov-v', bar.volume ? (bar.volume/1000).toFixed(1)+'k' : '—');
+      });
+      loadCandles();
+    }
+
+    function loadCandles() {
+      var sym = window._currentSymbol || 'MGC';
+      fetch('/api/candles?symbol=' + encodeURIComponent(sym) + '&interval=1d&range=5y', {cache:'no-store'})
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          var bars = (d.bars || []).map(function(b) { return {time:b.t,open:b.o,high:b.h,low:b.l,close:b.c}; })
+            .filter(function(b) { return b.close > 0; }).sort(function(a,b) { return a.time - b.time; });
+          window._chartBars = bars;
+          window._chartCloses = bars.map(function(b){return b.close;});
+          if (window.mainSeries && bars.length) { window.mainSeries.setData(bars); window.chart.timeScale().fitContent(); }
+        })
+        .catch(function(e) { console.error('candle load error', e); });
+    }
+
+    function loadTickerPrices() {
+      var syms = ['MGC','MES','MNQ','BTC','ETH'];
+      syms.forEach(function(sym) {
+        fetch('/api/prices?symbol=' + encodeURIComponent(sym) + '&interval=1d&range=1mo', {cache:'no-store'})
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            var bars = d.bars || [];
+            if (!bars.length) return;
+            var last = bars[bars.length - 1]; var prev = bars.length > 1 ? bars[bars.length - 2] : last;
+            var price = last.c != null ? Number(last.c) : null; var change_pct = null;
+            if (prev && prev.c && Number(prev.c) !== 0) change_pct = ((Number(last.c) - Number(prev.c)) / Number(prev.c)) * 100;
+            var pe = document.getElementById('tp-' + sym); var ce = document.getElementById('tc-' + sym);
+            if (pe && price != null && !isNaN(price)) pe.textContent = price.toLocaleString(undefined,{maximumFractionDigits:2});
+            if (ce && change_pct != null && !isNaN(change_pct)) {
+              var pos = change_pct >= 0;
+              ce.textContent = (pos ? '\u25B2' : '\u25BC') + ' ' + (pos ? '+' : '') + Math.abs(change_pct).toFixed(2) + '%';
+              ce.className = 'chg-pill ' + (pos ? 'pos' : 'neg');
+            }
+          }).catch(function() {});
+      });
+    }
+
+    window.loadChartData = function(sym) { window._currentSymbol = sym || 'MGC'; loadCandles(); };
+    window._reloadChart = loadCandles;
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() { setTimeout(tryInitChart, 100); setTimeout(loadTickerPrices, 200); });
+    } else { setTimeout(tryInitChart, 100); setTimeout(loadTickerPrices, 200); }
+    setTimeout(tryInitChart, 1000);
+    setTimeout(tryInitChart, 2500);
+    setInterval(loadTickerPrices, 60000);
+  })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  // ============================================================
+  // CEM LAB — COMPLETE JS (ground-up rebuild)
+  // ============================================================
+  var SUPA_URL = 'https://gsnbqohzprencuzkirui.supabase.co';
+  var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdzbmJxb2h6cHJlbmN1emtpcnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyOTYzMjMsImV4cCI6MjA4OTg3MjMyM30.YsMOVJyz4XYWOT0e_lQjNHDArNLiEdF38RXZuoR1iq8';
+  var sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+  var cemUser = null;
+
+  var CEM = {
+    asset: 'MGC', timeframe: '1d', range: '5y', chartType: 'candles',
+    theme: localStorage.getItem('cem_theme') || 'teal', tool: 'cursor',
+    activeIndicators: {},
+    params: {
+      emaFast:9, emaSlow:21, rsiPeriod:14, rsiEntry:50,
+      macdFast:12, macdSlow:26, bbPeriod:20, bbStd:2,
+      atrPeriod:14, stopLoss:1.5, takeProfit:3.0,
+      maxBars:20, trailStop:0, accountSize:10000,
+      riskPct:1.5, maxDailyLoss:5, maxPosition:5
+    },
+    backtestResults: null
+  };
+
+  // --- THEME ---
+  function setTheme(name) {
+    CEM.theme = name;
+    localStorage.setItem('cem_theme', name);
+    document.documentElement.setAttribute('data-theme', name);
+    document.querySelectorAll('.theme-dot').forEach(function(d) {
+      d.classList.toggle('active', d.getAttribute('title').toLowerCase() === name);
+    });
+    if (window.chart && window._CEM_THEMES) {
+      var t = window._CEM_THEMES[name] || window._CEM_THEMES.teal;
+      window.chart.applyOptions({
+        layout: { background: { type:'solid', color: t.bgVoid }, textColor: t.textPrimary },
+        grid: { vertLines: { color: t.gridLine }, horzLines: { color: t.gridLine } },
+        crosshair: { vertLine: { color: t.accent, labelBackgroundColor: t.accent }, horzLine: { color: t.accent, labelBackgroundColor: t.accent } },
+        rightPriceScale: { borderColor: t.borderFaint, textColor: t.textMuted },
+        timeScale: { borderColor: t.borderFaint, textColor: t.textMuted }
+      });
+    }
+  }
+
+  // --- CANDLE COLOR PICKER ---
+  function setCandleColors(up, dn) {
+    localStorage.setItem('cem_candle_up', up);
+    localStorage.setItem('cem_candle_down', dn);
+    document.getElementById('candle-up-swatch').style.background = up;
+    document.getElementById('candle-dn-swatch').style.background = dn;
+    if (window.mainSeries) {
+      window.mainSeries.applyOptions({ upColor:up, downColor:dn, wickUpColor:up, wickDownColor:dn, borderUpColor:up, borderDownColor:dn });
+    }
+    toggleCandlePicker();
+  }
+  function toggleCandlePicker() {
+    var pop = document.getElementById('candle-pop');
+    pop.classList.toggle('open');
+  }
+
+  // --- CHART TYPE ---
+  function setChartType(type) {
+    CEM.chartType = type;
+    document.querySelectorAll('[id^=type-]').forEach(function(b) { b.classList.remove('active'); });
+    var btn = document.getElementById('type-' + type);
+    if (btn) btn.classList.add('active');
+    if (!window.chart || !window._chartBars || !window._chartBars.length) return;
+    var bars = window._chartBars;
+    var savedUp = localStorage.getItem('cem_candle_up') || '#00C9B1';
+    var savedDn = localStorage.getItem('cem_candle_down') || '#FF4757';
+    try { window.chart.removeSeries(window.mainSeries); } catch(e) {}
+    if (type === 'candles') {
+      window.mainSeries = window.chart.addCandlestickSeries({ upColor:savedUp, downColor:savedDn, wickUpColor:savedUp, wickDownColor:savedDn, borderUpColor:savedUp, borderDownColor:savedDn });
+      window.mainSeries.setData(bars);
+    } else if (type === 'line') {
+      window.mainSeries = window.chart.addLineSeries({ color: savedUp, lineWidth: 2 });
+      window.mainSeries.setData(bars.map(function(b) { return {time:b.time, value:b.close}; }));
+    } else if (type === 'area') {
+      window.mainSeries = window.chart.addAreaSeries({ lineColor: savedUp, topColor: 'rgba(0,201,177,0.35)', bottomColor: 'rgba(0,201,177,0.02)' });
+      window.mainSeries.setData(bars.map(function(b) { return {time:b.time, value:b.close}; }));
+    }
+    window.chart.timeScale().fitContent();
+  }
+
+  function setTimeframe(tf) { CEM.timeframe = tf; loadChartData(CEM.asset); }
+  function setRange(r) { CEM.range = r; loadChartData(CEM.asset); }
+  function switchAsset(sym) {
+    CEM.asset = sym;
+    window._currentSymbol = sym;
+    document.getElementById('current-asset').textContent = sym;
+    document.getElementById('asset-dropdown').style.display = 'none';
+    loadChartData(sym);
+  }
+  function toggleAssetDropdown() {
+    var dd = document.getElementById('asset-dropdown');
+    dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+  }
+
+  // --- DRAWING TOOLS ---
+  function setTool(name) {
+    CEM.tool = name;
+    document.querySelectorAll('.lr-btn').forEach(function(b) { b.classList.remove('active'); });
+    var btn = document.getElementById('tool-' + name);
+    if (btn) btn.classList.add('active');
+  }
+  function eraseSelected() { showToast('Drawing erased'); }
+  function toggleWatchlist() { showToast('Watchlist — coming soon'); }
+  function toggleIndDropdown() {
+    var dd = document.getElementById('ind-dropdown');
+    dd.style.display = dd.style.display === 'none' || !dd.style.display ? 'block' : 'none';
+  }
+
+  // --- INDICATOR MATH ---
+  function calcEMA(prices, period) {
+    var k = 2 / (period + 1); var e = prices[0] || 0;
+    return prices.map(function(v) { return (e = (v * k) + (e * (1 - k))); });
+  }
+  function calcSMA(prices, period) {
+    return prices.map(function(_, i) {
+      if (i < period - 1) return prices[i];
+      var s = 0; for (var j = i - period + 1; j <= i; j++) s += prices[j];
+      return s / period;
+    });
+  }
+  function calcRSI(prices, period) {
+    if (!prices.length) return [];
+    var out = new Array(prices.length).fill(50);
+    var gains = 0, losses = 0;
+    for (var i = 1; i <= period && i < prices.length; i++) {
+      var ch = prices[i] - prices[i - 1];
+      if (ch >= 0) gains += ch; else losses += Math.abs(ch);
+    }
+    var avgGain = gains / Math.max(period, 1);
+    var avgLoss = losses / Math.max(period, 1);
+    for (var i2 = period + 1; i2 < prices.length; i2++) {
+      var ch2 = prices[i2] - prices[i2 - 1];
+      avgGain = ((avgGain * (period - 1)) + Math.max(ch2, 0)) / period;
+      avgLoss = ((avgLoss * (period - 1)) + Math.max(-ch2, 0)) / period;
+      var rs = avgLoss === 0 ? 100 : (avgGain / avgLoss);
+      out[i2] = 100 - (100 / (1 + rs));
+    }
+    return out;
+  }
+  function calcMACD(prices, fast, slow, signal) {
+    fast = fast || 12; slow = slow || 26; signal = signal || 9;
+    var ef = calcEMA(prices, fast); var es = calcEMA(prices, slow);
+    var macd = prices.map(function(_, i) { return (ef[i]||0) - (es[i]||0); });
+    var sig = calcEMA(macd, signal);
+    return { macd: macd, signal: sig, hist: macd.map(function(v, i) { return v - (sig[i]||0); }) };
+  }
+  function calcBB(prices, period, std) {
+    period = period || 20; std = std || 2;
+    var mid = calcSMA(prices, period);
+    var stdArr = prices.map(function(_, i) {
+      if (i < period - 1) return 0;
+      var m = mid[i]; var s = 0;
+      for (var j = i - period + 1; j <= i; j++) s += Math.pow(prices[j] - m, 2);
+      return Math.sqrt(s / period);
+    });
+    return {
+      mid: mid,
+      upper: mid.map(function(m, i) { return m + std * (stdArr[i]||0); }),
+      lower: mid.map(function(m, i) { return m - std * (stdArr[i]||0); })
+    };
+  }
+
+  // --- PARAMS & CALCS ---
+  function updateParam(key, val) {
+    var n = parseFloat(val);
+    var map = {'ema-fast':'emaFast','ema-slow':'emaSlow','rsi-period':'rsiPeriod','rsi-entry':'rsiEntry',
+      'macd-fast':'macdFast','macd-slow':'macdSlow','bb-period':'bbPeriod','bb-std':'bbStd','atr':'atrPeriod',
+      'stop':'stopLoss','tp':'takeProfit','maxbars':'maxBars','trail':'trailStop','risk':'riskPct','maxloss':'maxDailyLoss','maxpos':'maxPosition'};
+    if (map[key]) CEM.params[map[key]] = n;
+    var ve = document.getElementById('sl-' + key + '-val');
+    if (ve) {
+      if (key === 'trail') ve.textContent = n === 0 ? 'OFF' : n.toFixed(1) + '%';
+      else if (['stop','tp','bb-std'].indexOf(key) >= 0) ve.textContent = n.toFixed(1);
+      else ve.textContent = val;
+    }
+    updateCalcs();
+    // CEMbot auto-commentary (debounced)
+    clearTimeout(window._cembot_timer);
+    window._cembot_timer = setTimeout(function() {
+      if (window.sendCembotMsg) sendCembotMsg(null, buildStrategyContext());
+    }, 800);
+  }
+
+  function updateCalcs() {
+    var p = CEM.params;
+    var rr = (p.takeProfit / p.stopLoss).toFixed(2);
+    var be = (100 / (1 + p.takeProfit / p.stopLoss)).toFixed(1);
+    var risk = (p.accountSize * p.riskPct / 100).toFixed(0);
+    var maxloss = (p.accountSize * p.maxDailyLoss / 100).toFixed(0);
+    var s = function(id,v) { var e = document.getElementById(id); if(e) e.textContent = v; };
+    s('cc-rr', rr + ':1'); s('cc-be', be + '%');
+    s('cc-risk', '$' + parseInt(risk).toLocaleString());
+    s('cc-maxloss', '$' + parseInt(maxloss).toLocaleString());
+    s('cc-pos', p.maxPosition + ' lots');
+    s('cc-lossdaymax', Math.floor(parseInt(maxloss) / parseInt(risk)) + ' trades');
+  }
+
+  function buildStrategyContext() {
+    var p = CEM.params;
+    return CEM.asset + ' ' + CEM.timeframe + ' | EMA ' + p.emaFast + '/' + p.emaSlow +
+      ' | RSI ' + p.rsiPeriod + ' | SL ' + p.stopLoss + '% TP ' + p.takeProfit + '%' +
+      ' | R:R ' + (p.takeProfit/p.stopLoss).toFixed(2);
+  }
+
+  // --- BACKTEST ---
+  function runBacktest() {
+    var btn = document.getElementById('run-backtest');
+    var bar = document.getElementById('backtest-progress-bar');
+    if (btn) { btn.textContent = '◉ ANALYZING...'; btn.disabled = true; }
+    if (bar) { bar.style.display = 'block'; bar.style.width = '12%'; }
+    fetch('/api/backtest', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(Object.assign({ symbol: CEM.asset, period: CEM.range, interval: CEM.timeframe }, CEM.params))
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(raw) {
+      if (bar) bar.style.width = '90%';
+      var d = raw;
+      var tr = Number(d.total_return||0), wr = Number(d.win_rate||0), sh = Number(d.sharpe_ratio||0);
+      var md = Number(d.max_drawdown||0), tc = d.total_trades||d.trades&&d.trades.length||0, pf = Number(d.profit_factor||0);
+      CEM.backtestResults = d;
+      var s = function(id,v) { var e = document.getElementById(id); if(e) e.textContent = v; };
+      s('res-return', (tr>=0?'+':'')+tr.toFixed(2)+'%'); s('res-winrate', wr.toFixed(1)+'%');
+      s('res-sharpe', sh.toFixed(2)); s('res-maxdd', '-'+Math.abs(md).toFixed(2)+'%');
+      s('res-trades', tc); s('res-pf', pf.toFixed(2));
+      if (d.trades && d.trades.length) renderTradeLog(d.trades);
+      switchTabById('results');
+      if (btn) { btn.textContent = '✓ COMPLETE — RUN AGAIN'; btn.disabled = false; }
+      setTimeout(function() { if(bar) { bar.style.width='0%'; bar.style.display='none'; } }, 800);
+      addCembotMsg('Backtest complete: ' + (tr>=0?'+':'') + tr.toFixed(2) + '% return, ' + wr.toFixed(1) + '% win rate, Sharpe ' + sh.toFixed(2));
+    })
+    .catch(function(e) {
+      showToast('Backtest error: ' + e.message, 'error');
+      if (btn) { btn.textContent = '⚠ RETRY'; btn.disabled = false; }
+      if (bar) { bar.style.width='0%'; bar.style.display='none'; }
+    });
+  }
+
+  function renderTradeLog(trades) {
+    var c = document.getElementById('trade-log'); if (!c) return; c.innerHTML = '';
+    if (!trades || !trades.length) return;
+    trades.forEach(function(t, i) {
+      var pnl = Number(t.pnl_pct||t.pnl||0); var isPos = pnl >= 0;
+      var date = t.entry_date ? String(t.entry_date).slice(0,10) : '—';
+      var dir = String(t.direction||'LONG').toUpperCase();
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;padding:5px 6px;border-bottom:1px solid var(--border-faint);font-family:var(--font-mono);font-size:9px;';
+      row.innerHTML = '<span style="color:var(--text-muted)">' + date + '</span>' +
+        '<span style="color:' + (dir==='LONG'?'var(--accent)':'var(--negative)') + '">' + dir + '</span>' +
+        '<span style="color:' + (isPos?'var(--accent)':'var(--negative)') + '">' + (isPos?'+':'') + pnl.toFixed(2) + '%</span>';
+      c.appendChild(row);
+    });
+  }
+
+  // --- TABS ---
+  function switchTab(btn, tabName) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    ['strategy','results','paper'].forEach(function(t) {
+      var el = document.getElementById('tab-' + t);
+      if (el) el.style.display = t === tabName ? 'block' : 'none';
+    });
+  }
+  function switchTabById(name) {
+    var btn = document.querySelector('.tab-btn[data-tab="' + name + '"]');
+    if (btn) switchTab(btn, name);
+  }
+
+  // --- CEMBOT ---
+  function addCembotMsg(text, isUser) {
+    var msgs = document.getElementById('cembot-messages');
+    var div = document.createElement('div');
+    div.className = isUser ? 'msg-user' : 'msg-bot';
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function sendCembot() {
+    var input = document.getElementById('cembot-input');
+    var msg = input.value.trim(); if (!msg) return;
+    input.value = '';
+    sendCembotMsg(msg);
+  }
+
+  function sendCembotMsg(text, autoCtx) {
+    var msg = text || autoCtx;
+    if (!msg) return;
+    if (text) addCembotMsg(msg, true);
+    var ctx = buildStrategyContext();
+    fetch('/api/coach', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ message: msg, context: ctx, asset: CEM.asset })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { addCembotMsg(d.response || d.message || 'Try again.'); })
+    .catch(function() { addCembotMsg('CEMbot is offline.'); });
+  }
+
+  // --- CEMBOT Y/N PROMPT SYSTEM ---
+  function showCembotPrompt(question, noLabel, yesLabel, onYes, onNo) {
+    document.getElementById('cembot-prompt-text').textContent = question;
+    document.getElementById('cembot-prompt-no').textContent = noLabel;
+    document.getElementById('cembot-prompt-yes').textContent = yesLabel;
+    document.getElementById('cembot-prompt').style.display = 'block';
+    window._cembotYes = onYes;
+    window._cembotNo = onNo || function() {};
+    window._cembotTimeout = setTimeout(function() { cembotDecline(); }, 30000);
+  }
+  function cembotAccept() {
+    clearTimeout(window._cembotTimeout);
+    document.getElementById('cembot-prompt').style.display = 'none';
+    if (window._cembotYes) window._cembotYes();
+  }
+  function cembotDecline() {
+    clearTimeout(window._cembotTimeout);
+    document.getElementById('cembot-prompt').style.display = 'none';
+    if (window._cembotNo) window._cembotNo();
+  }
+
+  // --- SLIDER ANIMATION (CEMbot can move sliders) ---
+  function animateSlider(sliderId, targetVal, durationMs) {
+    var slider = document.getElementById(sliderId);
+    if (!slider) return;
+    var start = parseFloat(slider.value);
+    var diff = targetVal - start;
+    var startTime = performance.now();
+    function step(now) {
+      var progress = Math.min((now - startTime) / durationMs, 1);
+      var ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+      slider.value = start + (diff * ease);
+      var key = slider.getAttribute('data-key');
+      if (key) updateParam(key, slider.value);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // CEMbot param set event listener
+  window.addEventListener('cembot-set-param', function(e) {
+    var d = e.detail;
+    if (d.animate) animateSlider('sl-' + d.key, d.val, 300);
+    else { var s = document.getElementById('sl-' + d.key); if(s) { s.value = d.val; updateParam(d.key, d.val); } }
+  });
+
+  // --- VOICE ---
+  var isListening = false;
+  function toggleVoice() {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      showToast('Voice not supported', 'error'); return;
+    }
+    var btn = document.getElementById('voice-btn');
+    if (isListening) { isListening = false; btn.classList.remove('listening'); return; }
+    isListening = true; btn.classList.add('listening');
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var rec = new SR(); rec.lang = 'en-US'; rec.interimResults = false;
+    rec.onresult = function(e) { document.getElementById('cembot-input').value = e.results[0][0].transcript; sendCembot(); };
+    rec.onend = function() { isListening = false; btn.classList.remove('listening'); };
+    rec.start();
+  }
+
+  // --- SCRUBBER / REPLAY ---
+  var scrubPlaying = false;
+  var scrubTimer = null;
+  function toggleReplay() {
+    var bar = document.getElementById('scrubber-bar');
+    bar.classList.toggle('active');
+    if (bar.classList.contains('active') && window._chartBars) {
+      var slider = document.getElementById('main-scrub-slider');
+      slider.max = window._chartBars.length - 1;
+      slider.value = 0;
+    }
+  }
+  function seekToBar(idx) {
+    idx = parseInt(idx);
+    if (!window._chartBars || !window.mainSeries) return;
+    var slice = window._chartBars.slice(0, idx + 1);
+    if (slice.length) {
+      window.mainSeries.setData(slice);
+      var last = slice[slice.length - 1];
+      document.getElementById('scrub-time').textContent = new Date(last.time * 1000).toLocaleDateString();
+    }
+  }
+  function scrubPlay() {
+    if (scrubPlaying) { scrubPause(); return; }
+    scrubPlaying = true;
+    document.getElementById('scrub-play-btn').textContent = '⏸';
+    var speed = parseInt(document.getElementById('scrub-speed').value);
+    if (speed === 0) { scrubFwd(); scrubPlaying = false; document.getElementById('scrub-play-btn').textContent = '▶'; return; }
+    var slider = document.getElementById('main-scrub-slider');
+    scrubTimer = setInterval(function() {
+      var v = parseInt(slider.value) + 1;
+      if (v > parseInt(slider.max)) { scrubPause(); return; }
+      slider.value = v;
+      seekToBar(v);
+    }, speed);
+  }
+  function scrubPause() { scrubPlaying = false; clearInterval(scrubTimer); document.getElementById('scrub-play-btn').textContent = '▶'; }
+  function scrubBack() { var s = document.getElementById('main-scrub-slider'); s.value = Math.max(0, parseInt(s.value)-1); seekToBar(s.value); }
+  function scrubFwd() { var s = document.getElementById('main-scrub-slider'); s.value = Math.min(parseInt(s.max), parseInt(s.value)+1); seekToBar(s.value); }
+  function scrubReset() { var s = document.getElementById('main-scrub-slider'); s.value = 0; seekToBar(0); }
+
+  // --- SIM ---
+  function simLong() { showToast('SIM LONG — paper entry logged'); }
+  function simShort() { showToast('SIM SHORT — paper entry logged'); }
+  function simPause() { showToast('Simulation paused'); }
+  function simReview() { switchTabById('results'); }
+  function startPaperTrade() { showToast('Paper trading started'); }
+
+  // --- TOAST ---
+  function showToast(msg, type) {
+    var el = document.getElementById('cem-toast');
+    el.textContent = msg; el.className = 'show ' + (type || 'success');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(function() { el.className = ''; }, 3000);
+  }
+
+  // --- CLOSE DROPDOWNS ON OUTSIDE CLICK ---
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#asset-pill') && !e.target.closest('#asset-dropdown'))
+      document.getElementById('asset-dropdown').style.display = 'none';
+    if (!e.target.closest('#ind-btn') && !e.target.closest('#ind-dropdown'))
+      document.getElementById('ind-dropdown').style.display = 'none';
+    if (!e.target.closest('.candle-picker'))
+      document.getElementById('candle-pop').classList.remove('open');
+  });
+
+  // --- AUTH & INIT ---
+  async function init() {
+    try {
+      var sess = await sb.auth.getSession();
+      if (sess && sess.data && sess.data.session) {
+        cemUser = sess.data.session.user;
+        var initials = cemUser.email ? cemUser.email[0].toUpperCase() : '?';
+        document.getElementById('user-avatar').textContent = initials;
+      }
+    } catch(e) { console.warn('auth error', e); }
+    updateCalcs();
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    init();
+  });
+  </script>
+
+  <script src="/cem-cursor.js"></script>
+</body>
+</html>

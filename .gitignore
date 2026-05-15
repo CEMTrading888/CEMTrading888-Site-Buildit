@@ -1,0 +1,57 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+
+# Server runtime / cache
+cache/
+.env
+*.log
+/tmp/
+
+# Node / build artifacts
+node_modules/
+dist/
+build/
+.next/
+
+# Editor / OS
+.DS_Store
+.cursor/
+*.bak
+*.bak.*
+*.swp
+.idea/
+.vscode/
+
+# MCP / dev tools
+mcp-server/
+mcp.json
+.cursor/mcp.json
+
+# Test artifacts  
+e2e/
+test-results/
+playwright-report/
+playwright.config.js
+package-lock.json
+
+# Junk files Opus created
+AGENT_LOG.md
+deploy_log.txt
+inject_*.txt
+test_*.txt
+fix_*.py
+history_service.py
+*.mov
+IMG_*.jpeg
+IMG_*.jpg
+IMG_*.png
+
+# Server-only — NEVER commit these
+src/ui/
+api/__pycache__/
+static/__pycache__/
